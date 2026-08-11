@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assistente Financeiro</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-title">
+    <span class="logo">💰</span>
+    <div>
+      <h1>Assistente Financeiro</h1>
+      <p class="subtitle">Controle mensal de receitas, despesas e cartão</p>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <label class="campo-inline">
+      Mês
+      <select id="seletorMes"></select>
+    </label>
+    <button id="btnNovoMes" class="btn btn-ghost" title="Criar um novo mês">+ Mês</button>
+    <button id="btnExportar" class="btn btn-ghost">⬇ Exportar .xlsx</button>
+  </div>
+</header>
+
+<main>
+
+  <section id="alertaSemCategoria" class="alerta oculto"></section>
+
+  <section class="cards" id="cardsResumo"></section>
+
+  <section class="grid-2">
+    <div class="painel">
+      <h2>Despesas por categoria</h2>
+      <canvas id="graficoCategorias" height="220"></canvas>
+    </div>
+    <div class="painel">
+      <h2>Orçado x Realizado</h2>
+      <canvas id="graficoOrcamento" height="220"></canvas>
+    </div>
+  </section>
+
+  <section class="painel">
+    <h2>Evolução mensal</h2>
+    <canvas id="graficoEvolucao" height="120"></canvas>
+  </section>
+
+  <section class="painel" id="painelImportar">
+    <h2>Importar lançamentos</h2>
+    <p class="ajuda">Anexe a fatura do cartão (PDF), o extrato bancário (PDF) ou a planilha de controle (.xlsx). Você confere e ajusta tudo antes de confirmar a importação.</p>
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="inputArquivos" multiple accept=".pdf,.xlsx,.xls">
+      <p>Arraste os arquivos aqui ou <button type="button" id="btnEscolherArquivo" class="link">escolha no computador</button></p>
+    </div>
+    <div id="previewImportacao"></div>
+  </section>
+
+  <section class="painel">
+    <h2>Lançar manualmente</h2>
+    <form id="formManual" class="form-grid">
+      <label>Data <input type="date" name="data" required></label>
+      <label>Descrição <input type="text" name="descricao" required placeholder="Ex.: Mercado da esquina"></label>
+      <label>Origem
+        <select name="origem">
+          <option>Conta corrente</option>
+          <option>Cartão de crédito</option>
+          <option>Dinheiro</option>
+        </select>
+      </label>
+      <label>Tipo
+        <select name="tipo">
+          <option>Despesa</option>
+          <option>Receita</option>
+          <option>Transferência</option>
+        </select>
+      </label>
+      <label>Categoria
+        <select name="categoria" id="selectCategoriaManual"></select>
+      </label>
+      <label>Valor (R$) <input type="number" name="valor" step="0.01" min="0" required></label>
+      <button type="submit" class="btn btn-primario">Adicionar lançamento</button>
+    </form>
+  </section>
+
+  <section class="painel">
+    <div class="painel-header">
+      <h2>Lançamentos do mês</h2>
+      <input type="search" id="filtroLancamentos" placeholder="Filtrar por descrição, categoria...">
+    </div>
+    <div class="tabela-scroll">
+      <table id="tabelaLancamentos">
+        <thead>
+          <tr>
+            <th>Data</th><th>Descrição</th><th>Origem</th><th>Categoria</th><th>Tipo</th><th>Valor (R$)</th><th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="painel">
+    <h2>Orçamento por categoria</h2>
+    <div class="tabela-scroll">
+      <table id="tabelaOrcamento">
+        <thead><tr><th>Categoria</th><th>Orçado (R$)</th><th>Realizado (R$)</th><th>Diferença</th><th>% usado</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<div id="modalRoot"></div>
+
+<script type="module">
+  import * as pdfjsLib from './js/vendor/pdfjs/pdf.min.mjs';
+  window.pdfjsLib = pdfjsLib;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = './js/vendor/pdfjs/pdf.worker.min.mjs';
+  window.dispatchEvent(new Event('pdfjs-pronto'));
+</script>
+<script src="js/vendor/xlsx.full.min.js"></script>
+<script src="js/vendor/chart.umd.js"></script>
+<script src="js/state.js"></script>
+<script src="js/categorize.js"></script>
+<script src="js/calc.js"></script>
+<script src="js/parsePdf.js"></script>
+<script src="js/xlsxIO.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
