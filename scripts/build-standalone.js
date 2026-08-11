@@ -15,8 +15,12 @@ function subst(html, busca, textoLiteral) {
 
 let html = read('index.html');
 
-// 1. CSS inline
-const css = read('css/styles.css');
+// 1. CSS inline — e as fontes (@font-face) viram data: URI, sem arquivo externo
+let css = read('css/styles.css');
+css = css.replace(/url\('\.\.\/assets\/fonts\/([^']+)'\)/g, (_, arquivo) => {
+  const b64 = readBin(`assets/fonts/${arquivo}`).toString('base64');
+  return `url('data:font/woff2;base64,${b64}')`;
+});
 html = subst(html, '<link rel="stylesheet" href="css/styles.css">', `<style>\n${css}\n</style>`);
 
 // 2. pdf.js (module) + worker — embutidos como blobs em base64, criados em runtime

@@ -2,7 +2,10 @@
    ui.js — renderização do dashboard e interações da tela
    ============================================================ */
 
-const CORES_GRAFICO = ['#7c6cf0','#4f8cff','#f5a623','#ff6b9d','#34d399','#38bdf8','#fb923c','#a78bfa','#f87171','#2dd4bf','#facc15','#94a3b8','#c084fc','#60a5fa'];
+const CORES_GRAFICO = ['#c9a15c','#c17b63','#8bab8f','#9b8bc4','#d6a154','#7f9bb0','#b6654f','#6f9e82','#cf9a3e','#8a7fae','#af8562','#5e8f7c','#c76b7f','#7d90b0'];
+const COR_MUTED = '#928d7f';
+const COR_TRACO = '#2b2f3d';
+const FONTE_GRAFICO = "'IBM Plex Sans', sans-serif";
 
 let chartCategorias, chartOrcamento, chartEvolucao;
 let itensImportacaoPendente = [];
@@ -53,6 +56,7 @@ function renderTudo() {
   const mes = mesAtual();
   popularSeletorMes();
   renderSubtitulo(mes);
+  renderHeroResultado(mes);
   renderCards(mes);
   renderAlertaSemCategoria(mes);
   renderGastosPorCategoria(mes);
@@ -66,6 +70,61 @@ function renderTudo() {
   popularSelectCategoria(document.getElementById('selectCategoriaManual'));
 }
 
+function iniciaisDoNome(nome) {
+  if (!nome) return '—';
+  const partes = nome.trim().split(/\s+/);
+  return (partes[0][0] + (partes.length > 1 ? partes[partes.length - 1][0] : '')).toUpperCase();
+}
+
+function animarNumero(el, destino, prefixoNegativo) {
+  const inicio = 0;
+  const duracao = 700;
+  const t0 = performance.now();
+  function passo(agora) {
+    const p = Math.min(1, (agora - t0) / duracao);
+    const facil = 1 - Math.pow(1 - p, 3);
+    el.textContent = formatarMoeda((destino - inicio) * facil + inicio);
+    if (p < 1) requestAnimationFrame(passo);
+    else el.textContent = formatarMoeda(destino);
+  }
+  requestAnimationFrame(passo);
+}
+
+function renderHeroResultado(mes) {
+  const r = calcularResumo(mes);
+  document.getElementById('heroSelo').textContent = iniciaisDoNome(STATE.titular);
+  const nomeMes = rotuloMes(mes);
+  document.getElementById('heroMesNome').textContent = nomeMes;
+
+  const elValor = document.getElementById('heroResultadoValor');
+  elValor.classList.toggle('positivo', r.sobra >= 0);
+  elValor.classList.toggle('negativo', r.sobra < 0);
+  animarNumero(elValor, r.sobra);
+
+  const tag = document.getElementById('heroResultadoTag');
+  tag.textContent = r.sobra >= 0 ? 'sobrou no mês' : 'faltou no mês';
+
+  const [ano, mesNum] = mes.split('-').map(Number);
+  const diasNoMes = new Date(ano, mesNum, 0).getDate();
+  const hoje = new Date();
+  const ehMesAtual = hoje.getFullYear() === ano && hoje.getMonth() + 1 === mesNum;
+  const mesEncerrado = new Date(ano, mesNum - 1, 1) < new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  let diaAtual, pct, legenda;
+  if (ehMesAtual) {
+    diaAtual = hoje.getDate();
+    pct = (diaAtual / diasNoMes) * 100;
+    legenda = `Dia ${diaAtual} de ${diasNoMes} do mês`;
+  } else if (mesEncerrado) {
+    pct = 100;
+    legenda = 'Mês encerrado';
+  } else {
+    pct = 0;
+    legenda = 'Mês ainda não começou';
+  }
+  requestAnimationFrame(() => { document.getElementById('heroReguaPreenchido').style.width = pct.toFixed(1) + '%'; });
+  document.getElementById('heroReguaTexto').textContent = legenda;
+}
+
 function renderCards(mes) {
   const r = calcularResumo(mes);
   const saldoConta = calcularSaldoConta(mes);
@@ -73,7 +132,6 @@ function renderCards(mes) {
   const cards = [
     { rotulo: 'Receitas do mês', valor: r.receitas, classe: 'receita', rodape: 'entradas na conta' },
     { rotulo: 'Despesas do mês', valor: r.despesas, classe: 'despesa', rodape: 'saídas no total' },
-    { rotulo: 'Resultado', valor: r.sobra, classe: 'sobra', positivo: r.sobra >= 0, rodape: r.sobra >= 0 ? 'sobrou 🎉' : 'faltou' },
     { rotulo: 'Saldo em conta', valor: saldoConta, classe: 'sobra', positivo: saldoConta >= 0, rodape: 'após lançamentos', editavel: true },
     { rotulo: 'Fatura do cartão', valor: r.despesasCartao, classe: 'despesa', rodape: cartao && cartao.vencimento ? `vence ${cartao.vencimento}` : '—' }
   ];
@@ -130,8 +188,14 @@ function renderGastosPorCategoria(mes) {
   if (!entradas.length) return;
   chartCategorias = new Chart(ctx, {
     type: 'doughnut',
-    data: { labels: entradas.map(e => e[0]), datasets: [{ data: entradas.map(e => e[1]), backgroundColor: CORES_GRAFICO, borderColor: 'transparent' }] },
-    options: { cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: true } } }
+    data: { labels: entradas.map(e => e[0]), datasets: [{ data: entradas.map(e => e[1]), backgroundColor: CORES_GRAFICO, borderColor: 'transparent', borderRadius: 2, spacing: 2 }] },
+    options: {
+      cutout: '74%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: true, backgroundColor: '#1a1d28', borderColor: COR_TRACO, borderWidth: 1, titleFont: { family: FONTE_GRAFICO }, bodyFont: { family: FONTE_GRAFICO } }
+      }
+    }
   });
 }
 
@@ -168,16 +232,16 @@ function renderGraficoEvolucao() {
     data: {
       labels: dados.map(d => rotuloMes(d.mes)),
       datasets: [
-        { label: 'Receitas', data: dados.map(d => d.receitas), borderColor: '#34d399', tension: .25 },
-        { label: 'Despesas', data: dados.map(d => d.despesas), borderColor: '#ff6b81', tension: .25 },
-        { label: 'Sobra', data: dados.map(d => d.sobra), borderColor: '#7c6cf0', tension: .25 }
+        { label: 'Receitas', data: dados.map(d => d.receitas), borderColor: '#8bab8f', backgroundColor: 'rgba(139,171,143,.08)', tension: .3, fill: false, pointRadius: 3 },
+        { label: 'Despesas', data: dados.map(d => d.despesas), borderColor: '#c17b63', backgroundColor: 'rgba(193,123,99,.08)', tension: .3, fill: false, pointRadius: 3 },
+        { label: 'Sobra', data: dados.map(d => d.sobra), borderColor: '#c9a15c', backgroundColor: 'rgba(201,161,92,.1)', tension: .3, fill: false, pointRadius: 3 }
       ]
     },
     options: {
-      plugins: { legend: { labels: { color: '#8890a6' } } },
+      plugins: { legend: { labels: { color: COR_MUTED, font: { family: FONTE_GRAFICO } } } },
       scales: {
-        x: { ticks: { color: '#8890a6' }, grid: { color: '#262b3d' } },
-        y: { ticks: { color: '#8890a6' }, grid: { color: '#262b3d' } }
+        x: { ticks: { color: COR_MUTED, font: { family: FONTE_GRAFICO } }, grid: { color: COR_TRACO } },
+        y: { ticks: { color: COR_MUTED, font: { family: FONTE_GRAFICO } }, grid: { color: COR_TRACO } }
       }
     }
   });
@@ -195,15 +259,15 @@ function renderGraficoOrcamento(mes) {
     data: {
       labels: categorias,
       datasets: [
-        { label: 'Orçado', data: categorias.map(c => orcamento[c] || 0), backgroundColor: '#33384c' },
-        { label: 'Realizado', data: categorias.map(c => r.porCategoria[c] || 0), backgroundColor: '#7c6cf0' }
+        { label: 'Orçado', data: categorias.map(c => orcamento[c] || 0), backgroundColor: '#2b2f3d', borderRadius: 3 },
+        { label: 'Realizado', data: categorias.map(c => r.porCategoria[c] || 0), backgroundColor: '#c9a15c', borderRadius: 3 }
       ]
     },
     options: {
-      plugins: { legend: { labels: { color: '#8890a6' } } },
+      plugins: { legend: { labels: { color: COR_MUTED, font: { family: FONTE_GRAFICO } } } },
       scales: {
-        x: { ticks: { color: '#8890a6', font: { size: 10 } }, grid: { display: false } },
-        y: { ticks: { color: '#8890a6' }, grid: { color: '#262b3d' } }
+        x: { ticks: { color: COR_MUTED, font: { size: 10, family: FONTE_GRAFICO } }, grid: { display: false } },
+        y: { ticks: { color: COR_MUTED, font: { family: FONTE_GRAFICO } }, grid: { color: COR_TRACO } }
       }
     }
   });
