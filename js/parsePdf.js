@@ -53,6 +53,37 @@ function dataBrParaIso(dataBr) {
   return `${a}-${m}-${d}`;
 }
 
+function numeroBr(txt) {
+  return txt ? parseFloat(txt.replace(/\./g, '').replace(',', '.')) : null;
+}
+
+function extrairTitular(linhas) {
+  for (const linha of linhas) {
+    const m = /Titular:\s*([A-ZÀ-Ü][A-ZÀ-Ü\s]+?)(?:\s{1,}(?:Cart[ãa]o final|Ag[êe]ncia|CPF)|\s*$)/.exec(linha);
+    if (m) return m[1].trim();
+  }
+  return null;
+}
+
+/* ---------- Cabeçalho e resumo da fatura ---------- */
+
+function extrairResumoFatura(linhas) {
+  const texto = linhas.join(' ');
+  const pega = re => { const m = re.exec(texto); return m ? m[1].trim() : null; };
+  return {
+    titular: extrairTitular(linhas),
+    cartaoFinal: pega(/Cart[ãa]o final:\s*(\d+)/i),
+    vencimento: pega(/Vencimento:\s*(\d{2}\/\d{2}\/\d{4})/i),
+    fechamento: pega(/Fechamento:\s*(\d{2}\/\d{2}\/\d{4})/i),
+    periodo: pega(/Per[íi]odo:\s*(\d{2}\/\d{2}\/\d{4}\s*a\s*\d{2}\/\d{2}\/\d{4})/i),
+    totalFatura: numeroBr(pega(/TOTAL DESTA FATURA\s+([\d.,]+,\d{2})/i)),
+    limiteTotal: numeroBr(pega(/Limite total\s+([\d.,]+,\d{2})/i)),
+    limiteUtilizado: numeroBr(pega(/Limite utilizado\s+([\d.,]+,\d{2})/i)),
+    limiteDisponivel: numeroBr(pega(/Limite dispon[íi]vel\s+([\d.,]+,\d{2})/i)),
+    pagamentoMinimo: numeroBr(pega(/Pagamento m[íi]nimo\s*(?:\([^)]*\))?\s*([\d.,]+,\d{2})/i))
+  };
+}
+
 /* ---------- Extrato bancário ---------- */
 
 const TIPOS_LANCAMENTO_EXTRATO = [
@@ -175,7 +206,7 @@ function parseFaturaCartao(linhas) {
       cidade: cidade || null
     });
   }
-  return { lancamentos, avisos };
+  return { lancamentos, avisos, resumoFatura: extrairResumoFatura(linhas) };
 }
 
 /* ---------- Roteador: tenta identificar o tipo de documento ---------- */
@@ -187,17 +218,17 @@ async function analisarPdf(file) {
 
   if (textoCompleto.includes('EXTRATO DE CONTA') || textoCompleto.includes('SALDO ANTERIOR') || textoCompleto.includes('SALDO (R$)')) {
     const r = parseExtratoBancario(linhas);
-    return { tipoDocumento: 'extrato', ...r, linhas };
+    return { tipoDocumento: 'extrato', titular: extrairTitular(linhas), ...r, linhas };
   }
   if (textoCompleto.includes('FATURA') && (textoCompleto.includes('CARTÃO') || textoCompleto.includes('CARTAO'))) {
     const r = parseFaturaCartao(linhas);
-    return { tipoDocumento: 'fatura', ...r, linhas };
+    return { tipoDocumento: 'fatura', titular: r.resumoFatura.titular, ...r, linhas };
   }
   // fallback: tenta os dois e fica com quem achou mais lançamentos
   const rFatura = parseFaturaCartao(linhas);
   const rExtrato = parseExtratoBancario(linhas);
   if (rFatura.lancamentos.length >= rExtrato.lancamentos.length) {
-    return { tipoDocumento: 'fatura (detecção automática)', ...rFatura, linhas };
+    return { tipoDocumento: 'fatura (detecção automática)', titular: rFatura.resumoFatura.titular, ...rFatura, linhas };
   }
-  return { tipoDocumento: 'extrato (detecção automática)', ...rExtrato, linhas };
+  return { tipoDocumento: 'extrato (detecção automática)', titular: extrairTitular(linhas), ...rExtrato, linhas };
 }

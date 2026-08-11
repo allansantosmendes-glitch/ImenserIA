@@ -6,6 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
   ensureMes(mesAtual());
   renderTudo();
 
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  document.getElementById('subtituloTitular').addEventListener('click', () => {
+    const valor = prompt('Nome do titular:', STATE.titular || '');
+    if (valor === null) return;
+    STATE.titular = valor.trim() || null;
+    saveState();
+    renderTudo();
+  });
+
   document.getElementById('seletorMes').addEventListener('change', e => {
     setMesAtual(e.target.value);
     renderTudo();

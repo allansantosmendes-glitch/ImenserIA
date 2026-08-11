@@ -31,7 +31,8 @@ function emptyState() {
     meses: {},        // { "2026-07": { lancamentos: [...], orcamento: {categoria: valor}, saldoInicial, saldoFinalInformado } }
     depara: seedDepara(),
     categorias: CATEGORIAS_PADRAO.slice(),
-    mesAtual: null
+    mesAtual: null,
+    titular: null
   };
 }
 
@@ -83,9 +84,19 @@ function saveState() {
 
 function ensureMes(mes) {
   if (!STATE.meses[mes]) {
-    STATE.meses[mes] = { lancamentos: [], orcamento: {}, saldoInicial: 0, saldoFinalInformado: null };
+    STATE.meses[mes] = { lancamentos: [], orcamento: {}, saldoInicial: 0, saldoFinalInformado: null, cartao: null };
   }
   return STATE.meses[mes];
+}
+
+function setTitular(nome) {
+  if (nome && !STATE.titular) { STATE.titular = nome; saveState(); }
+}
+
+function setResumoCartao(mes, resumo) {
+  const m = ensureMes(mes);
+  m.cartao = resumo;
+  saveState();
 }
 
 function listarMeses() {
