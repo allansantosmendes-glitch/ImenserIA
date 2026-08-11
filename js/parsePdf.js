@@ -14,6 +14,7 @@ const RE_DATA = /^(\d{2}\/\d{2}\/\d{4})\s+(.*)$/;
 const TOLERANCIA_Y = 3; // px de diferença entre itens que ainda contam como a mesma linha da tabela
 
 async function extrairLinhasPdf(arrayBuffer) {
+  if (window.__pdfjsPronto) await window.__pdfjsPronto;
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
   const linhas = [];
   for (let p = 1; p <= pdf.numPages; p++) {
