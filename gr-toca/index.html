@@ -147,6 +147,14 @@ header.top{
   .hero-photo{border-radius:18px;}
   .hero-photo .title-overlay{top:4%;}
 }
+@media (max-width:480px){
+  .wrap{padding:0 16px 60px;}
+  .bubble-panel{padding:24px 20px;}
+  .feedback{padding:26px 20px;}
+  .month-card .row{gap:20px;}
+  .download-btn{padding:14px 22px;font-size:.92rem;}
+  .forms-btn{padding:14px 22px;font-size:.92rem;}
+}
 
 /* ---------- glass bubble panel ---------- */
 .bubble-panel{
@@ -182,7 +190,7 @@ header.top{
   display:inline-flex;align-items:center;gap:8px;font-size:.78rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--accent-2);margin-bottom:10px;
 }
-.month-card h3{font-family:'Fraunces',serif;font-size:1.9rem;margin:0 0 10px;font-weight:600;}
+.month-card h3{font-family:'Fraunces',serif;font-size:clamp(1.5rem,6vw,1.9rem);line-height:1.15;margin:0 0 10px;font-weight:600;}
 .month-card .sub{color:var(--ink-dim);font-size:.98rem;line-height:1.6;margin:0 0 20px;max-width:520px;}
 
 .download-btn{
@@ -245,10 +253,11 @@ header.top{
   position:relative;
 }
 .feedback .warn-line{
-  font-size:.85rem;letter-spacing:.05em;color:var(--warn);font-weight:600;
+  font-size:clamp(.72rem,3.4vw,.85rem);letter-spacing:.03em;color:var(--warn);font-weight:600;
   display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;
+  text-align:center;
 }
-.feedback h3{font-family:'Fraunces',serif;font-size:1.6rem;margin:0 0 10px;font-weight:600;}
+.feedback h3{font-family:'Fraunces',serif;font-size:clamp(1.35rem,7vw,1.6rem);line-height:1.2;margin:0 0 10px;font-weight:600;}
 .feedback p{color:var(--ink-dim);font-size:.95rem;max-width:480px;margin:0 auto 22px;line-height:1.6;}
 .forms-btn{
   display:inline-flex;align-items:center;gap:10px;
@@ -302,7 +311,7 @@ footer a{color:var(--ink-dim);}
     <div class="row">
       <div class="info">
         <span class="month-tag">🫧 Material de Agosto</span>
-        <h3>GR Toca — Estudos 1 a 4</h3>
+        <h3>GR Toca — Estudos 1&nbsp;a&nbsp;4</h3>
         <p class="sub">Quatro encontros, quatro bolhas, um único caminho: do "preciso merecer" ao "Deus vem até mim". Baixe o PDF completo com quebra-gelo, texto base, perguntas, aplicação e oração de cada semana.</p>
       </div>
       <div>
@@ -361,7 +370,7 @@ footer a{color:var(--ink-dim);}
 
   <section id="feedback" class="feedback">
     <div class="warn-line">⚠️ Faça assim que acabar seu encontro ⚠️</div>
-    <h3>Feedback semanal | GRs</h3>
+    <h3>Feedback semanal |&nbsp;GRs</h3>
     <p>Como foi o clima do grupo, quantos vieram, o que funcionou e o que travou — leva menos de 2 minutos e ajuda a gente a cuidar melhor de cada GR.</p>
     <a class="forms-btn" href="https://forms.gle/7rHPZ1EDWQJEnmyp7" target="_blank" rel="noopener">
       Preencher feedback do encontro →
