@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GR Toca — Portal do Líder</title>
+<meta name="description" content="Baixe o material do mês e envie o feedback do seu encontro de GR.">
+<style>
+@font-face{font-family:'Fraunces';src:url('../assets/fonts/fraunces-latin-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'Fraunces';src:url('../assets/fonts/fraunces-latin-600-normal.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Sans';src:url('../assets/fonts/ibm-plex-sans-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Sans';src:url('../assets/fonts/ibm-plex-sans-latin-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Sans';src:url('../assets/fonts/ibm-plex-sans-latin-600-normal.woff2') format('woff2');font-weight:600;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Sans';src:url('../assets/fonts/ibm-plex-sans-latin-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:swap;}
+@font-face{font-family:'IBM Plex Mono';src:url('../assets/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-display:swap;}
+:root{
+  --bg-deep:#050b1f;
+  --bg-mid:#0a1638;
+  --bg-glow:#13245a;
+  --ink:#eef1ff;
+  --ink-dim:#aab3d6;
+  --ink-faint:#7580a8;
+  --bubble-line:rgba(255,255,255,.14);
+  --bubble-fill:rgba(255,255,255,.05);
+  --accent-1:#ff6bd6;
+  --accent-2:#ffd166;
+  --accent-3:#6bc9ff;
+  --accent-4:#9b7bff;
+  --warn:#ffcf3f;
+  --radius-lg:28px;
+  --radius-md:18px;
+  font-size:16px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(60vw 60vw at 82% -10%, #1c2f6e 0%, transparent 60%),
+    radial-gradient(50vw 50vw at -10% 25%, #17235a 0%, transparent 55%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ---------- floating bubble decorations ---------- */
+.bg-bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-bubbles span{
+  position:absolute;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), rgba(255,255,255,.02) 70%);
+  border:1px solid rgba(255,255,255,.18);
+  filter:blur(.3px);
+  animation:drift linear infinite;
+  opacity:.5;
+}
+.bg-bubbles span:nth-child(1){width:120px;height:120px;left:6%;top:70%;animation-duration:26s;}
+.bg-bubbles span:nth-child(2){width:60px;height:60px;left:80%;top:60%;animation-duration:19s;animation-delay:-4s;}
+.bg-bubbles span:nth-child(3){width:26px;height:26px;left:20%;top:20%;animation-duration:14s;animation-delay:-2s;}
+.bg-bubbles span:nth-child(4){width:80px;height:80px;left:90%;top:10%;animation-duration:22s;animation-delay:-9s;}
+.bg-bubbles span:nth-child(5){width:14px;height:14px;left:45%;top:85%;animation-duration:11s;animation-delay:-1s;}
+.bg-bubbles span:nth-child(6){width:40px;height:40px;left:60%;top:35%;animation-duration:17s;animation-delay:-6s;}
+@keyframes drift{
+  0%{transform:translateY(0) translateX(0);}
+  50%{transform:translateY(-38px) translateX(14px);}
+  100%{transform:translateY(0) translateX(0);}
+}
+
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:0 20px 80px;}
+
+/* ---------- header ---------- */
+header.top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:26px 4px 10px;gap:12px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.02em;color:var(--ink-dim);font-size:.95rem;}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--accent-1),var(--accent-3));box-shadow:0 0 12px var(--accent-3);}
+.top nav a{color:var(--ink-dim);text-decoration:none;font-size:.9rem;margin-left:22px;transition:color .2s;}
+.top nav a:hover{color:var(--ink);}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;padding:56px 0 20px;position:relative;}
+.hero .kicker{
+  display:inline-block;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent-3);background:rgba(107,201,255,.1);border:1px solid rgba(107,201,255,.3);
+  padding:6px 14px;border-radius:999px;margin-bottom:22px;
+}
+.hero h1{
+  font-family:'Fraunces', Georgia, serif;
+  font-weight:600;
+  font-size:clamp(3.2rem, 11vw, 6.4rem);
+  line-height:.92;
+  margin:0;
+  letter-spacing:-.01em;
+  background:linear-gradient(100deg, var(--accent-2) 0%, var(--accent-1) 45%, var(--accent-4) 75%, var(--accent-3) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 30px 60px rgba(255,107,214,.15);
+}
+.hero p.lead{
+  max-width:620px;margin:22px auto 0;color:var(--ink-dim);font-size:1.05rem;line-height:1.65;
+}
+
+/* ---------- glass bubble panel ---------- */
+.bubble-panel{
+  position:relative;
+  background:var(--bubble-fill);
+  border:1px solid var(--bubble-line);
+  border-radius:var(--radius-lg);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 30px 60px -20px rgba(0,0,0,.55);
+  padding:38px;
+}
+.bubble-panel::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(135deg, rgba(255,255,255,.5), rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,255,255,.25));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  pointer-events:none;
+}
+
+/* ---------- intro / "o que é a bolha" ---------- */
+.intro{margin:40px 0;}
+.intro h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.5rem;margin:0 0 12px;color:var(--ink);}
+.intro p{color:var(--ink-dim);line-height:1.75;margin:0 0 12px;font-size:.98rem;}
+.intro p:last-child{margin-bottom:0;}
+.intro strong{color:var(--ink);font-weight:600;}
+
+/* ---------- month card w/ download ---------- */
+.month-card{margin:36px 0;}
+.month-card .row{display:flex;gap:28px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;}
+.month-card .info{flex:1 1 320px;}
+.month-tag{
+  display:inline-flex;align-items:center;gap:8px;font-size:.78rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent-2);margin-bottom:10px;
+}
+.month-card h3{font-family:'Fraunces',serif;font-size:1.9rem;margin:0 0 10px;font-weight:600;}
+.month-card .sub{color:var(--ink-dim);font-size:.98rem;line-height:1.6;margin:0 0 20px;max-width:520px;}
+
+.download-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(120deg,var(--accent-1),var(--accent-4));
+  color:#fff;text-decoration:none;font-weight:600;font-size:.98rem;
+  padding:15px 26px;border-radius:999px;
+  box-shadow:0 14px 30px -10px rgba(255,107,214,.5);
+  transition:transform .18s ease, box-shadow .18s ease;
+  white-space:nowrap;
+}
+.download-btn:hover{transform:translateY(-2px);box-shadow:0 18px 36px -8px rgba(255,107,214,.65);}
+.download-btn svg{width:18px;height:18px;flex:none;}
+.file-meta{margin-top:10px;font-size:.78rem;color:var(--ink-faint);}
+
+/* ---------- 4 estudos grid ---------- */
+.studies{margin:44px 0 10px;}
+.studies h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.4rem;margin:0 0 6px;}
+.studies > p{color:var(--ink-dim);font-size:.94rem;margin:0 0 24px;}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media (max-width:680px){.grid{grid-template-columns:1fr;}}
+
+.study{
+  position:relative;border-radius:var(--radius-md);
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.1);
+  padding:22px 22px 20px;
+  overflow:hidden;
+  transition:border-color .2s, transform .2s;
+}
+.study:hover{border-color:rgba(255,255,255,.25);transform:translateY(-3px);}
+.study .num{
+  font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ink-faint);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:block;
+}
+.study h4{font-family:'Fraunces',serif;font-size:1.15rem;margin:0 0 14px;line-height:1.35;font-weight:600;}
+.bolha-box{
+  display:flex;gap:10px;align-items:flex-start;
+  background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:12px 14px;
+}
+.bolha-box .icon{font-size:1.1rem;line-height:1;margin-top:1px;}
+.bolha-box .txt{font-size:.85rem;color:var(--ink-dim);line-height:1.5;}
+.bolha-box .txt em{color:var(--ink);font-style:normal;font-weight:500;}
+
+/* accent per card */
+.study:nth-child(1) .num{color:var(--accent-1);}
+.study:nth-child(2) .num{color:var(--accent-2);}
+.study:nth-child(3) .num{color:var(--accent-3);}
+.study:nth-child(4) .num{color:var(--accent-4);}
+
+/* ---------- feedback banner ---------- */
+.feedback{
+  margin:52px 0 30px;
+  border-radius:var(--radius-lg);
+  padding:34px;
+  text-align:center;
+  background:linear-gradient(160deg, rgba(255,207,63,.14), rgba(255,207,63,.03));
+  border:1px solid rgba(255,207,63,.35);
+  position:relative;
+}
+.feedback .warn-line{
+  font-size:.85rem;letter-spacing:.05em;color:var(--warn);font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;
+}
+.feedback h3{font-family:'Fraunces',serif;font-size:1.6rem;margin:0 0 10px;font-weight:600;}
+.feedback p{color:var(--ink-dim);font-size:.95rem;max-width:480px;margin:0 auto 22px;line-height:1.6;}
+.forms-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--warn);color:#1a1300;text-decoration:none;font-weight:700;font-size:.98rem;
+  padding:15px 28px;border-radius:999px;
+  box-shadow:0 14px 30px -10px rgba(255,207,63,.55);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.forms-btn:hover{transform:translateY(-2px);box-shadow:0 18px 36px -8px rgba(255,207,63,.7);}
+
+/* ---------- footer ---------- */
+footer{text-align:center;color:var(--ink-faint);font-size:.82rem;padding:30px 0 0;}
+footer a{color:var(--ink-dim);}
+</style>
+</head>
+<body>
+
+<div class="bg-bubbles" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand"><span class="dot"></span>GR Toca</div>
+    <nav>
+      <a href="#material">Material</a>
+      <a href="#feedback">Feedback</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <span class="kicker">Portal do Líder · Agosto</span>
+    <h1>Agosto</h1>
+    <p class="lead">Todo mês, aqui, um material novo para o seu GR — e um lugar rápido para contar como foi o encontro.</p>
+  </section>
+
+  <section class="bubble-panel intro">
+    <h2>A bolha que cada encontro rompe</h2>
+    <p>A série deste mês não é uma coleção de estudos soltos — ela tem um fio condutor. Cada um dos quatro encontros parte de uma <strong>bolha</strong>: uma crença comum, quase automática, que o adolescente carrega sobre Deus, sobre si mesmo ou sobre a fé. E cada texto bíblico do encontro existe para estourar essa bolha específica.</p>
+    <p>Por isso, ao preparar o seu GR, vale a pena nomear a bolha em voz alta com o grupo antes de abrir o texto. Não é só sobre mudar um comportamento da semana — é sobre perceber que <strong>Jesus muda o paradigma</strong> por trás do comportamento. Use os resumos abaixo como um mapa rápido antes de ler o estudo completo no PDF.</p>
+  </section>
+
+  <section id="material" class="bubble-panel month-card">
+    <div class="row">
+      <div class="info">
+        <span class="month-tag">🫧 Material de Agosto</span>
+        <h3>GR Toca — Estudos 1 a 4</h3>
+        <p class="sub">Quatro encontros, quatro bolhas, um único caminho: do "preciso merecer" ao "Deus vem até mim". Baixe o PDF completo com quebra-gelo, texto base, perguntas, aplicação e oração de cada semana.</p>
+      </div>
+      <div>
+        <a class="download-btn" href="documentos/GR-Toca-Estudos-2-3-4-Agosto.pdf" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Baixar PDF do mês
+        </a>
+        <div class="file-meta">GR-Toca-Estudos-2-3-4-Agosto.pdf</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="studies">
+    <h2>Os quatro encontros</h2>
+    <p>Um resumo de cada bolha — o conteúdo completo está no PDF.</p>
+    <div class="grid">
+
+      <article class="study">
+        <span class="num">Estudo 1</span>
+        <h4>Quem pode chegar perto de Deus?</h4>
+        <div class="bolha-box">
+          <span class="icon">🫧</span>
+          <span class="txt"><em>Bolha:</em> "Só pessoas boas podem se aproximar de Deus." A pergunta deixa de ser <em>quem merece?</em> e passa a ser <em>quem tem fome?</em></span>
+        </div>
+      </article>
+
+      <article class="study">
+        <span class="num">Estudo 2</span>
+        <h4>Quem pode permanecer quando está quebrado?</h4>
+        <div class="bolha-box">
+          <span class="icon">🫧</span>
+          <span class="txt"><em>Bolha:</em> "Se eu estiver mal, Deus deve estar decepcionado comigo." A graça dele se torna mais visível exatamente ali.</span>
+        </div>
+      </article>
+
+      <article class="study">
+        <span class="num">Estudo 3</span>
+        <h4>Quem decide o que é certo?</h4>
+        <div class="bolha-box">
+          <span class="icon">🫧</span>
+          <span class="txt"><em>Bolha:</em> "Conhecer a verdade sobre Deus é o mesmo que concordar com o jeito dele agir." O teste real é confiar no caminho de Deus.</span>
+        </div>
+      </article>
+
+      <article class="study">
+        <span class="num">Estudo 4</span>
+        <h4>Quem você é quando ninguém vê?</h4>
+        <div class="bolha-box">
+          <span class="icon">🫧</span>
+          <span class="txt"><em>Bolha:</em> "Posso manter a aparência de espiritualidade por fora enquanto negocio pequenas coisas por dentro." Integridade é ser por dentro o que se aparenta ser por fora.</span>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section id="feedback" class="feedback">
+    <div class="warn-line">⚠️ Faça assim que acabar seu encontro ⚠️</div>
+    <h3>Feedback semanal | GRs</h3>
+    <p>Como foi o clima do grupo, quantos vieram, o que funcionou e o que travou — leva menos de 2 minutos e ajuda a gente a cuidar melhor de cada GR.</p>
+    <a class="forms-btn" href="https://forms.gle/7rHPZ1EDWQJEnmyp7" target="_blank" rel="noopener">
+      Preencher feedback do encontro →
+    </a>
+  </section>
+
+  <footer>
+    Portal do Líder · GR Toca · atualizado em agosto
+  </footer>
+
+</div>
+
+</body>
+</html>
