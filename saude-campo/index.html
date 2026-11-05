@@ -345,11 +345,12 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 .brand-mark.big.logos { height: 84px; gap: 10px; }
 @media (max-width: 439px) { .net .net-txt { display: none; } .net { padding: 7px; } }
 @media (max-width: 479px) { .topbar .brand-mark.logos { height: 32px; gap: 3px; } .brand { gap: 8px; } }
-.login-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.login-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.login .box > div:nth-child(2) { text-align: center; }
 .login-brand b { display: block; font-family: var(--f-display); font-size: 1.05rem; line-height: 1.2; }
 .login-brand > div span { color: var(--gold); font-size: .95rem; font-weight: 700; }
-.report .r-org { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.report .r-mark { height: 52px; display: flex; gap: 6px; flex: none; }
+.report .r-org { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 14px; }
+.report .r-mark { height: 60px; display: flex; gap: 8px; flex: none; }
 .report .r-org b { display: block; font-size: .95rem; color: #1B1F1D; }
 .report .r-org div span { font-size: .8rem; color: #5A645F; }
 .linkish { background: none; border: 0; padding: 0; text-align: left; min-width: 0; display: block; }
@@ -360,7 +361,7 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 /* Relatório: folha branca deliberada (papel), igual nos dois temas */
 .report-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
 .report { background: #FFFFFF; color: #1B1F1D; padding: 28px 26px; font: 13px/1.45 var(--f-body); min-width: 520px; }
-.report header { border-bottom: 3px solid #FDB413; padding-bottom: 12px; margin-bottom: 14px; }
+.report header { text-align: center; border-bottom: 3px solid #FDB413; padding-bottom: 12px; margin-bottom: 14px; }
 .report h1 { font-size: 1.45rem; color: #1B1F1D; }
 .report h2 { font-size: 1rem; margin: 16px 0 6px; color: #17603A; }
 .report .r-eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #5A645F; font-weight: 700; }
