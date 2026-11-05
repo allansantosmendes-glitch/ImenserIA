@@ -194,7 +194,7 @@ nav.tabs .extra { display: none; }
 .search svg { position: absolute; left: 13px; top: 13px; color: var(--muted); }
 
 /* Formulário */
-.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .steps div { font-size: .76rem; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
 .steps div::before { content: ""; height: 5px; border-radius: 4px; background: var(--line); }
 .steps div.done::before, .steps div.now::before { background: var(--primary); }
@@ -297,6 +297,60 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 .prose { max-width: 68ch; display: flex; flex-direction: column; gap: 10px; }
 .prose ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* Família, morador e atendimento */
+.comp { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.comp div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; }
+.comp b { font-family: var(--f-display); font-size: 1.4rem; line-height: 1.1; }
+.comp span { font-size: .72rem; color: var(--muted); }
+.comp-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.comp-in .total { grid-column: 1 / -1; }
+@media (min-width: 640px) { .comp-in { grid-template-columns: repeat(4, 1fr); } }
+.vitals { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 640px) { .vitals { grid-template-columns: repeat(3, 1fr); } }
+.vitals-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.vitals-view div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; min-width: 0; }
+.vitals-view span { font-size: .74rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.vitals-view b { font-family: var(--f-display); font-size: 1.3rem; }
+.vitals-view small { font-size: .74rem; color: var(--muted); overflow-wrap: anywhere; }
+.imc-out { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: .95rem; }
+.curva svg { width: 100%; height: auto; max-width: 100%; display: block; }
+.curva { display: flex; flex-direction: column; gap: 8px; }
+.cid-res { display: flex; flex-direction: column; gap: 4px; }
+.cid-res button { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 12px; }
+.cid-res button:hover { background: var(--surface-2); }
+.med-row { display: grid; grid-template-columns: 1fr 76px 40px; gap: 8px; align-items: center; }
+.med-row input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); min-height: 46px; min-width: 0; }
+.linkish { background: none; border: 0; padding: 0; text-align: left; min-width: 0; display: block; }
+.linkish:hover b { text-decoration: underline; }
+.member .btn.primary svg { width: 18px; height: 18px; }
+@media (max-width: 479px) { .hide-sm { display: none; } .member .btn.small { padding: 6px 10px; } }
+
+/* Relatório: folha branca deliberada (papel), igual nos dois temas */
+.report-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
+.report { background: #FFFFFF; color: #1B1F1D; padding: 28px 26px; font: 13px/1.45 var(--f-body); min-width: 520px; }
+.report header { border-bottom: 3px solid #1E6B4E; padding-bottom: 12px; margin-bottom: 14px; }
+.report h1 { font-size: 1.45rem; color: #1B1F1D; }
+.report h2 { font-size: 1rem; margin: 16px 0 6px; color: #1E6B4E; }
+.report .r-eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #5A645F; font-weight: 700; }
+.report p { color: #3B4440; }
+.report table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.report th, .report td { border-bottom: 1px solid #DDE3DF; padding: 5px 6px; text-align: right; }
+.report th:first-child, .report td:first-child { text-align: left; }
+.report th { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: #5A645F; }
+.report tr.tot td { font-weight: 700; border-top: 2px solid #1B1F1D; }
+.report table.nominal { margin-top: 10px; }
+.report table.nominal td, .report table.nominal th { text-align: left; }
+.report footer { margin-top: 18px; padding-top: 10px; border-top: 1px solid #DDE3DF; font-size: .75rem; color: #5A645F; }
+.report section { break-inside: avoid; }
+#print-area { display: none; }
+@media print {
+  body > *:not(#print-area) { display: none !important; }
+  body::before { display: none; }
+  body { background: #FFFFFF; }
+  #print-area { display: block; }
+  #print-area .report { min-width: 0; padding: 0; }
+  @page { size: A4; margin: 14mm; }
+}
 </style>
 </head>
 <body>
@@ -304,7 +358,7 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>
-      <div><b>Saúde em Campo</b><small id="sub-equipe">Atenção Primária · Cadastro territorial</small></div>
+      <div><b>Saúde em Campo</b><small id="sub-equipe">Atenção primária · censo e atendimentos</small></div>
     </div>
     <button class="net off" id="net-pill" data-act="toggle-net" title="Simular conexão"></button>
     <button class="icon-btn" data-act="go" data-tab="projeto" aria-label="Sobre o projeto"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button>
@@ -317,16 +371,18 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 </div>
 <div id="overlay"></div>
 <div id="toast" class="toast" role="status" hidden></div>
+<div id="print-area"></div>
 
 <script>
 /* =========================================================
    Saúde em Campo — protótipo navegável (sem backend).
-   Os dados abaixo são gerados de forma fictícia. A versão real
+   Todos os dados são gerados de forma fictícia. A versão real
    guardará tudo em IndexedDB e sincronizará com o Supabase.
    ========================================================= */
 const HOJE = new Date();
-const LS_KEY = 'saudecampo-prototipo-v1';
-const META_DIA = 10;
+const LS_KEY = 'saudecampo-prototipo-v2';
+const META_DIA = 12;
+const EMBUTIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 
 const ICON = {
   home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -342,171 +398,318 @@ const ICON = {
   close: '<path d="M6 6l12 12M18 6L6 18"/>',
   check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
   edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
-  clip: '<path d="M9 4h6v3H9z"/><path d="M9 5.5H6v15h12v-15h-3"/><path d="M9 12h6M9 16h4"/>'
+  clip: '<path d="M9 4h6v3H9z"/><path d="M9 5.5H6v15h12v-15h-3"/><path d="M9 12h6M9 16h4"/>',
+  steth: '<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v2a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="11" r="2"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>'
 };
 const ico = (n, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 const h = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-/* ---------- Listas (alinhadas às fichas do e-SUS APS) ---------- */
+/* ---------- Listas de opções ---------- */
 const OP = {
   localidades: ['Comunidade São Raimundo', 'Vila Nova do Purus', 'Ramal do Açaí', 'Igarapé Grande'],
-  situacao: ['Próprio', 'Cedido', 'Alugado', 'Ocupação'],
-  material: ['Madeira', 'Alvenaria', 'Taipa', 'Palha / outro'],
-  agua: ['Rede pública', 'Poço ou nascente', 'Rio / igarapé', 'Cisterna', 'Carro-pipa'],
-  tratamento: ['Filtrada', 'Fervida', 'Clorada', 'Sem tratamento'],
-  esgoto: ['Rede coletora', 'Fossa séptica', 'Fossa rudimentar', 'Direto no rio', 'Céu aberto'],
-  lixo: ['Coletado', 'Queimado / enterrado', 'Céu aberto'],
+  moradia: ['Palafita', 'Madeira', 'Alvenaria', 'Outro'],
+  energia: ['Sim', 'Não', 'Gerador', 'Solar'],
+  agua: ['Rio', 'Poço', 'Chuva', 'Rede', 'Outro'],
+  tratamento: ['Fervida', 'Filtrada', 'Clorada', 'Sem tratamento'],
+  esgoto: ['Fossa', 'A céu aberto', 'Rio', 'Banheiro com descarga', 'Sem banheiro'],
+  lixo: ['Queimado', 'Enterrado', 'Jogado no rio/mato', 'Coletado'],
+  animais: ['Cão', 'Gato', 'Outros', 'Nenhum'],
   renda: ['Até ¼ salário mínimo', '¼ a ½ salário mínimo', '½ a 1 salário mínimo', '1 a 2 salários mínimos', 'Acima de 2 salários mínimos'],
-  benefFamilia: ['Bolsa Família', 'Auxílio Gás', 'Tarifa Social de Energia', 'Cesta básica / programa local'],
-  benefPessoa: ['BPC', 'Aposentadoria / pensão', 'Seguro-defeso'],
-  parentesco: ['Responsável', 'Cônjuge', 'Filho(a)', 'Neto(a)', 'Pai / mãe', 'Outro parente', 'Não parente'],
-  raca: ['Parda', 'Branca', 'Preta', 'Amarela', 'Indígena'],
-  escolaridade: ['Não alfabetizado', 'Fundamental incompleto', 'Fundamental completo', 'Médio completo', 'Superior', 'Criança fora da idade escolar'],
-  condicoes: ['Hipertensão', 'Diabetes', 'Gestante', 'Deficiência', 'Tabagismo', 'Saúde mental', 'Acamado(a)', 'Tuberculose', 'Hanseníase'],
-  motivos: ['Visita periódica', 'Atualização de cadastro', 'Busca ativa', 'Acompanhamento de gestante', 'Acompanhamento de crônico'],
-  desfechos: ['Realizada', 'Ausente', 'Recusada']
+  benefFamilia: ['Bolsa Família', 'BPC/LOAS', 'Aposentadoria', 'Pensão', 'Seguro-defeso', 'Outro', 'Nenhum'],
+  benefPessoa: ['Bolsa Família', 'BPC/LOAS', 'Aposentadoria', 'Pensão', 'Seguro-defeso', 'Outro'],
+  tempoPosto: ['Até 30 min', '30 min a 1 h', '1 a 3 h', '3 a 6 h', 'Mais de 6 h'],
+  meioPosto: ['A pé', 'Barco / rabeta', 'Carro / moto', 'Outro'],
+  parentesco: ['Responsável', 'Cônjuge', 'Filho(a)', 'Enteado(a)', 'Neto(a)', 'Pai / mãe', 'Irmão / irmã', 'Outro parente', 'Não parente'],
+  raca: ['Branca', 'Preta', 'Parda', 'Amarela', 'Indígena'],
+  escolaridade: ['Sem escolaridade', 'Fundamental incompleto', 'Fundamental completo', 'Médio incompleto', 'Médio completo', 'Superior', 'Criança fora da idade escolar'],
+  condicoes: ['Gestante', 'Hipertensão', 'Diabetes', 'Doença respiratória', 'Tuberculose', 'Hanseníase', 'Malária recente', 'Verminose', 'Deficiência', 'Saúde mental', 'Álcool / tabaco', 'Acamado(a)', 'Outra'],
+  profissionais: ['Médico(a)', 'Enfermeiro(a)', 'Dentista', 'Outro'],
+  urgencia: ['Eletivo', 'Prioritário', 'Urgente'],
+  destinos: ['UBS da sede do município', 'Hospital regional', 'Maternidade', 'CAPS', 'Centro de especialidades', 'Laboratório municipal', 'CEO (odontologia)'],
+  meds: ['Losartana 50 mg', 'Hidroclorotiazida 25 mg', 'Metformina 850 mg', 'Glibenclamida 5 mg', 'Paracetamol 500 mg', 'Paracetamol gotas 200 mg/mL', 'Dipirona 500 mg', 'Ibuprofeno 600 mg', 'Amoxicilina 500 mg', 'Amoxicilina suspensão 250 mg/5 mL', 'Cefalexina 500 mg', 'Albendazol 400 mg', 'Sais de reidratação oral', 'Sulfato ferroso 40 mg', 'Ácido fólico 5 mg', 'Omeprazol 20 mg', 'Salbutamol spray', 'Permetrina loção 5%']
 };
+
+/* CID-10 — recorte dos códigos mais usados na atenção primária em campo */
+const CID = [
+  ['A09', 'Diarreia e gastroenterite infecciosa'], ['A15', 'Tuberculose respiratória'], ['A30', 'Hanseníase'], ['A90', 'Dengue'],
+  ['B35', 'Micose de pele (dermatofitose)'], ['B50', 'Malária por P. falciparum'], ['B51', 'Malária por P. vivax'], ['B54', 'Malária não especificada'],
+  ['B82.9', 'Parasitose intestinal (verminose)'], ['B85', 'Pediculose (piolho)'], ['B86', 'Escabiose (sarna)'], ['D50', 'Anemia por deficiência de ferro'],
+  ['E10', 'Diabetes tipo 1'], ['E11', 'Diabetes tipo 2'], ['E44', 'Desnutrição moderada ou leve'], ['E66', 'Obesidade'],
+  ['F10', 'Transtorno por uso de álcool'], ['F17', 'Transtorno por uso de tabaco'], ['F32', 'Episódio depressivo'], ['F41', 'Transtorno de ansiedade'],
+  ['G40', 'Epilepsia'], ['H10', 'Conjuntivite'], ['H66', 'Otite média'], ['I10', 'Hipertensão essencial'],
+  ['J00', 'Resfriado comum'], ['J03', 'Amigdalite aguda'], ['J06.9', 'Infecção aguda das vias aéreas superiores'], ['J18.9', 'Pneumonia'],
+  ['J44', 'DPOC'], ['J45', 'Asma'], ['K02', 'Cárie dentária'], ['K05', 'Gengivite / doença periodontal'],
+  ['K29', 'Gastrite'], ['L08.9', 'Infecção localizada de pele'], ['M54.5', 'Dor lombar (lombalgia)'], ['M25.5', 'Dor articular'],
+  ['N39.0', 'Infecção do trato urinário'], ['N76', 'Vaginite / vulvovaginite'], ['R05', 'Tosse'], ['R10.4', 'Dor abdominal'],
+  ['R50.9', 'Febre'], ['R51', 'Cefaleia (dor de cabeça)'], ['S61', 'Ferimento de mão ou punho'], ['T63.0', 'Picada de serpente'],
+  ['W54', 'Mordedura de cão'], ['Z00.0', 'Exame médico geral (adulto)'], ['Z00.1', 'Acompanhamento de crescimento (puericultura)'], ['Z34', 'Pré-natal de gravidez normal'],
+  ['Z30', 'Planejamento familiar'], ['Z23', 'Vacinação']
+];
+
+/* Curva de IMC por idade (OMS) — medianas aproximadas, sexos combinados, 0 a 19 anos.
+   No protótipo os limites de escore-z são estimados a partir da mediana. */
+const IMC_MED = [13.4, 16.9, 16.0, 15.6, 15.4, 15.3, 15.3, 15.5, 15.7, 16.0, 16.4, 16.9, 17.5, 18.2, 19.0, 19.8, 20.5, 21.1, 21.7, 22.2];
+function imcRef(anos) { const a = Math.max(0, Math.min(19, anos)); const i = Math.floor(a); const f = a - i; const m = i >= 19 ? IMC_MED[19] : IMC_MED[i] + (IMC_MED[i + 1] - IMC_MED[i]) * f; return { med: m, zm2: m * .83, zp1: m * 1.13, zp2: m * 1.28 }; }
+function classificaIMC(imc, anosDec) {
+  if (!imc) return null;
+  if (anosDec < 19) {
+    const r = imcRef(anosDec);
+    if (imc < r.zm2) return { txt: 'Magreza para a idade', nivel: 'alta' };
+    if (imc > r.zp2) return { txt: 'Obesidade para a idade', nivel: 'media' };
+    if (imc > r.zp1) return { txt: 'Sobrepeso / risco para a idade', nivel: 'media' };
+    return { txt: 'Adequado para a idade', nivel: 'ok' };
+  }
+  if (anosDec >= 60) return imc <= 22 ? { txt: 'Baixo peso (idoso)', nivel: 'media' } : imc < 27 ? { txt: 'Adequado (idoso)', nivel: 'ok' } : { txt: 'Sobrepeso (idoso)', nivel: 'media' };
+  return imc < 18.5 ? { txt: 'Baixo peso', nivel: 'media' } : imc < 25 ? { txt: 'Adequado', nivel: 'ok' } : imc < 30 ? { txt: 'Sobrepeso', nivel: 'media' } : { txt: 'Obesidade', nivel: 'media' };
+}
+const calcIMC = (peso, alt) => peso && alt ? peso / Math.pow(alt / 100, 2) : null;
 
 /* ---------- Gerador de dados fictícios ---------- */
 function rng(seed) { return () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296; }
+function uid() { return (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2) + Date.now().toString(36)); }
 function gerarExemplo() {
   const r = rng(20261105);
   const pick = a => a[Math.floor(r() * a.length)];
   const chance = p => r() < p;
+  const ri = (a, b) => a + Math.floor(r() * (b - a + 1));
   const NM = ['João', 'José', 'Antônio', 'Francisco', 'Raimundo', 'Pedro', 'Lucas', 'Gabriel', 'Mateus', 'Davi', 'Miguel', 'Sebastião', 'Manoel', 'Paulo', 'Benedito'];
   const NF = ['Maria', 'Ana', 'Francisca', 'Raimunda', 'Antônia', 'Juliana', 'Larissa', 'Beatriz', 'Alice', 'Helena', 'Sofia', 'Luzia', 'Rosa', 'Joana', 'Cleide'];
   const SB = ['Silva', 'Souza', 'Oliveira', 'Lima', 'Pereira', 'Costa', 'Ferreira', 'Rodrigues', 'Almeida', 'Nascimento', 'Araújo', 'Barbosa', 'Cardoso', 'Moraes', 'Freitas'];
+  const PROF = [['Dra. Ana Ribeiro', 'Médico(a)'], ['Enf. Paulo Mendes', 'Enfermeiro(a)'], ['Enf. Rute Sales', 'Enfermeiro(a)'], ['Dr. Caio Lins', 'Dentista']];
+  const digitos = n => Array.from({ length: n }, () => Math.floor(r() * 10)).join('');
 
   function pessoa(sexo, idade, parentesco, sob) {
     idade = Math.max(0, Math.min(94, idade));
-    const nasc = new Date(HOJE); nasc.setFullYear(HOJE.getFullYear() - idade); nasc.setDate(nasc.getDate() - Math.floor(r() * 360) - 1);
+    const nasc = new Date(HOJE); nasc.setFullYear(HOJE.getFullYear() - idade); nasc.setDate(nasc.getDate() - ri(1, 360));
     const c = [];
+    let semanas = null;
     if (idade >= 35 && chance(idade > 55 ? .45 : .22)) c.push('Hipertensão');
     if (idade >= 40 && chance(.14)) c.push('Diabetes');
-    let gest = null;
-    if (sexo === 'F' && idade >= 16 && idade <= 40 && chance(.14)) { c.push('Gestante'); gest = { semanas: 8 + Math.floor(r() * 28), preNatal: chance(.55) }; }
-    if (idade >= 16 && chance(.13)) c.push('Tabagismo');
+    if (sexo === 'F' && idade >= 16 && idade <= 40 && chance(.15)) { c.push('Gestante'); semanas = ri(8, 36); }
+    if (chance(.05)) c.push('Doença respiratória');
+    if (chance(.07)) c.push('Malária recente');
+    if (chance(idade < 15 ? .25 : .05)) c.push('Verminose');
     if (chance(.04)) c.push('Deficiência');
-    if (idade >= 70 && chance(.18)) c.push('Acamado(a)');
     if (idade >= 18 && chance(.04)) c.push('Saúde mental');
+    if (idade >= 16 && chance(.15)) c.push('Álcool / tabaco');
+    if (idade >= 70 && chance(.18)) c.push('Acamado(a)');
+    if (chance(.01)) c.push('Hanseníase');
     const b = [];
-    if ((c.includes('Deficiência') && chance(.6)) || (idade >= 65 && chance(.12))) b.push('BPC');
-    if (idade >= 60 && chance(.7)) b.push('Aposentadoria / pensão');
-    if (idade >= 18 && idade < 60 && chance(.16)) b.push('Seguro-defeso');
+    if ((c.includes('Deficiência') && chance(.6)) || (idade >= 65 && chance(.12))) b.push('BPC/LOAS');
+    if (idade >= 60 && chance(.65)) b.push('Aposentadoria');
+    if (idade >= 18 && chance(idade >= 60 ? .12 : .03)) b.push('Pensão');
+    if (idade >= 18 && idade < 60 && chance(.15)) b.push('Seguro-defeso');
     let esc = 'Criança fora da idade escolar';
-    if (idade >= 6) esc = idade < 15 ? 'Fundamental incompleto' : pick(['Não alfabetizado', 'Fundamental incompleto', 'Fundamental incompleto', 'Fundamental completo', 'Médio completo', 'Médio completo', 'Superior']);
+    if (idade >= 6) esc = idade < 15 ? 'Fundamental incompleto' : pick(['Sem escolaridade', 'Fundamental incompleto', 'Fundamental incompleto', 'Fundamental completo', 'Médio incompleto', 'Médio completo', 'Superior']);
     let ocup = 'Criança';
     if (idade >= 6 && idade < 18) ocup = 'Estudante';
-    else if (idade >= 60 && b.includes('Aposentadoria / pensão')) ocup = 'Aposentado(a)';
+    else if (idade >= 60 && b.includes('Aposentadoria')) ocup = 'Aposentado(a)';
     else if (idade >= 18) ocup = b.includes('Seguro-defeso') ? 'Pescador(a)' : pick(['Agricultor(a)', 'Extrativista', 'Do lar', 'Pescador(a)', 'Comércio', 'Sem ocupação', 'Professor(a)']);
-    const nome = (sexo === 'F' ? pick(NF) : pick(NM)) + ' ' + (chance(.5) ? pick(SB) + ' ' : '') + sob;
+    const meds = [];
+    if (c.includes('Hipertensão') && chance(.75)) meds.push('Losartana 50 mg');
+    if (c.includes('Diabetes') && chance(.75)) meds.push('Metformina 850 mg');
+    if (c.includes('Gestante')) meds.push('Sulfato ferroso 40 mg');
     return {
-      id: uid(), nome, sexo, nascimento: nasc.toISOString().slice(0, 10), parentesco,
+      id: uid(), nome: (sexo === 'F' ? pick(NF) : pick(NM)) + ' ' + (chance(.5) ? pick(SB) + ' ' : '') + sob,
+      sexo, nascimento: nasc.toISOString().slice(0, 10), parentesco,
+      cns: chance(.7) ? '7' + digitos(14) : '', cpf: chance(.4) ? digitos(11) : '',
       raca: pick(['Parda', 'Parda', 'Parda', 'Branca', 'Preta', 'Indígena']),
-      cns: '7' + Array.from({ length: 14 }, () => Math.floor(r() * 10)).join(''),
-      escolaridade: esc, ocupacao: ocup, condicoes: c, gestacao: gest,
-      vacinaEmDia: idade < 7 ? chance(.72) : null, beneficios: b
+      escolaridade: esc, alfabetizado: idade < 7 ? null : esc === 'Sem escolaridade' ? chance(.3) : true,
+      ocupacao: ocup, beneficios: b, condicoes: c, semanas, outraCondicao: '',
+      vacina: idade < 12 ? (chance(.68) ? 'Sim' : chance(.6) ? 'Não' : 'Não sabe') : pick(['Sim', 'Sim', 'Não sabe', 'Não']),
+      caderneta: idade < 12 ? (chance(.8) ? 'Sim' : 'Não') : null,
+      medUsa: meds.length > 0, medQual: meds.join(', ')
+    };
+  }
+
+  function atendimento(m, quando) {
+    const anos = idadeDec(m.nascimento, quando);
+    const has = c => m.condicoes.includes(c);
+    let p = chance(.7) ? PROF[0] : pick(PROF.slice(1, 3));
+    let q, hip, cid, conduta, meds = [], exames = '';
+    if (has('Hipertensão') && chance(.7)) { q = pick(['Dor de cabeça e tontura', 'Retorno de pressão alta, sem remédio há 2 semanas', 'Renovar receita da pressão']); hip = 'Hipertensão arterial'; cid = 'I10'; meds = [['Losartana 50 mg', 30]]; conduta = 'Orientada dieta com pouco sal e uso diário da medicação.'; }
+    else if (has('Diabetes') && chance(.7)) { q = pick(['Muita sede e vontade de urinar', 'Retorno do diabetes']); hip = 'Diabetes tipo 2 descompensado'; cid = 'E11'; meds = [['Metformina 850 mg', 60]]; conduta = 'Ajuste de dieta, caminhada e uso da medicação.'; exames = 'Hemoglobina glicada, creatinina'; }
+    else if (has('Gestante')) { q = 'Consulta de pré-natal'; hip = 'Gestação de baixo risco'; cid = 'Z34'; meds = [['Sulfato ferroso 40 mg', 30], ['Ácido fólico 5 mg', 30]]; conduta = 'Orientações de pré-natal e sinais de alerta.'; exames = 'Hemograma, glicemia, sorologias (HIV, sífilis, hepatites), urina'; }
+    else if (has('Malária recente') && chance(.6)) { q = 'Febre e calafrios há 3 dias'; hip = 'Suspeita de malária'; cid = 'B54'; conduta = 'Coletada lâmina de gota espessa; tratamento conforme resultado.'; exames = 'Gota espessa'; }
+    else if (anos < 12) {
+      const o = pick([['Consulta de rotina da criança', 'Puericultura', 'Z00.1', [], 'Orientada alimentação e vacinas.'], ['Tosse e coriza há 4 dias', 'IVAS', 'J06.9', [['Paracetamol gotas 200 mg/mL', 1]], 'Hidratação, lavagem nasal com soro.'], ['Diarreia há 2 dias', 'Gastroenterite', 'A09', [['Sais de reidratação oral', 4]], 'Soro oral, sinais de desidratação explicados à família.'], ['Barriga inchada e coceira no ânus', 'Verminose', 'B82.9', [['Albendazol 400 mg', 1]], 'Dose única; orientada higiene das mãos e água fervida.']]);
+      [q, hip, cid, meds, conduta] = o;
+    } else {
+      const o = pick([['Dor nas costas', 'Lombalgia', 'M54.5', [['Dipirona 500 mg', 10]], 'Orientações posturais.'], ['Queimação no estômago', 'Gastrite', 'K29', [['Omeprazol 20 mg', 28]], 'Evitar jejum prolongado.'], ['Dor de cabeça frequente', 'Cefaleia', 'R51', [['Paracetamol 500 mg', 10]], 'Hidratação e diário da dor.'], ['Ferida infeccionada na perna', 'Infecção de pele', 'L08.9', [['Cefalexina 500 mg', 28]], 'Curativo diário.'], ['Dor de dente', 'Cárie dentária', 'K02', [['Paracetamol 500 mg', 10]], 'Restauração provisória.']]);
+      [q, hip, cid, meds, conduta] = o;
+      if (cid === 'K02') p = PROF[3];
+    }
+    const adulto = anos >= 18;
+    const hip_ = has('Hipertensão');
+    const pas = adulto ? (hip_ ? ri(132, 182) : ri(106, 134)) : null;
+    const pad = adulto ? (hip_ ? ri(84, 112) : ri(66, 86)) : null;
+    let peso, alt;
+    if (anos < 1) { peso = 7 + r() * 2; alt = 66 + r() * 6; }
+    else if (anos < 13) { peso = 2.2 * anos + 8 + r() * 4; alt = 6 * anos + 77 + r() * 6; }
+    else if (anos < 18) { peso = 40 + (anos - 13) * 4 + r() * 10; alt = 150 + (anos - 13) * 4 + r() * 8; }
+    else { peso = 52 + r() * 36; alt = 150 + r() * 28; }
+    if (anos < 12 && chance(.15)) peso *= .78;
+    const febre = cid === 'B54' || (cid === 'J06.9' && chance(.5));
+    const enc = (pas && pas >= 170 && chance(.7)) || cid === 'B54' && chance(.4) || chance(.06);
+    return {
+      id: uid(), moradorId: m.id, data: quando.toISOString(), profTipo: p[1], profNome: p[0], queixa: q,
+      pas, pad, fc: ri(64, 104), temp: febre ? +(37.9 + r() * 1.6).toFixed(1) : +(36.1 + r() * 1).toFixed(1),
+      glic: has('Diabetes') ? ri(130, 290) : chance(.4) ? ri(74, 118) : null, sat: has('Doença respiratória') ? ri(89, 96) : ri(95, 99),
+      peso: +peso.toFixed(1), altura: Math.round(alt), hipotese: hip, cid, conduta,
+      meds: meds.map(([nome, qtd]) => ({ nome, qtd })), exames,
+      encaminhamento: enc ? { sim: true, destino: cid === 'B54' ? 'Laboratório municipal' : cid === 'Z34' ? 'Maternidade' : pick(['Hospital regional', 'UBS da sede do município', 'Centro de especialidades']), urgencia: pas >= 170 ? 'Urgente' : pick(['Eletivo', 'Prioritário']) } : { sim: false },
+      retorno: (hip_ || has('Diabetes') || has('Gestante')) ? { sim: chance(.75), dias: 30 } : chance(.18) ? { sim: true, dias: 15 } : { sim: false }
     };
   }
 
   const doms = [];
   for (let i = 1; i <= 28; i++) {
-    const loc = pick(OP.localidades);
-    const sob = pick(SB);
-    const n = 1 + Math.floor(r() * 6);
+    const loc = pick(OP.localidades); const sob = pick(SB);
+    const n = ri(1, 7);
     const respSexo = chance(.58) ? 'F' : 'M';
-    const respIdade = 20 + Math.floor(r() * 54);
+    const respIdade = ri(20, 74);
     const mor = [pessoa(respSexo, respIdade, 'Responsável', sob)];
-    if (n > 1 && chance(.75)) mor.push(pessoa(respSexo === 'F' ? 'M' : 'F', respIdade + Math.floor(r() * 9) - 4, 'Cônjuge', sob));
-    if (n > 3 && respIdade < 50 && chance(.3)) mor.push(pessoa(chance(.6) ? 'F' : 'M', respIdade + 24 + Math.floor(r() * 8), 'Pai / mãe', sob));
+    if (n > 1 && chance(.75)) mor.push(pessoa(respSexo === 'F' ? 'M' : 'F', respIdade + ri(-4, 4), 'Cônjuge', sob));
+    if (n > 3 && respIdade < 50 && chance(.3)) mor.push(pessoa(chance(.6) ? 'F' : 'M', respIdade + ri(22, 32), 'Pai / mãe', sob));
     while (mor.length < n) {
-      const k = Math.floor(r() * Math.max(1, Math.min(respIdade - 16, 30)));
-      mor.push(pessoa(chance(.5) ? 'F' : 'M', respIdade > 52 && chance(.5) ? Math.floor(r() * 12) : k, respIdade > 52 && chance(.5) ? 'Neto(a)' : 'Filho(a)', sob));
+      const neto = respIdade > 52 && chance(.5);
+      mor.push(pessoa(chance(.5) ? 'F' : 'M', neto ? ri(0, 11) : ri(0, Math.max(1, Math.min(respIdade - 16, 30))), neto ? 'Neto(a)' : 'Filho(a)', sob));
     }
     const renda = OP.renda[Math.min(4, Math.floor(r() * r() * 5.5))];
-    const bf = [];
-    if (OP.renda.indexOf(renda) <= 2 && chance(.72)) bf.push('Bolsa Família');
-    if (bf.length && chance(.5)) bf.push('Auxílio Gás');
-    if (chance(.3)) bf.push('Tarifa Social de Energia');
-    const dias = 2 + Math.floor(r() * 40);
-    const quando = new Date(HOJE); quando.setDate(quando.getDate() - dias); quando.setHours(8 + Math.floor(r() * 9), Math.floor(r() * 60));
-    doms.push({
-      id: uid(), codigo: 'DOM-' + String(i).padStart(4, '0'),
+    const bf = new Set();
+    if (OP.renda.indexOf(renda) <= 2 && chance(.72)) { bf.add('Bolsa Família'); mor[0].beneficios.unshift('Bolsa Família'); }
+    mor.forEach(m => m.beneficios.forEach(b => bf.add(b)));
+    const km = ri(2, 95);
+    const dias = ri(4, 45);
+    const criado = new Date(HOJE); criado.setDate(criado.getDate() - dias); criado.setHours(ri(7, 16), ri(0, 59));
+    const d = {
+      id: uid(), codigo: 'FAM-' + String(i).padStart(4, '0'),
       localidade: loc, microarea: String(OP.localidades.indexOf(loc) + 1).padStart(2, '0'),
-      endereco: (chance(.5) ? 'Casa ' : 'Lote ') + (1 + Math.floor(r() * 80)) + (chance(.5) ? ', beira do rio' : ', próximo à escola'),
-      referencia: chance(.5) ? 'Casa de madeira azul' : '',
-      coords: { lat: (-7.24 - r() * .06).toFixed(5), lng: (-64.76 - r() * .08).toFixed(5), prec: 4 + Math.floor(r() * 12) },
-      situacao: pick(OP.situacao), material: pick(['Madeira', 'Madeira', 'Alvenaria', 'Taipa']), comodos: 1 + Math.floor(r() * 5),
-      agua: pick(['Rio / igarapé', 'Poço ou nascente', 'Poço ou nascente', 'Rede pública', 'Cisterna']),
-      tratamento: pick(['Filtrada', 'Fervida', 'Clorada', 'Clorada', 'Sem tratamento', 'Sem tratamento']),
-      esgoto: pick(['Fossa rudimentar', 'Fossa rudimentar', 'Fossa séptica', 'Direto no rio', 'Céu aberto', 'Rede coletora']),
-      lixo: pick(['Coletado', 'Queimado / enterrado', 'Queimado / enterrado', 'Céu aberto']),
-      energia: chance(.82), animais: Math.floor(r() * 4),
-      renda, beneficiosFamilia: bf, moradores: mor, consentimento: true, observacoes: '',
-      status: 'sincronizado', criadoEm: quando.toISOString(), atualizadoEm: quando.toISOString(), versao: 1,
-      visitas: [{ id: uid(), data: quando.toISOString(), motivo: 'Atualização de cadastro', desfecho: 'Realizada', obs: '', por: 'Equipe' }]
+      referencia: pick(['Casa azul na beira do rio', 'Ao lado da igreja', 'Próximo à escola', 'Depois do campo de futebol', 'Porto do Seu Chico']),
+      coords: { lat: (-7.24 - r() * .06).toFixed(5), lng: (-64.76 - r() * .08).toFixed(5), prec: ri(4, 15) },
+      responsavelNome: mor[0].nome, comp: composicao(mor),
+      moradia: pick(['Palafita', 'Madeira', 'Madeira', 'Alvenaria', 'Palafita']), comodos: ri(1, 5),
+      energia: pick(['Sim', 'Sim', 'Gerador', 'Solar', 'Não']),
+      agua: pick(['Rio', 'Rio', 'Poço', 'Chuva', 'Rede']), tratamento: pick(['Fervida', 'Filtrada', 'Clorada', 'Clorada', 'Sem tratamento', 'Sem tratamento']),
+      esgoto: pick(['Fossa', 'Fossa', 'A céu aberto', 'Rio', 'Banheiro com descarga', 'Sem banheiro']),
+      lixo: pick(['Queimado', 'Queimado', 'Enterrado', 'Jogado no rio/mato', 'Coletado']),
+      animais: (() => { const a = []; if (chance(.6)) a.push('Cão'); if (chance(.35)) a.push('Gato'); if (chance(.3)) a.push('Outros'); return a.length ? a : ['Nenhum']; })(),
+      renda, beneficiosFamilia: bf.size ? [...bf] : ['Nenhum'], pessoasComBeneficio: mor.filter(m => m.beneficios.length).length,
+      posto: { acesso: chance(.72) ? 'Sim' : 'Não', km, tempo: km < 8 ? 'Até 30 min' : km < 20 ? '30 min a 1 h' : km < 50 ? '1 a 3 h' : km < 80 ? '3 a 6 h' : 'Mais de 6 h', meio: chance(.8) ? 'Barco / rabeta' : 'A pé' },
+      moradores: mor, consentimento: true, observacoes: '',
+      criadoEm: criado.toISOString(), atualizadoEm: criado.toISOString(), versao: 1, pend: null, atendimentos: []
+    };
+    mor.forEach(m => {
+      if (chance(.45)) {
+        const t = new Date(criado); t.setDate(t.getDate() + ri(0, Math.max(0, dias - 1))); t.setHours(ri(8, 16), ri(0, 59));
+        d.atendimentos.push(atendimento(m, t));
+      }
     });
+    doms.push(d);
   }
-  // Registros feitos hoje, ainda sem internet
-  const horas = [[8, 12], [8, 47], [9, 31], [10, 5]];
+  // Hoje: 3 famílias novas e 1 retorno, ainda sem internet
+  const horas = [[8, 12], [9, 5], [10, 20]];
   [0, 1, 2].forEach((k, j) => {
-    const d = doms[k]; const t = new Date(HOJE); t.setHours(horas[j][0], horas[j][1]);
-    d.status = 'pendente'; d.criadoEm = d.atualizadoEm = t.toISOString(); d.tipoPendente = 'Novo cadastro';
-    d.visitas = [{ id: uid(), data: t.toISOString(), motivo: 'Atualização de cadastro', desfecho: 'Realizada', obs: 'Cadastro inicial em campo', por: 'Dra. Ana Ribeiro' }];
+    const d = doms[k]; const t = new Date(HOJE); t.setHours(...horas[j]);
+    d.criadoEm = d.atualizadoEm = t.toISOString(); d.atendimentos = [];
+    d.moradores.slice(0, 2).forEach((m, x) => { const ta = new Date(t); ta.setMinutes(ta.getMinutes() + 15 + x * 12); d.atendimentos.push(atendimento(m, ta)); });
+    d.pend = { cadastro: 'Nova família', atend: d.atendimentos.length };
   });
-  const d4 = doms[5]; const t4 = new Date(HOJE); t4.setHours(10, 5);
-  d4.status = 'pendente'; d4.tipoPendente = 'Visita registrada'; d4.atualizadoEm = t4.toISOString();
-  d4.visitas.push({ id: uid(), data: t4.toISOString(), motivo: 'Acompanhamento de crônico', desfecho: 'Realizada', obs: 'Pressão 150x95, orientada a retomar medicação.', por: 'Dra. Ana Ribeiro' });
-  const syncs = [3, 2, 1].map((d, i) => { const t = new Date(HOJE); t.setDate(t.getDate() - d); t.setHours(18, 10 + i * 16); return { quando: t.toISOString(), qtd: [7, 11, 9][i], ok: true }; });
+  const d5 = doms[5]; const t5 = new Date(HOJE); t5.setHours(11, 0);
+  d5.moradores.slice(0, 2).forEach((m, x) => { const ta = new Date(t5); ta.setMinutes(x * 20); d5.atendimentos.push(atendimento(m, ta)); });
+  d5.atualizadoEm = t5.toISOString(); d5.pend = { cadastro: null, atend: Math.min(2, d5.moradores.length) };
+  const syncs = [3, 2, 1].map((d, i) => { const t = new Date(HOJE); t.setDate(t.getDate() - d); t.setHours(18, 10 + i * 16); return { quando: t.toISOString(), qtd: [14, 22, 17][i] }; });
   return { domicilios: doms, syncs };
 }
-function uid() { return (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2) + Date.now().toString(36)); }
 
 /* ---------- Estado ---------- */
-let S = carregar() || { ...gerarExemplo(), online: false, rascunho: null, logado: false, perfil: null };
-S.logado = false; // a tela de entrada aparece a cada abertura
-let UI = { tab: 'inicio', filtro: 'todos', busca: '', painelLocal: 'Todas', passo: 0, sincronizando: false, progresso: 0 };
-
+let S = carregar() || { ...gerarExemplo(), online: false, rascunho: null, perfil: null };
+S.logado = false;
+const UI = { tab: 'inicio', filtro: 'todos', busca: '', buscaInicio: '', local: 'Todas', periodo: 'tudo', de: '', ate: '', passo: 0, sincronizando: false, progresso: 0 };
 function carregar() { try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } }
 function salvar() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) { /* sem armazenamento: segue em memória */ } }
 
 /* ---------- Utilidades ---------- */
-function idade(nasc) { const n = new Date(nasc + 'T12:00:00'); let a = HOJE.getFullYear() - n.getFullYear(); const m = HOJE.getMonth() - n.getMonth(); if (m < 0 || (m === 0 && HOJE.getDate() < n.getDate())) a--; return Math.max(0, a); }
+function idadeDec(nasc, ref = HOJE) { return Math.max(0, (new Date(ref) - new Date(nasc + 'T12:00:00')) / (365.25 * 864e5)); }
+function idade(nasc, ref) { return Math.floor(idadeDec(nasc, ref)); }
+function idadeTxt(nasc) {
+  if (!nasc) return '';
+  const d = idadeDec(nasc);
+  if (d < 1) { const m = Math.floor(d * 12); return m + (m === 1 ? ' mês' : ' meses'); }
+  const a = Math.floor(d); return a + (a === 1 ? ' ano' : ' anos');
+}
+function composicao(mor) {
+  const ids = mor.filter(m => m.nascimento).map(m => idade(m.nascimento));
+  return { total: mor.length, criancas: ids.filter(i => i <= 11).length, adolescentes: ids.filter(i => i >= 12 && i <= 17).length, adultos: ids.filter(i => i >= 18 && i <= 59).length, idosos: ids.filter(i => i >= 60).length };
+}
 const ehHoje = d => new Date(d).toDateString() === HOJE.toDateString();
 const fmtData = d => new Date(d).toLocaleDateString('pt-BR');
 const fmtHora = d => new Date(d).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-function fmtQuando(d) { const x = new Date(d); const ontem = new Date(HOJE); ontem.setDate(ontem.getDate() - 1); if (ehHoje(d)) return 'hoje, ' + fmtHora(d); if (x.toDateString() === ontem.toDateString()) return 'ontem, ' + fmtHora(d); return fmtData(d) + ', ' + fmtHora(d); }
+function fmtQuando(d) { const x = new Date(d); const ontem = new Date(HOJE); ontem.setDate(ontem.getDate() - 1); if (ehHoje(d)) return 'hoje, ' + fmtHora(d); if (x.toDateString() === ontem.toDateString()) return 'ontem, ' + fmtHora(d); return fmtData(d); }
 const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
-const responsavel = d => d.moradores.find(m => m.parentesco === 'Responsável') || d.moradores[0] || { nome: '(sem moradores)' };
-const pendentes = () => S.domicilios.filter(d => d.status === 'pendente');
+const num = v => (v === '' || v == null || isNaN(Number(v))) ? null : Number(v);
+const fmtNum = (v, c = 1) => v == null ? '—' : Number(v).toFixed(c).replace('.', ',');
+const pendentes = () => S.domicilios.filter(d => d.pend);
 const iniciais = n => n.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
-const cnsMask = c => c ? c.slice(0, 3) + ' •••• •••• ' + c.slice(-4) : '—';
+const cnsMask = c => c ? c.slice(0, 3) + ' •••• •••• ' + c.slice(-4) : '';
+const cpfMask = c => c ? '•••.•••.' + c.slice(6, 9) + '-' + c.slice(9) : '';
+const achaMorador = (d, id) => d.moradores.find(m => m.id === id);
+const cidNome = c => (CID.find(x => x[0] === c) || [])[1] || '';
+function pendTexto(p) { if (!p) return ''; const t = []; if (p.cadastro) t.push(p.cadastro); if (p.atend) t.push(p.atend + (p.atend === 1 ? ' atendimento' : ' atendimentos')); return t.join(' + '); }
+function pendItens(p) { return p ? (p.cadastro ? 1 : 0) + (p.atend || 0) : 0; }
+function marcarPend(d, cad, atend = 0) {
+  const p = d.pend || { cadastro: null, atend: 0 };
+  if (cad && p.cadastro !== 'Nova família') p.cadastro = cad;
+  p.atend += atend; d.pend = p; d.atualizadoEm = new Date().toISOString();
+}
+
+function vitaisAlertas(a, anos) {
+  const r = [];
+  if (anos >= 18 && a.pas && a.pad) {
+    if (a.pas >= 180 || a.pad >= 110) r.push({ nivel: 'alta', txt: 'Pressão muito elevada' });
+    else if (a.pas >= 140 || a.pad >= 90) r.push({ nivel: 'media', txt: 'Pressão elevada' });
+    else if (a.pas < 90) r.push({ nivel: 'media', txt: 'Pressão baixa' });
+  }
+  if (a.temp) { if (a.temp >= 39.5) r.push({ nivel: 'alta', txt: 'Febre alta' }); else if (a.temp >= 37.8) r.push({ nivel: 'media', txt: 'Febre' }); }
+  if (a.sat) { if (a.sat < 90) r.push({ nivel: 'alta', txt: 'Saturação muito baixa' }); else if (a.sat < 94) r.push({ nivel: 'media', txt: 'Saturação baixa' }); }
+  if (a.glic) { if (a.glic < 70) r.push({ nivel: 'alta', txt: 'Hipoglicemia' }); else if (a.glic >= 250) r.push({ nivel: 'alta', txt: 'Glicemia muito alta' }); else if (a.glic >= 200) r.push({ nivel: 'media', txt: 'Glicemia alta' }); }
+  if (anos >= 12 && a.fc) { if (a.fc > 100) r.push({ nivel: 'media', txt: 'Frequência cardíaca alta' }); else if (a.fc < 50) r.push({ nivel: 'media', txt: 'Frequência cardíaca baixa' }); }
+  const imc = calcIMC(a.peso, a.altura); const c = classificaIMC(imc, anos);
+  if (c && c.nivel !== 'ok') r.push({ nivel: c.nivel, txt: c.txt + ` (IMC ${fmtNum(imc)})` });
+  return r;
+}
+function ultimoAtend(d, mId) { return d.atendimentos.filter(a => a.moradorId === mId).sort((a, b) => b.data.localeCompare(a.data))[0]; }
 
 function alertasDom(d) {
   const a = [];
   d.moradores.forEach(m => {
-    const id = idade(m.nascimento); const pn = m.nome.split(' ')[0];
-    if (m.condicoes.includes('Gestante') && m.gestacao && !m.gestacao.preNatal) a.push({ nivel: 'alta', texto: `${pn}: gestante (${m.gestacao.semanas} sem.) sem pré-natal` });
-    if (id < 7 && m.vacinaEmDia === false) a.push({ nivel: 'alta', texto: `${pn} (${id} ${id === 1 ? 'ano' : 'anos'}): vacina em atraso` });
-    if (m.condicoes.includes('Acamado(a)')) a.push({ nivel: 'media', texto: `${pn}: idoso(a) acamado(a), precisa de visita domiciliar` });
-    if (m.condicoes.includes('Hipertensão') && m.condicoes.includes('Diabetes')) a.push({ nivel: 'media', texto: `${pn}: hipertensão e diabetes` });
+    const anos = idadeDec(m.nascimento); const pn = m.nome.split(' ')[0];
+    const ult = ultimoAtend(d, m.id);
+    if (ult) {
+      if (ult.encaminhamento.sim) a.push({ nivel: ult.encaminhamento.urgencia === 'Urgente' ? 'alta' : 'media', texto: `${pn}: encaminhar para ${ult.encaminhamento.destino} (${ult.encaminhamento.urgencia.toLowerCase()})`, m });
+      vitaisAlertas(ult, anos).filter(v => v.nivel === 'alta').forEach(v => a.push({ nivel: 'alta', texto: `${pn}: ${v.txt.toLowerCase()} no último atendimento`, m }));
+    }
+    if (anos < 5 && m.vacina === 'Não') a.push({ nivel: 'alta', texto: `${pn} (${idadeTxt(m.nascimento)}): vacinação atrasada`, m });
+    if (m.condicoes.includes('Gestante') && !ult) a.push({ nivel: 'alta', texto: `${pn}: gestante (${m.semanas || '?'} sem.) sem atendimento registrado`, m });
+    if (m.condicoes.includes('Acamado(a)')) a.push({ nivel: 'media', texto: `${pn}: acamado(a), precisa de visita domiciliar`, m });
   });
   if (d.tratamento === 'Sem tratamento' && d.moradores.some(m => idade(m.nascimento) < 5)) a.push({ nivel: 'media', texto: 'Água sem tratamento com criança menor de 5 anos' });
-  return a;
+  return a.sort((x, y) => (x.nivel === 'alta' ? 0 : 1) - (y.nivel === 'alta' ? 0 : 1));
 }
 
 /* ---------- Render principal ---------- */
 const TABS = [
   { id: 'inicio', nome: 'Início', ic: 'home' },
   { id: 'familias', nome: 'Famílias', ic: 'users' },
-  { id: 'novo', nome: 'Cadastrar', ic: 'plus' },
+  { id: 'novo', nome: 'Nova família', ic: 'plus' },
   { id: 'sync', nome: 'Sincronizar', ic: 'cloud' },
   { id: 'painel', nome: 'Painel', ic: 'chart' },
   { id: 'projeto', nome: 'Sobre o projeto', ic: 'info', extra: true }
 ];
-
 function render() {
-  const p = pendentes().length;
+  const p = pendentes().reduce((n, d) => n + pendItens(d.pend), 0);
   document.getElementById('tabs').innerHTML = TABS.map(t => `
     <button data-act="go" data-tab="${t.id}" class="${t.id === 'novo' ? 'novo' : ''} ${t.extra ? 'extra' : ''}" ${UI.tab === t.id ? 'aria-current="page"' : ''}>
       ${t.id === 'novo' ? `<span class="plus">${ico('plus')}</span>` : ico(t.ic)}
@@ -517,71 +720,75 @@ function render() {
   pill.className = 'net ' + (S.online ? 'on' : 'off');
   pill.innerHTML = S.online ? `${ico('wifi')} Online` : `${ico('wifiOff')} Offline`;
   if (S.perfil) document.getElementById('sub-equipe').textContent = S.perfil.equipe;
-  const v = document.getElementById('view');
   const views = { inicio: vInicio, familias: vFamilias, novo: vNovo, sync: vSync, painel: vPainel, projeto: vProjeto };
-  v.innerHTML = views[UI.tab]();
+  document.getElementById('view').innerHTML = views[UI.tab]();
   if (!S.logado) abrirLogin();
 }
 
 /* ---------- Início ---------- */
+function resultadosBusca(q, lim) {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  return S.domicilios.filter(d => [d.codigo, d.localidade, d.responsavelNome, ...d.moradores.map(m => m.nome)].join(' ').toLowerCase().includes(q)).slice(0, lim);
+}
+function homeResHTML() {
+  const q = UI.buscaInicio.trim(); if (!q) return '';
+  const l = resultadosBusca(q, 5);
+  return `<div class="list">${l.length ? l.map(itemDom).join('') : '<p class="item muted">Nenhuma família encontrada com esse nome.</p>'}</div>`;
+}
 function vInicio() {
   const pend = pendentes();
-  const visitasHoje = S.domicilios.reduce((n, d) => n + d.visitas.filter(v => ehHoje(v.data)).length, 0);
+  const nPend = pend.reduce((n, d) => n + pendItens(d.pend), 0);
+  const atHoje = S.domicilios.reduce((n, d) => n + d.atendimentos.filter(a => ehHoje(a.data)).length, 0);
   const ult = S.syncs[S.syncs.length - 1];
-  const todosAlertas = S.domicilios.flatMap(d => alertasDom(d).map(a => ({ ...a, d }))).sort((a, b) => (a.nivel === 'alta' ? 0 : 1) - (b.nivel === 'alta' ? 0 : 1));
+  const alertas = S.domicilios.flatMap(d => alertasDom(d).map(a => ({ ...a, d }))).sort((a, b) => (a.nivel === 'alta' ? 0 : 1) - (b.nivel === 'alta' ? 0 : 1));
   const deHoje = S.domicilios.filter(d => ehHoje(d.atualizadoEm)).sort((a, b) => b.atualizadoEm.localeCompare(a.atualizadoEm));
   const hr = HOJE.getHours();
   const saud = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
   const nome = S.perfil ? S.perfil.nome.split(' ').slice(0, 2).join(' ') : 'equipe';
-  const dataLonga = HOJE.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
   return `<div class="stack">
-    <div class="hello"><p class="eyebrow">${h(dataLonga)}</p><h1>${saud}, ${h(nome)}</h1></div>
-
+    <div class="hello"><p class="eyebrow">${h(HOJE.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p><h1>${saud}, ${h(nome)}</h1></div>
+    <div class="search">${ico('search')}<input id="busca-inicio" type="search" placeholder="Buscar família pelo nome do responsável ou morador" value="${h(UI.buscaInicio)}" aria-label="Buscar família"></div>
+    <div id="home-res">${homeResHTML()}</div>
+    <div class="quick">
+      <button class="main" data-act="nova-familia">${ico('plus')}<b>Nova família</b><small>Domicílio, moradores e atendimentos</small></button>
+      ${S.rascunho ? `<button data-act="go" data-tab="novo">${ico('edit')}<b>Continuar rascunho</b><small>${h(S.rascunho.responsavelNome || S.rascunho.localidade || 'Sem nome')} · passo ${UI.passo + 1} de ${PASSOS.length}</small></button>` : ''}
+      <button data-act="go" data-tab="familias">${ico('users')}<b>Famílias</b><small>${S.domicilios.length} cadastradas no território</small></button>
+    </div>
     <div class="sync-card ${S.online ? 'on' : 'off'}">
       <div class="ico">${ico(S.online ? 'cloud' : 'wifiOff')}</div>
-      <h2>${S.online ? (pend.length ? 'Internet disponível' : 'Tudo enviado') : 'Trabalhando sem internet'}</h2>
-      <p class="muted">${pend.length ? `<b class="num">${pend.length}</b> ${pend.length === 1 ? 'registro guardado' : 'registros guardados'} neste aparelho` : 'Nenhum registro esperando envio'} · última sincronização ${ult ? fmtQuando(ult.quando) : 'nunca'}</p>
+      <h2>${S.online ? (nPend ? 'Internet disponível' : 'Tudo enviado') : 'Trabalhando sem internet'}</h2>
+      <p class="muted">${nPend ? `<b class="num">${nPend}</b> ${nPend === 1 ? 'registro guardado' : 'registros guardados'} neste aparelho` : 'Nenhum registro esperando envio'} · última sincronização ${ult ? fmtQuando(ult.quando) : 'nunca'}</p>
       <div class="actions">
-        ${S.online && pend.length ? `<button class="btn primary small" data-act="sync-now">${ico('cloud')} Enviar agora</button>` : ''}
+        ${S.online && nPend ? `<button class="btn primary small" data-act="sync-now">${ico('cloud')} Enviar agora</button>` : ''}
         <button class="btn small" data-act="go" data-tab="sync">Ver fila de envio</button>
       </div>
     </div>
-
     <div class="card stack" style="gap:10px">
-      <div class="row between"><h2>Visitas de hoje</h2><span class="num"><b>${visitasHoje}</b> <span class="muted">de ${META_DIA}</span></span></div>
-      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${META_DIA}" aria-valuenow="${visitasHoje}"><i style="width:${Math.min(100, visitasHoje / META_DIA * 100)}%"></i></div>
-      <p class="muted" style="font-size:.86rem">Rota planejada: ${h(OP.localidades[0])} e ${h(OP.localidades[1])}</p>
+      <div class="row between"><h2>Atendimentos de hoje</h2><span class="num"><b>${atHoje}</b> <span class="muted">de ${META_DIA} previstos</span></span></div>
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${META_DIA}" aria-valuenow="${atHoje}"><i style="width:${Math.min(100, atHoje / META_DIA * 100)}%"></i></div>
     </div>
-
-    <div class="quick">
-      <button class="main" data-act="novo-dom">${ico('plus')}<b>Novo domicílio</b><small>Cadastrar casa e moradores</small></button>
-      ${S.rascunho ? `<button data-act="go" data-tab="novo">${ico('edit')}<b>Continuar rascunho</b><small>${h(S.rascunho.localidade || 'Sem localidade')} · passo ${UI.passo + 1} de 4</small></button>` : ''}
-      <button data-act="go" data-tab="familias">${ico('search')}<b>Buscar família</b><small>${S.domicilios.length} domicílios no território</small></button>
-    </div>
-
-    <div class="section-head"><h2>Precisam de atenção</h2><span class="muted num" style="font-size:.86rem">${todosAlertas.length} alertas</span></div>
-    <div class="list">
-      ${todosAlertas.slice(0, 6).map(a => `<button class="alert-item ${a.nivel}" data-act="abrir-dom" data-id="${a.d.id}">
-        <span class="bar"></span><span><b>${h(a.texto)}</b><br><span class="muted" style="font-size:.84rem">${h(a.d.codigo)} · ${h(a.d.localidade)}</span></span>
-        <span class="chip ${a.nivel === 'alta' ? 'risk' : 'pend'}">${a.nivel === 'alta' ? 'Prioridade' : 'Acompanhar'}</span></button>`).join('')}
-    </div>
-
+    <div class="section-head"><h2>Precisam de atenção</h2><span class="muted num" style="font-size:.86rem">${alertas.length} alertas</span></div>
+    <div class="list">${alertas.slice(0, 6).map(a => alertaItem(a, a.d)).join('')}</div>
     <div class="section-head"><h2>Registros de hoje</h2></div>
     <div class="list">${deHoje.length ? deHoje.map(itemDom).join('') : '<p class="item muted">Nenhum registro feito hoje.</p>'}</div>
   </div>`;
 }
-
+function alertaItem(a, d) {
+  const alvo = a.m ? `data-act="abrir-morador" data-d="${d.id}" data-m="${a.m.id}"` : `data-act="abrir-dom" data-id="${d.id}"`;
+  return `<button class="alert-item ${a.nivel}" ${alvo}><span class="bar"></span><span><b>${h(a.texto)}</b><br><span class="muted" style="font-size:.84rem">${h(d.codigo)} · ${h(d.localidade)}</span></span>
+    <span class="chip ${a.nivel === 'alta' ? 'risk' : 'pend'}">${a.nivel === 'alta' ? 'Prioridade' : 'Acompanhar'}</span></button>`;
+}
 function itemDom(d) {
-  const r = responsavel(d); const al = alertasDom(d);
+  const al = alertasDom(d);
   const gest = d.moradores.some(m => m.condicoes.includes('Gestante'));
-  const ben = d.beneficiosFamilia.length || d.moradores.some(m => m.beneficios.length);
+  const ben = d.beneficiosFamilia.some(b => b !== 'Nenhum');
   return `<button class="item" data-act="abrir-dom" data-id="${d.id}">
-    <span class="t">${h(r.nome)}</span>
+    <span class="t">${h(d.responsavelNome)}</span>
     <span class="mono muted">${h(d.codigo)}</span>
-    <span class="s">${h(d.localidade)} · ${d.moradores.length} ${d.moradores.length === 1 ? 'morador' : 'moradores'} · ${d.status === 'pendente' ? 'salvo ' + fmtQuando(d.atualizadoEm) : 'atualizado ' + fmtData(d.atualizadoEm)}</span>
+    <span class="s">${h(d.localidade)} · ${d.moradores.length} ${d.moradores.length === 1 ? 'morador' : 'moradores'} · ${d.atendimentos.length} ${d.atendimentos.length === 1 ? 'atendimento' : 'atendimentos'}</span>
     <span></span>
     <span class="chips">
-      ${d.status === 'pendente' ? '<span class="chip pend">Aguardando envio</span>' : '<span class="chip ok">' + ico('check').replace('class="i"', 'class="i" style="width:14px;height:14px"') + ' Na nuvem</span>'}
+      ${d.pend ? `<span class="chip pend">Aguardando envio</span>` : '<span class="chip ok">Na nuvem</span>'}
       ${al.some(a => a.nivel === 'alta') ? '<span class="chip risk">Prioridade</span>' : ''}
       ${gest ? '<span class="chip river">Gestante</span>' : ''}
       ${ben ? '<span class="chip">Recebe benefício</span>' : ''}
@@ -590,104 +797,274 @@ function itemDom(d) {
 }
 
 /* ---------- Famílias ---------- */
-const FILTROS = [
-  ['todos', 'Todos'], ['pendente', 'Aguardando envio'], ['prioridade', 'Prioridade'], ['gestante', 'Com gestante'],
-  ['beneficio', 'Com benefício'], ['cronico', 'Hipertensos / diabéticos']
-];
+const FILTROS = [['todos', 'Todas'], ['pendente', 'Aguardando envio'], ['prioridade', 'Prioridade'], ['retorno', 'Encaminhamento ou retorno'], ['gestante', 'Com gestante'], ['beneficio', 'Com benefício'], ['cronico', 'Hipertensos / diabéticos']];
 function filtrarDoms() {
   const q = UI.busca.trim().toLowerCase();
   return S.domicilios.filter(d => {
     const f = UI.filtro;
-    if (f === 'pendente' && d.status !== 'pendente') return false;
+    if (f === 'pendente' && !d.pend) return false;
     if (f === 'prioridade' && !alertasDom(d).some(a => a.nivel === 'alta')) return false;
+    if (f === 'retorno' && !d.atendimentos.some(a => a.encaminhamento.sim || a.retorno.sim)) return false;
     if (f === 'gestante' && !d.moradores.some(m => m.condicoes.includes('Gestante'))) return false;
-    if (f === 'beneficio' && !(d.beneficiosFamilia.length || d.moradores.some(m => m.beneficios.length))) return false;
+    if (f === 'beneficio' && !d.beneficiosFamilia.some(b => b !== 'Nenhum')) return false;
     if (f === 'cronico' && !d.moradores.some(m => m.condicoes.includes('Hipertensão') || m.condicoes.includes('Diabetes'))) return false;
-    if (!q) return true;
-    return [d.codigo, d.localidade, d.endereco, ...d.moradores.map(m => m.nome)].join(' ').toLowerCase().includes(q);
-  }).sort((a, b) => (a.status === 'pendente' ? 0 : 1) - (b.status === 'pendente' ? 0 : 1) || a.codigo.localeCompare(b.codigo));
+    return !q || [d.codigo, d.localidade, d.responsavelNome, ...d.moradores.map(m => m.nome)].join(' ').toLowerCase().includes(q);
+  }).sort((a, b) => (a.pend ? 0 : 1) - (b.pend ? 0 : 1) || a.responsavelNome.localeCompare(b.responsavelNome));
 }
 function listaFamiliasHTML() {
   const l = filtrarDoms();
-  return `<p class="muted num" style="font-size:.86rem">${l.length} ${l.length === 1 ? 'domicílio' : 'domicílios'}</p>
-    <div class="list">${l.length ? l.map(itemDom).join('') : '<p class="item muted">Nenhum domicílio encontrado. Confira a grafia ou cadastre um novo.</p>'}</div>`;
+  return `<p class="muted num" style="font-size:.86rem">${l.length} ${l.length === 1 ? 'família' : 'famílias'}</p>
+    <div class="list">${l.length ? l.map(itemDom).join('') : '<p class="item muted">Nenhuma família encontrada. Confira a grafia ou cadastre uma nova.</p>'}</div>`;
 }
 function vFamilias() {
   return `<div class="stack">
-    <div class="row between"><h1>Famílias</h1><button class="btn primary small" data-act="novo-dom">${ico('plus')} Novo domicílio</button></div>
-    <div class="search">${ico('search')}<input id="busca" type="search" placeholder="Nome, código ou localidade" value="${h(UI.busca)}" aria-label="Buscar família"></div>
+    <div class="row between"><h1>Famílias</h1><button class="btn primary small" data-act="nova-familia">${ico('plus')} Nova família</button></div>
+    <div class="search">${ico('search')}<input id="busca" type="search" placeholder="Nome do responsável ou de um morador" value="${h(UI.busca)}" aria-label="Buscar família"></div>
     <div class="filter-chips" role="group" aria-label="Filtros">${FILTROS.map(([k, n]) => `<button data-act="filtro" data-f="${k}" aria-pressed="${UI.filtro === k}">${n}</button>`).join('')}</div>
     <div id="lista-familias" class="stack" style="gap:8px">${listaFamiliasHTML()}</div>
   </div>`;
 }
 
-/* ---------- Detalhe do domicílio ---------- */
+/* ---------- Ficha da família ---------- */
+function chipsMorador(m) {
+  return `${m.condicoes.map(c => `<span class="chip ${c === 'Gestante' ? 'river' : 'risk'}">${h(c === 'Outra' && m.outraCondicao ? m.outraCondicao : c)}${c === 'Gestante' && m.semanas ? ' · ' + m.semanas + ' sem.' : ''}</span>`).join('')}
+  ${m.vacina === 'Não' ? '<span class="chip risk">Vacina atrasada</span>' : m.vacina === 'Não sabe' ? '<span class="chip pend">Vacina: não sabe</span>' : ''}
+  ${m.beneficios.map(b => `<span class="chip">${h(b)}</span>`).join('')}`;
+}
 function abrirDom(id) {
   const d = S.domicilios.find(x => x.id === id); if (!d) return;
   const al = alertasDom(d);
-  const ben = [...d.beneficiosFamilia];
+  const c = d.comp || {};
+  const ats = [...d.atendimentos].sort((a, b) => b.data.localeCompare(a.data));
   abrirSheet(`
     <div class="sheet-head">
-      <div><p class="eyebrow mono">${h(d.codigo)} · microárea ${h(d.microarea)}</p><h2 style="font-size:1.35rem">Família ${h(responsavel(d).nome.split(' ').slice(-1)[0])}</h2>
-      <p class="muted">${h(d.localidade)} · ${h(d.endereco)}</p></div>
+      <div><p class="eyebrow mono">${h(d.codigo)} · microárea ${h(d.microarea)}</p><h2 style="font-size:1.35rem">${h(d.responsavelNome)}</h2>
+      <p class="muted">${h(d.localidade)}${d.referencia ? ' · ' + h(d.referencia) : ''}</p></div>
       <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
     </div>
     <div class="stack">
       <div class="row">
-        ${d.status === 'pendente' ? `<span class="chip pend">Aguardando envio · ${h(d.tipoPendente || 'Atualização')}</span>` : '<span class="chip ok">Sincronizado</span>'}
-        <span class="chip">${d.moradores.length} moradores</span>
+        ${d.pend ? `<span class="chip pend">Aguardando envio · ${h(pendTexto(d.pend))}</span>` : '<span class="chip ok">Sincronizado</span>'}
         <span class="chip">Versão ${d.versao}</span>
       </div>
-      ${al.length ? `<div class="list">${al.map(a => `<div class="alert-item ${a.nivel}"><span class="bar"></span><span>${h(a.texto)}</span><span></span></div>`).join('')}</div>` : ''}
-      <div class="row"><button class="btn primary" data-act="visita" data-id="${d.id}">${ico('clip')} Registrar visita</button><button class="btn" data-act="editar-dom" data-id="${d.id}">${ico('edit')} Editar cadastro</button></div>
-
-      <h3>Moradores</h3>
+      ${al.length ? `<div class="list">${al.map(a => alertaItem(a, d)).join('')}</div>` : ''}
+      <div class="comp">
+        ${[['Total', c.total], ['0–11 anos', c.criancas], ['12–17', c.adolescentes], ['18–59', c.adultos], ['60+', c.idosos]].map(([l, v]) => `<div><b class="num">${v ?? '—'}</b><span>${l}</span></div>`).join('')}
+      </div>
+      <div class="section-head"><h3>Moradores</h3><button class="btn small ghost" data-act="editar-dom" data-id="${d.id}">${ico('edit')} Editar família</button></div>
       <div class="list">${d.moradores.map(m => {
-        const id = idade(m.nascimento);
+        const n = d.atendimentos.filter(a => a.moradorId === m.id).length;
         return `<div class="member"><span class="avatar ${m.sexo}">${h(iniciais(m.nome))}</span>
-          <div style="min-width:0"><b>${h(m.nome)}</b><br><span class="muted" style="font-size:.85rem">${h(m.parentesco)} · ${id} ${id === 1 ? 'ano' : 'anos'} · ${m.sexo === 'F' ? 'Feminino' : 'Masculino'} · CNS <span class="mono">${cnsMask(m.cns)}</span></span>
-          <div class="row" style="gap:6px;margin-top:6px">${m.condicoes.map(c => `<span class="chip ${c === 'Gestante' ? 'river' : 'risk'}">${h(c)}${c === 'Gestante' && m.gestacao ? ' · ' + m.gestacao.semanas + ' sem.' : ''}</span>`).join('')}
-          ${m.vacinaEmDia === false ? '<span class="chip risk">Vacina atrasada</span>' : m.vacinaEmDia ? '<span class="chip ok">Vacina em dia</span>' : ''}
-          ${m.beneficios.map(b => `<span class="chip">${h(b)}</span>`).join('')}</div></div><span></span></div>`;
+          <button class="linkish" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}"><b>${h(m.nome)}</b><br><span class="muted" style="font-size:.85rem">${h(m.parentesco)} · ${idadeTxt(m.nascimento)} · ${n} ${n === 1 ? 'atendimento' : 'atendimentos'}</span>
+          <span class="row" style="gap:6px;margin-top:6px">${chipsMorador(m)}</span></button>
+          <button class="btn small primary" data-act="novo-atend" data-d="${d.id}" data-m="${m.id}" aria-label="Novo atendimento para ${h(m.nome)}">${ico('steth')}<span class="hide-sm">Atender</span></button></div>`;
       }).join('')}</div>
-
       <h3>Domicílio</h3>
       <div class="card"><dl class="review">
-        <dt>Moradia</dt><dd>${h(d.situacao)} · ${h(d.material)} · ${d.comodos} cômodo(s)</dd>
+        <dt>Moradia</dt><dd>${h(d.moradia)} · ${d.comodos} cômodo(s)</dd>
+        <dt>Energia</dt><dd>${h(d.energia)}</dd>
         <dt>Água</dt><dd>${h(d.agua)} · ${h(d.tratamento)}</dd>
         <dt>Esgoto</dt><dd>${h(d.esgoto)}</dd>
         <dt>Lixo</dt><dd>${h(d.lixo)}</dd>
-        <dt>Energia</dt><dd>${d.energia ? 'Sim' : 'Não'}</dd>
-        <dt>Renda familiar</dt><dd>${h(d.renda)}</dd>
-        <dt>Benefícios</dt><dd>${ben.length ? h(ben.join(', ')) : 'Nenhum benefício familiar'}</dd>
-        <dt>Localização</dt><dd class="mono">${d.coords ? `${d.coords.lat}, ${d.coords.lng} (±${d.coords.prec} m)` : '—'}</dd>
+        <dt>Animais</dt><dd>${h(d.animais.join(', '))}</dd>
+        <dt>Renda</dt><dd>${h(d.renda)}</dd>
+        <dt>Benefícios</dt><dd>${h(d.beneficiosFamilia.join(', '))} · ${d.pessoasComBeneficio} ${d.pessoasComBeneficio === 1 ? 'pessoa recebe' : 'pessoas recebem'}</dd>
+        <dt>Posto de saúde</dt><dd>${d.posto.acesso === 'Sim' ? `Tem acesso · ${d.posto.km ? d.posto.km + ' km · ' : ''}${h(d.posto.tempo)} (${h(d.posto.meio)})` : `Sem acesso · ${d.posto.km ? d.posto.km + ' km · ' : ''}${h(d.posto.tempo || '')}`}</dd>
+        <dt>GPS</dt><dd class="mono">${d.coords ? `${d.coords.lat}, ${d.coords.lng} (±${d.coords.prec} m)` : '—'}</dd>
       </dl></div>
+      <h3>Últimos atendimentos</h3>
+      <div class="list">${ats.length ? ats.slice(0, 8).map(a => itemAtend(d, a, true)).join('') : '<p class="item muted">Nenhum atendimento ainda. Use “Atender” ao lado de cada morador.</p>'}</div>
+    </div>`);
+}
+function itemAtend(d, a, comNome) {
+  const m = achaMorador(d, a.moradorId) || { nome: '—', nascimento: '' };
+  const al = vitaisAlertas(a, idadeDec(m.nascimento, a.data));
+  return `<button class="item" data-act="ver-atend" data-d="${d.id}" data-a="${a.id}">
+    <span class="t">${comNome ? h(m.nome.split(' ')[0]) + ' · ' : ''}${h(a.hipotese || a.queixa)}</span><span class="muted" style="font-size:.84rem">${fmtQuando(a.data)}</span>
+    <span class="s">${h(a.profNome)} · ${a.cid ? '<span class="mono">' + h(a.cid) + '</span> · ' : ''}${h(a.queixa)}</span><span></span>
+    <span class="chips">${a.encaminhamento.sim ? `<span class="chip ${a.encaminhamento.urgencia === 'Urgente' ? 'risk' : 'pend'}">Encaminhado · ${h(a.encaminhamento.urgencia)}</span>` : ''}${a.retorno.sim ? '<span class="chip river">Retorno</span>' : ''}${al.filter(x => x.nivel === 'alta').map(x => `<span class="chip risk">${h(x.txt)}</span>`).join('')}</span>
+  </button>`;
+}
 
-      <h3>Histórico de visitas</h3>
-      <div class="list">${[...d.visitas].reverse().map(v => `<div class="item"><span class="t">${h(v.motivo)}</span><span class="muted" style="font-size:.84rem">${fmtQuando(v.data)}</span><span class="s">${h(v.desfecho)} · ${h(v.por)}${v.obs ? ' · ' + h(v.obs) : ''}</span></div>`).join('')}</div>
+/* ---------- Ficha do morador ---------- */
+function abrirMorador(dId, mId) {
+  const d = S.domicilios.find(x => x.id === dId); const m = achaMorador(d, mId); if (!m) return;
+  const ats = d.atendimentos.filter(a => a.moradorId === m.id).sort((a, b) => b.data.localeCompare(a.data));
+  abrirSheet(`
+    <div class="sheet-head">
+      <div><button class="btn small ghost" data-act="abrir-dom" data-id="${d.id}" style="margin-left:-10px">${ico('back')} Família ${h(d.responsavelNome.split(' ')[0])}</button>
+      <h2 style="font-size:1.35rem">${h(m.nome)}</h2><p class="muted">${h(m.parentesco)} · ${idadeTxt(m.nascimento)} · ${m.sexo === 'F' ? 'Feminino' : 'Masculino'} · nasc. ${fmtData(m.nascimento + 'T12:00:00')}</p></div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <div class="stack">
+      <div class="row" style="gap:6px">${chipsMorador(m)}</div>
+      <button class="btn primary block" data-act="novo-atend" data-d="${d.id}" data-m="${m.id}">${ico('steth')} Novo atendimento</button>
+      <div class="card"><dl class="review">
+        <dt>CNS</dt><dd class="mono">${cnsMask(m.cns) || 'não informado'}</dd>
+        <dt>CPF</dt><dd class="mono">${cpfMask(m.cpf) || 'não informado'}</dd>
+        <dt>Raça / cor</dt><dd>${h(m.raca || '—')}</dd>
+        <dt>Escolaridade</dt><dd>${h(m.escolaridade || '—')}${m.alfabetizado === false ? ' · não sabe ler/escrever' : m.alfabetizado ? ' · sabe ler/escrever' : ''}</dd>
+        <dt>Ocupação</dt><dd>${h(m.ocupacao || '—')}</dd>
+        <dt>Vacinação</dt><dd>${h(m.vacina || '—')}${m.caderneta ? ' · caderneta: ' + h(m.caderneta) : ''}</dd>
+        <dt>Medicamento contínuo</dt><dd>${m.medUsa ? h(m.medQual || 'sim') : 'Não'}</dd>
+      </dl></div>
+      <h3>Atendimentos</h3>
+      <div class="list">${ats.length ? ats.map(a => itemAtend(d, a, false)).join('') : '<p class="item muted">Nenhum atendimento registrado.</p>'}</div>
     </div>`);
 }
 
-function abrirVisita(id) {
-  const d = S.domicilios.find(x => x.id === id);
+/* ---------- Atendimento: ver ---------- */
+function abrirAtendVer(dId, aId) {
+  const d = S.domicilios.find(x => x.id === dId); const a = d.atendimentos.find(x => x.id === aId); const m = achaMorador(d, a.moradorId);
+  const anos = idadeDec(m.nascimento, a.data); const imc = calcIMC(a.peso, a.altura); const cl = classificaIMC(imc, anos);
+  const al = vitaisAlertas(a, anos);
   abrirSheet(`
-    <div class="sheet-head"><div><p class="eyebrow mono">${h(d.codigo)}</p><h2>Registrar visita</h2><p class="muted">Família ${h(responsavel(d).nome)}</p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
-    <form id="form-visita" class="stack" data-id="${d.id}">
-      <div class="field"><span class="lbl">Motivo</span><div class="opts">${OP.motivos.map((m, i) => `<label class="opt"><input type="radio" name="motivo" value="${h(m)}" ${i === 0 ? 'checked' : ''}><span>${h(m)}</span></label>`).join('')}</div></div>
-      <div class="field"><span class="lbl">Desfecho</span><div class="opts">${OP.desfechos.map((m, i) => `<label class="opt"><input type="radio" name="desfecho" value="${h(m)}" ${i === 0 ? 'checked' : ''}><span>${h(m)}</span></label>`).join('')}</div></div>
-      <div class="field"><label for="v-obs">Observações</label><textarea id="v-obs" name="obs" placeholder="Ex.: pressão 140x90, orientada sobre medicação"></textarea></div>
-      <button class="btn primary block" type="submit">${ico('check')} Salvar visita no aparelho</button>
-    </form>`);
+    <div class="sheet-head">
+      <div><button class="btn small ghost" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}" style="margin-left:-10px">${ico('back')} ${h(m.nome.split(' ')[0])}</button>
+      <h2>${h(a.hipotese || 'Atendimento')}</h2><p class="muted">${fmtData(a.data)} às ${fmtHora(a.data)} · ${h(a.profNome)} (${h(a.profTipo)})</p></div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <div class="stack">
+      ${al.length ? `<div class="row" style="gap:6px">${al.map(x => `<span class="chip ${x.nivel === 'alta' ? 'risk' : 'pend'}">${h(x.txt)}</span>`).join('')}</div>` : ''}
+      <div class="vitals-view">
+        ${[['PA', a.pas ? a.pas + '×' + a.pad : '—', 'mmHg'], ['FC', a.fc ?? '—', 'bpm'], ['Temp.', fmtNum(a.temp), '°C'], ['Glicemia', a.glic ?? '—', 'mg/dL'], ['Saturação', a.sat ?? '—', '%'], ['IMC', fmtNum(imc), cl ? cl.txt : '']].map(([l, v, u]) => `<div><span>${l}</span><b class="num">${v}</b><small>${h(u)}</small></div>`).join('')}
+      </div>
+      ${anos < 19 && imc ? curvaIMC(imc, anos) : ''}
+      <div class="card"><dl class="review">
+        <dt>Queixa</dt><dd>${h(a.queixa)}</dd>
+        <dt>Peso / altura</dt><dd>${fmtNum(a.peso)} kg · ${a.altura ?? '—'} cm</dd>
+        <dt>Hipótese</dt><dd>${h(a.hipotese || '—')}${a.cid ? ` · <span class="mono">${h(a.cid)}</span> ${h(cidNome(a.cid))}` : ''}</dd>
+        <dt>Conduta</dt><dd>${h(a.conduta || '—')}</dd>
+        <dt>Medicamentos</dt><dd>${a.meds.length ? a.meds.map(x => h(x.nome) + ' (' + x.qtd + ')').join('<br>') : 'Nenhum'}</dd>
+        <dt>Exames</dt><dd>${h(a.exames || 'Nenhum')}</dd>
+        <dt>Encaminhamento</dt><dd>${a.encaminhamento.sim ? h(a.encaminhamento.destino) + ' · ' + h(a.encaminhamento.urgencia) : 'Não'}</dd>
+        <dt>Retorno</dt><dd>${a.retorno.sim ? 'Sim' + (a.retorno.dias ? ', em ' + a.retorno.dias + ' dias' : '') : 'Não'}</dd>
+      </dl></div>
+    </div>`);
 }
 
-/* ---------- Cadastro (assistente em 4 passos) ---------- */
-const PASSOS = ['Domicílio', 'Moradores', 'Renda e benefícios', 'Revisão'];
+/* Curva de IMC para idade (crianças e adolescentes) */
+function curvaIMC(imc, anos) {
+  const W = 320, H = 150, L = 30, R = 8, T = 10, B = 24;
+  const x = a => L + a / 19 * (W - L - R);
+  const y = v => T + (1 - (v - 10) / 24) * (H - T - B);
+  const pts = k => Array.from({ length: 39 }, (_, i) => { const a = i / 2; return [x(a), y(imcRef(a)[k])]; });
+  const band = [...pts('zm2'), ...pts('zp2').reverse()].map(p => p.join(',')).join(' ');
+  const line = k => pts(k).map(p => p.join(',')).join(' ');
+  const c = classificaIMC(imc, anos);
+  const cor = c.nivel === 'ok' ? 'var(--primary)' : c.nivel === 'alta' ? 'var(--danger)' : 'var(--sun)';
+  const iy = Math.max(10, Math.min(34, imc));
+  return `<div class="card curva"><div class="row between"><h3>IMC para a idade</h3><span class="chip ${c.nivel === 'ok' ? 'ok' : c.nivel === 'alta' ? 'risk' : 'pend'}">${h(c.txt)}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Curva de IMC para idade com o ponto da criança">
+      <polygon points="${band}" style="fill:var(--primary-soft)"/>
+      <polyline points="${line('med')}" style="fill:none;stroke:var(--primary);stroke-width:1.5"/>
+      <polyline points="${line('zm2')}" style="fill:none;stroke:var(--danger);stroke-width:1;stroke-dasharray:3 3"/>
+      <polyline points="${line('zp2')}" style="fill:none;stroke:var(--sun);stroke-width:1;stroke-dasharray:3 3"/>
+      ${[0, 5, 10, 15, 19].map(a => `<text x="${x(a)}" y="${H - 6}" text-anchor="middle" style="fill:var(--muted);font-size:10px">${a}a</text>`).join('')}
+      ${[12, 18, 24, 30].map(v => `<text x="${L - 4}" y="${y(v) + 3}" text-anchor="end" style="fill:var(--muted);font-size:10px">${v}</text><line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" style="stroke:var(--line);stroke-width:.6"/>`).join('')}
+      <circle cx="${x(Math.min(19, anos))}" cy="${y(iy)}" r="5.5" style="fill:${cor};stroke:var(--surface);stroke-width:2"/>
+    </svg>
+    <p class="muted" style="font-size:.78rem">Faixa verde: entre −2 e +2 escores-z (referência OMS, valores aproximados no protótipo). IMC ${fmtNum(imc)} aos ${fmtNum(anos)} anos.</p></div>`;
+}
+
+/* ---------- Atendimento: novo ---------- */
+function abrirAtendForm(dId, mId) {
+  const d = S.domicilios.find(x => x.id === dId); const m = achaMorador(d, mId);
+  const anos = idadeDec(m.nascimento);
+  const hojeISO = new Date(HOJE.getTime() - HOJE.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+  const papel = S.perfil ? S.perfil.papel : 'Médico(a)';
+  abrirSheet(`
+    <div class="sheet-head">
+      <div><button class="btn small ghost" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}" style="margin-left:-10px">${ico('back')} Cancelar</button>
+      <h2>Novo atendimento</h2><p class="muted">${h(m.nome)} · ${idadeTxt(m.nascimento)} · ${h(d.localidade)}</p></div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <form id="form-atend" class="stack" data-d="${d.id}" data-m="${m.id}" data-anos="${anos}">
+      <fieldset><legend>Atendimento</legend>
+        <div class="grid2">
+          <div class="field"><label for="a-data">Data</label><input id="a-data" name="data" type="date" value="${hojeISO}" required></div>
+          <div class="field"><label for="a-prof">Nome do profissional</label><input id="a-prof" name="profNome" type="text" value="${h(S.perfil ? S.perfil.nome : '')}"></div>
+        </div>
+        <div class="field"><span class="lbl">Profissional</span><div class="opts">${OP.profissionais.map(p => `<label class="opt"><input type="radio" name="profTipo" value="${h(p)}" ${p === (OP.profissionais.includes(papel) ? papel : 'Médico(a)') ? 'checked' : ''}><span>${h(p)}</span></label>`).join('')}</div></div>
+        <div class="field"><label for="a-queixa">Queixa principal</label><textarea id="a-queixa" name="queixa" placeholder="Nas palavras do paciente" required></textarea></div>
+      </fieldset>
+      <fieldset><legend>Sinais vitais</legend>
+        <div class="vitals">
+          <div class="field"><label for="a-pas">PA sistólica</label><input id="a-pas" name="pas" type="number" inputmode="numeric" placeholder="120"><span class="hint">mmHg</span></div>
+          <div class="field"><label for="a-pad">PA diastólica</label><input id="a-pad" name="pad" type="number" inputmode="numeric" placeholder="80"><span class="hint">mmHg</span></div>
+          <div class="field"><label for="a-fc">Freq. cardíaca</label><input id="a-fc" name="fc" type="number" inputmode="numeric"><span class="hint">bpm</span></div>
+          <div class="field"><label for="a-temp">Temperatura</label><input id="a-temp" name="temp" type="number" step="0.1" inputmode="decimal"><span class="hint">°C</span></div>
+          <div class="field"><label for="a-glic">Glicemia capilar</label><input id="a-glic" name="glic" type="number" inputmode="numeric"><span class="hint">mg/dL</span></div>
+          <div class="field"><label for="a-sat">Saturação</label><input id="a-sat" name="sat" type="number" inputmode="numeric"><span class="hint">% SpO₂</span></div>
+        </div>
+        <div id="vitais-alertas" class="row" style="gap:6px"></div>
+      </fieldset>
+      <fieldset><legend>Peso e altura</legend>
+        <div class="grid2">
+          <div class="field"><label for="a-peso">Peso (kg)</label><input id="a-peso" name="peso" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label for="a-alt">Altura (cm)</label><input id="a-alt" name="altura" type="number" inputmode="numeric"></div>
+        </div>
+        <div id="imc-out" class="imc-out muted">Preencha peso e altura para calcular o IMC.</div>
+        <div id="curva-out"></div>
+      </fieldset>
+      <fieldset><legend>Avaliação e conduta</legend>
+        <div class="field"><label for="a-hip">Hipótese diagnóstica</label><input id="a-hip" name="hipotese" type="text" placeholder="Ex.: hipertensão descompensada"></div>
+        <div class="field"><label for="cid-busca">CID-10 (opcional)</label><input id="cid-busca" type="search" placeholder="Busque por código ou nome, ex.: I10 ou malária" autocomplete="off"><input type="hidden" name="cid" id="a-cid"><div id="cid-res" class="cid-res"></div></div>
+        <div class="field"><label for="a-cond">Conduta</label><textarea id="a-cond" name="conduta"></textarea></div>
+        <div class="field"><span class="lbl">Medicamentos entregues</span><div id="meds" class="stack" style="gap:8px">${medRow()}</div>
+          <button type="button" class="btn small" data-act="add-med" style="align-self:flex-start">${ico('plus')} Adicionar medicamento</button></div>
+        <div class="field"><label for="a-ex">Exames solicitados</label><input id="a-ex" name="exames" type="text" placeholder="Ex.: hemograma, gota espessa"></div>
+      </fieldset>
+      <fieldset><legend>Encaminhamento e retorno</legend>
+        <div class="field"><span class="lbl">Precisa de encaminhamento?</span><div class="opts">${['Não', 'Sim'].map((s, i) => `<label class="opt"><input type="radio" name="encSim" value="${s}" ${i === 0 ? 'checked' : ''}><span>${s}</span></label>`).join('')}</div></div>
+        <div class="grid2">
+          <div class="field"><label for="a-dest">Para onde</label><input id="a-dest" name="encDestino" type="text" list="lista-destinos" placeholder="Ex.: Hospital regional"></div>
+          <div class="field"><span class="lbl">Urgência</span><div class="opts">${OP.urgencia.map((u, i) => `<label class="opt"><input type="radio" name="encUrg" value="${u}" ${i === 0 ? 'checked' : ''}><span>${u}</span></label>`).join('')}</div></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><span class="lbl">Precisa de retorno / acompanhamento?</span><div class="opts">${['Não', 'Sim'].map((s, i) => `<label class="opt"><input type="radio" name="retSim" value="${s}" ${i === 0 ? 'checked' : ''}><span>${s}</span></label>`).join('')}</div></div>
+          <div class="field"><label for="a-ret">Retorno em (dias)</label><input id="a-ret" name="retDias" type="number" inputmode="numeric" placeholder="30"></div>
+        </div>
+      </fieldset>
+      <datalist id="lista-destinos">${OP.destinos.map(x => `<option value="${h(x)}">`).join('')}</datalist>
+      <datalist id="lista-meds">${OP.meds.map(x => `<option value="${h(x)}">`).join('')}</datalist>
+      <button class="btn primary block" type="submit">${ico('check')} Salvar atendimento no aparelho</button>
+    </form>`);
+}
+const medRow = () => `<div class="med-row"><input name="med_nome" type="text" list="lista-meds" placeholder="Medicamento e dose" aria-label="Medicamento"><input name="med_qtd" type="number" inputmode="numeric" placeholder="Qtd" aria-label="Quantidade"><button type="button" class="icon-btn" data-act="rm-med" aria-label="Remover medicamento">${ico('close')}</button></div>`;
+function atualizarCalculosAtend() {
+  const f = document.getElementById('form-atend'); if (!f) return;
+  const v = n => num(f.elements[n].value);
+  const anos = Number(f.dataset.anos);
+  const a = { pas: v('pas'), pad: v('pad'), fc: v('fc'), temp: v('temp'), glic: v('glic'), sat: v('sat'), peso: v('peso'), altura: v('altura') };
+  const imc = calcIMC(a.peso, a.altura);
+  const cl = classificaIMC(imc, anos);
+  document.getElementById('imc-out').innerHTML = imc ? `IMC <b class="num">${fmtNum(imc)}</b> kg/m² · <span class="chip ${cl.nivel === 'ok' ? 'ok' : cl.nivel === 'alta' ? 'risk' : 'pend'}">${h(cl.txt)}</span>` : 'Preencha peso e altura para calcular o IMC.';
+  document.getElementById('curva-out').innerHTML = imc && anos < 19 ? curvaIMC(imc, anos) : '';
+  document.getElementById('vitais-alertas').innerHTML = vitaisAlertas({ ...a, peso: null }, anos).map(x => `<span class="chip ${x.nivel === 'alta' ? 'risk' : 'pend'}">${h(x.txt)}</span>`).join('');
+}
+function buscaCID(q) {
+  q = q.trim().toLowerCase(); const el = document.getElementById('cid-res');
+  if (!q) { el.innerHTML = ''; return; }
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const l = CID.filter(([c, n]) => c.toLowerCase().startsWith(q) || norm(n).includes(norm(q))).slice(0, 6);
+  el.innerHTML = l.length ? l.map(([c, n]) => `<button type="button" data-act="cid-pick" data-c="${c}" data-n="${h(n)}"><span class="mono">${c}</span> ${h(n)}</button>`).join('') : '<p class="muted" style="font-size:.84rem;padding:6px 2px">Código não encontrado na lista offline. Escreva só a hipótese.</p>';
+}
+
+/* ---------- Cadastro da família (assistente) ---------- */
+const PASSOS = ['Família', 'Moradia', 'Renda e acesso', 'Moradores', 'Revisão'];
 function novoRascunho() {
-  return { id: null, localidade: '', microarea: '', endereco: '', referencia: '', coords: null, situacao: '', material: '', comodos: '', agua: '', tratamento: '', esgoto: '', lixo: '', energia: true, animais: 0, moradores: [], renda: '', beneficiosFamilia: [], consentimento: false, observacoes: '' };
+  return { id: null, localidade: '', microarea: '', referencia: '', coords: null, responsavelNome: '', comp: { total: '', criancas: '', adolescentes: '', adultos: '', idosos: '' }, moradia: '', comodos: '', energia: '', agua: '', tratamento: '', esgoto: '', lixo: '', animais: [], renda: '', beneficiosFamilia: [], pessoasComBeneficio: '', posto: { acesso: '', km: '', tempo: '', meio: '' }, moradores: [], atendimentos: [], consentimento: false, observacoes: '' };
 }
 const radios = (campo, lista, valor) => `<div class="opts" role="radiogroup">${lista.map(o => `<label class="opt"><input type="radio" name="${campo}" data-f="${campo}" value="${h(o)}" ${valor === o ? 'checked' : ''}><span>${h(o)}</span></label>`).join('')}</div>`;
 const checks = (grupo, lista, valores) => `<div class="opts">${lista.map(o => `<label class="opt"><input type="checkbox" data-g="${grupo}" value="${h(o)}" ${valores.includes(o) ? 'checked' : ''}><span>${h(o)}</span></label>`).join('')}</div>`;
-
+const getPath = (o, p) => p.split('.').reduce((x, k) => x?.[k], o);
+function setPath(o, p, v) { const ks = p.split('.'); const last = ks.pop(); ks.reduce((x, k) => x[k] ??= {}, o)[last] = v; }
+function compHint() {
+  const c = S.rascunho.comp; const soma = ['criancas', 'adolescentes', 'adultos', 'idosos'].reduce((n, k) => n + (Number(c[k]) || 0), 0);
+  if (!c.total) return 'Informe o total e a divisão por idade.';
+  return Number(c.total) === soma ? `<span style="color:var(--primary)">Soma confere: ${soma} pessoas.</span>` : `<span style="color:var(--sun)">A soma das faixas (${soma}) é diferente do total (${c.total}).</span>`;
+}
 function vNovo() {
   if (!S.rascunho) { S.rascunho = novoRascunho(); UI.passo = 0; }
   const r = S.rascunho;
@@ -696,107 +1073,139 @@ function vNovo() {
   if (UI.passo === 0) corpo = `
     <fieldset><legend>Onde fica</legend>
       <div class="grid2">
-        <div class="field"><label for="f-loc">Localidade</label><select id="f-loc" data-f="localidade"><option value="">Selecione</option>${OP.localidades.map(l => `<option ${r.localidade === l ? 'selected' : ''}>${h(l)}</option>`).join('')}</select></div>
-        <div class="field"><label for="f-end">Endereço ou descrição</label><input id="f-end" type="text" data-f="endereco" value="${h(r.endereco)}" placeholder="Ex.: Casa 14, beira do rio"></div>
+        <div class="field"><label for="f-loc">Comunidade / localidade</label><select id="f-loc" data-f="localidade"><option value="">Selecione</option>${OP.localidades.map(l => `<option ${r.localidade === l ? 'selected' : ''}>${h(l)}</option>`).join('')}</select></div>
+        <div class="field"><label for="f-ref">Ponto de referência</label><input id="f-ref" type="text" data-f="referencia" value="${h(r.referencia)}" placeholder="Ex.: casa azul ao lado da igreja"></div>
       </div>
-      <div class="field"><label for="f-ref">Ponto de referência</label><input id="f-ref" type="text" data-f="referencia" value="${h(r.referencia)}" placeholder="Ex.: ao lado da igreja"></div>
       <div class="gps">${ico('pin')}<div style="flex:1;min-width:160px">${r.coords ? `<b class="mono">${r.coords.lat}, ${r.coords.lng}</b><br><span class="muted" style="font-size:.84rem">Precisão de ±${r.coords.prec} m · GPS funciona sem internet</span>` : '<b>Localização da casa</b><br><span class="muted" style="font-size:.84rem">Usa o GPS do celular, mesmo sem internet</span>'}</div>
-      <button type="button" class="btn small" data-act="gps">${r.coords ? 'Capturar de novo' : 'Capturar localização'}</button></div>
+      <button type="button" class="btn small" data-act="gps">${r.coords ? 'Capturar de novo' : 'Capturar GPS'}</button></div>
     </fieldset>
-    <fieldset><legend>Condições de moradia</legend>
-      <div class="field"><span class="lbl">Situação do imóvel</span>${radios('situacao', OP.situacao, r.situacao)}</div>
-      <div class="field"><span class="lbl">Material das paredes</span>${radios('material', OP.material, r.material)}</div>
-      <div class="grid2">
-        <div class="field"><label for="f-com">Nº de cômodos</label><input id="f-com" type="number" min="1" inputmode="numeric" data-f="comodos" value="${h(r.comodos)}"></div>
-        <div class="field"><label for="f-ani">Animais no domicílio</label><input id="f-ani" type="number" min="0" inputmode="numeric" data-f="animais" value="${h(r.animais)}"></div>
+    <fieldset><legend>Responsável e moradores</legend>
+      <div class="field"><label for="f-resp">Nome do responsável pela família</label><input id="f-resp" type="text" data-f="responsavelNome" value="${h(r.responsavelNome)}" autocomplete="off"></div>
+      <div class="comp-in">
+        ${[['comp.total', 'Total de moradores'], ['comp.criancas', 'Crianças 0–11'], ['comp.adolescentes', 'Adolescentes 12–17'], ['comp.adultos', 'Adultos 18–59'], ['comp.idosos', 'Idosos 60+']].map(([f, l], i) => `<div class="field ${i === 0 ? 'total' : ''}"><label for="f-${f}">${l}</label><input id="f-${f}" type="number" min="0" inputmode="numeric" data-f="${f}" value="${h(getPath(r, f))}"></div>`).join('')}
       </div>
-      <div class="field"><span class="lbl">Energia elétrica</span>${radios('energia', ['Sim', 'Não'], r.energia ? 'Sim' : 'Não')}</div>
-    </fieldset>
-    <fieldset><legend>Saneamento</legend>
-      <div class="field"><span class="lbl">Abastecimento de água</span>${radios('agua', OP.agua, r.agua)}</div>
-      <div class="field"><span class="lbl">Água para beber</span>${radios('tratamento', OP.tratamento, r.tratamento)}</div>
-      <div class="field"><span class="lbl">Esgoto / banheiro</span>${radios('esgoto', OP.esgoto, r.esgoto)}</div>
-      <div class="field"><span class="lbl">Destino do lixo</span>${radios('lixo', OP.lixo, r.lixo)}</div>
+      <p id="comp-hint" class="hint" style="font-size:.84rem">${compHint()}</p>
     </fieldset>`;
   if (UI.passo === 1) corpo = `
-    <div class="row between"><div><h2>Quem mora na casa</h2><p class="muted" style="font-size:.88rem">Comece pelo responsável familiar.</p></div><button type="button" class="btn primary small" data-act="add-morador">${ico('plus')} Adicionar</button></div>
-    <div class="list">${r.moradores.length ? r.moradores.map((m, i) => `<div class="member"><span class="avatar ${m.sexo}">${h(iniciais(m.nome))}</span>
-      <div style="min-width:0"><b>${h(m.nome)}</b><br><span class="muted" style="font-size:.85rem">${h(m.parentesco)} · ${idade(m.nascimento)} anos${m.condicoes.length ? ' · ' + h(m.condicoes.join(', ')) : ''}${m.beneficios.length ? ' · ' + h(m.beneficios.join(', ')) : ''}</span></div>
-      <button type="button" class="btn small ghost" data-act="edit-morador" data-i="${i}">Editar</button></div>`).join('') : '<p class="item muted">Nenhum morador ainda. Toque em “Adicionar”.</p>'}</div>
-    <p class="muted num" style="font-size:.86rem">${r.moradores.length} ${r.moradores.length === 1 ? 'pessoa' : 'pessoas'} no domicílio</p>`;
+    <fieldset><legend>Moradia</legend>
+      <div class="field"><span class="lbl">Tipo de moradia</span>${radios('moradia', OP.moradia, r.moradia)}</div>
+      <div class="grid2"><div class="field"><label for="f-com">Número de cômodos</label><input id="f-com" type="number" min="1" inputmode="numeric" data-f="comodos" value="${h(r.comodos)}"></div></div>
+      <div class="field"><span class="lbl">Energia elétrica</span>${radios('energia', OP.energia, r.energia)}</div>
+    </fieldset>
+    <fieldset><legend>Água</legend>
+      <div class="field"><span class="lbl">De onde vem</span>${radios('agua', OP.agua, r.agua)}</div>
+      <div class="field"><span class="lbl">Como é tratada</span>${radios('tratamento', OP.tratamento, r.tratamento)}</div>
+    </fieldset>
+    <fieldset><legend>Esgoto, lixo e animais</legend>
+      <div class="field"><span class="lbl">Esgoto / banheiro</span>${radios('esgoto', OP.esgoto, r.esgoto)}</div>
+      <div class="field"><span class="lbl">Destino do lixo</span>${radios('lixo', OP.lixo, r.lixo)}</div>
+      <div class="field"><span class="lbl">Animais em casa</span>${checks('animais', OP.animais, r.animais)}</div>
+    </fieldset>`;
   if (UI.passo === 2) corpo = `
-    <fieldset><legend>Renda familiar mensal</legend>${radios('renda', OP.renda, r.renda)}
-      <p class="hint muted" style="font-size:.82rem">Soma da renda de todos os moradores, por faixa de salário mínimo.</p></fieldset>
-    <fieldset><legend>Benefícios da família</legend>${checks('beneficiosFamilia', OP.benefFamilia, r.beneficiosFamilia)}
-      <p class="muted" style="font-size:.82rem">Benefícios individuais (BPC, aposentadoria, seguro-defeso) ficam no cadastro de cada morador.</p></fieldset>
-    <fieldset><legend>Observações da visita</legend><div class="field"><label for="f-obs" class="muted" style="font-weight:400">Opcional</label><textarea id="f-obs" data-f="observacoes" placeholder="Ex.: família chegou há 2 meses de outra comunidade">${h(r.observacoes)}</textarea></div></fieldset>`;
+    <fieldset><legend>Renda familiar aproximada</legend>${radios('renda', OP.renda, r.renda)}</fieldset>
+    <fieldset><legend>Benefícios do governo</legend>
+      <div class="field"><span class="lbl">Recebidos pela família (marque todos)</span>${checks('beneficiosFamilia', OP.benefFamilia, r.beneficiosFamilia)}</div>
+      <div class="grid2"><div class="field"><label for="f-pben">Quantas pessoas da casa recebem algum benefício</label><input id="f-pben" type="number" min="0" inputmode="numeric" data-f="pessoasComBeneficio" value="${h(r.pessoasComBeneficio)}"></div></div>
+    </fieldset>
+    <fieldset><legend>Acesso à saúde</legend>
+      <div class="field"><span class="lbl">A família tem acesso a posto de saúde?</span>${radios('posto.acesso', ['Sim', 'Não'], r.posto.acesso)}</div>
+      <div class="grid2"><div class="field"><label for="f-km">Distância até o posto mais próximo (km)</label><input id="f-km" type="number" min="0" inputmode="numeric" data-f="posto.km" value="${h(r.posto.km)}"></div></div>
+      <div class="field"><span class="lbl">Tempo até o posto</span>${radios('posto.tempo', OP.tempoPosto, r.posto.tempo)}</div>
+      <div class="field"><span class="lbl">Como chega</span>${radios('posto.meio', OP.meioPosto, r.posto.meio)}</div>
+    </fieldset>`;
   if (UI.passo === 3) {
-    const faltando = validarRascunho();
+    const decl = Number(r.comp.total) || 0;
+    corpo = `
+    <div class="row between"><div><h2>Quem mora na casa</h2><p class="muted" style="font-size:.88rem">Cadastre cada morador. Os atendimentos ficam disponíveis depois de salvar a família.</p></div><button type="button" class="btn primary small" data-act="add-morador">${ico('plus')} Adicionar morador</button></div>
+    <div class="list">${r.moradores.length ? r.moradores.map((m, i) => `<div class="member"><span class="avatar ${m.sexo}">${h(iniciais(m.nome))}</span>
+      <div style="min-width:0"><b>${h(m.nome)}</b><br><span class="muted" style="font-size:.85rem">${h(m.parentesco)} · ${idadeTxt(m.nascimento)}${m.condicoes.length ? ' · ' + h(m.condicoes.join(', ')) : ''}${m.beneficios.length ? ' · ' + h(m.beneficios.join(', ')) : ''}</span></div>
+      <button type="button" class="btn small ghost" data-act="edit-morador" data-i="${i}">Editar</button></div>`).join('') : `<p class="item muted">Nenhum morador ainda. Comece por ${h(r.responsavelNome || 'o responsável')}.</p>`}</div>
+    <p class="muted num" style="font-size:.86rem">${r.moradores.length} de ${decl || '?'} moradores declarados no passo 1</p>`;
+  }
+  if (UI.passo === 4) {
+    const falta = validarRascunho();
     corpo = `
     <div class="card"><dl class="review">
-      <dt>Localidade</dt><dd>${h(r.localidade || '—')}</dd>
-      <dt>Endereço</dt><dd>${h(r.endereco || '—')}</dd>
+      <dt>Responsável</dt><dd>${h(r.responsavelNome || '—')}</dd>
+      <dt>Localidade</dt><dd>${h(r.localidade || '—')}${r.referencia ? ' · ' + h(r.referencia) : ''}</dd>
       <dt>GPS</dt><dd class="mono">${r.coords ? r.coords.lat + ', ' + r.coords.lng : 'não capturado'}</dd>
-      <dt>Moradia</dt><dd>${h([r.situacao, r.material, r.comodos ? r.comodos + ' cômodo(s)' : ''].filter(Boolean).join(' · ') || '—')}</dd>
-      <dt>Saneamento</dt><dd>${h([r.agua, r.tratamento, r.esgoto, r.lixo].filter(Boolean).join(' · ') || '—')}</dd>
-      <dt>Moradores</dt><dd>${r.moradores.length ? h(r.moradores.map(m => m.nome.split(' ')[0] + ' (' + idade(m.nascimento) + ')').join(', ')) : '—'}</dd>
+      <dt>Composição</dt><dd>${r.comp.total || '—'} pessoas · ${r.comp.criancas || 0} crianças · ${r.comp.adolescentes || 0} adolescentes · ${r.comp.adultos || 0} adultos · ${r.comp.idosos || 0} idosos</dd>
+      <dt>Moradia</dt><dd>${h([r.moradia, r.comodos ? r.comodos + ' cômodo(s)' : '', r.energia ? 'energia: ' + r.energia : ''].filter(Boolean).join(' · ') || '—')}</dd>
+      <dt>Saneamento</dt><dd>${h([r.agua && 'água: ' + r.agua, r.tratamento, r.esgoto, r.lixo && 'lixo: ' + r.lixo].filter(Boolean).join(' · ') || '—')}</dd>
       <dt>Renda</dt><dd>${h(r.renda || '—')}</dd>
-      <dt>Benefícios</dt><dd>${h([...r.beneficiosFamilia, ...r.moradores.flatMap(m => m.beneficios)].join(', ') || 'Nenhum')}</dd>
+      <dt>Benefícios</dt><dd>${h(r.beneficiosFamilia.join(', ') || '—')}${r.pessoasComBeneficio !== '' ? ' · ' + r.pessoasComBeneficio + ' pessoa(s)' : ''}</dd>
+      <dt>Posto de saúde</dt><dd>${h([r.posto.acesso && (r.posto.acesso === 'Sim' ? 'tem acesso' : 'sem acesso'), r.posto.km && r.posto.km + ' km', r.posto.tempo, r.posto.meio].filter(Boolean).join(' · ') || '—')}</dd>
+      <dt>Moradores</dt><dd>${r.moradores.length ? h(r.moradores.map(m => m.nome.split(' ')[0] + ' (' + idadeTxt(m.nascimento) + ')').join(', ')) : '—'}</dd>
     </dl></div>
-    ${faltando.length ? `<div class="card" style="background:var(--sun-soft);border-color:transparent"><b>Falta preencher</b><ul style="margin:6px 0 0;padding-left:20px">${faltando.map(f => `<li>${h(f)}</li>`).join('')}</ul></div>` : ''}
+    ${falta.length ? `<div class="card" style="background:var(--sun-soft);border-color:transparent"><b>Falta preencher</b><ul style="margin:6px 0 0;padding-left:20px">${falta.map(f => `<li>${h(f)}</li>`).join('')}</ul></div>` : ''}
     <label class="consent"><input type="checkbox" id="f-cons" data-f="consentimento" ${r.consentimento ? 'checked' : ''}>
-      <span><b>A família autorizou o registro dos dados</b><br><span class="muted" style="font-size:.86rem">Li o termo de consentimento em voz alta: os dados serão usados apenas para o cuidado em saúde e para relatórios sem identificação enviados à Secretaria de Saúde. A família pode pedir para corrigir ou apagar as informações.</span></span></label>`;
+      <span><b>A família autorizou o registro dos dados</b><br><span class="muted" style="font-size:.86rem">Li o termo em voz alta: os dados serão usados para o cuidado em saúde e para relatórios sem identificação entregues à Secretaria de Saúde. A família pode pedir para corrigir ou apagar as informações.</span></span></label>`;
   }
+  const editando = r.id ? S.domicilios.find(d => d.id === r.id) : null;
   return `<div class="stack">
-    <div class="row between"><div><p class="eyebrow">${r.id ? 'Editando ' + h(S.domicilios.find(d => d.id === r.id)?.codigo || '') : 'Novo domicílio'} · rascunho salvo automaticamente</p><h1>${PASSOS[UI.passo]}</h1></div>
+    <div class="row between"><div><p class="eyebrow">${editando ? 'Editando ' + h(editando.codigo) : 'Nova família'} · passo ${UI.passo + 1} de ${PASSOS.length} · rascunho salvo sozinho</p><h1>${PASSOS[UI.passo]}</h1></div>
     <button class="btn small ghost" data-act="descartar">Descartar</button></div>
     ${passos}
     ${corpo}
     <div class="wizard-foot">
-      ${UI.passo > 0 ? '<button class="btn" data-act="passo" data-d="-1">Voltar</button>' : ''}
-      ${UI.passo < 3 ? '<button class="btn primary" data-act="passo" data-d="1">Continuar</button>' : `<button class="btn primary" data-act="salvar-dom">${ico('check')} Salvar no aparelho</button>`}
+      ${UI.passo > 0 ? '<button class="btn" data-act="passo" data-dir="-1">Voltar</button>' : ''}
+      ${UI.passo < PASSOS.length - 1 ? '<button class="btn primary" data-act="passo" data-dir="1">Continuar</button>' : `<button class="btn primary" data-act="salvar-dom">${ico('check')} Salvar família</button>`}
     </div>
   </div>`;
 }
 function validarRascunho() {
   const r = S.rascunho; const f = [];
-  if (!r.localidade) f.push('Localidade (passo 1)');
-  if (!r.endereco) f.push('Endereço ou descrição (passo 1)');
-  if (!r.agua || !r.tratamento) f.push('Água e tratamento (passo 1)');
-  if (!r.moradores.length) f.push('Ao menos um morador (passo 2)');
-  else if (!r.moradores.some(m => m.parentesco === 'Responsável')) f.push('Indicar o responsável familiar (passo 2)');
-  if (!r.renda) f.push('Faixa de renda (passo 3)');
+  if (!r.localidade) f.push('Comunidade / localidade (passo 1)');
+  if (!r.responsavelNome.trim()) f.push('Nome do responsável (passo 1)');
+  if (!r.comp.total) f.push('Total de moradores (passo 1)');
+  if (!r.moradia) f.push('Tipo de moradia (passo 2)');
+  if (!r.agua || !r.tratamento) f.push('Origem e tratamento da água (passo 2)');
+  if (!r.esgoto) f.push('Esgoto / banheiro (passo 2)');
+  if (!r.renda) f.push('Renda familiar (passo 3)');
+  if (!r.beneficiosFamilia.length) f.push('Benefícios: marque “Nenhum” se não receber (passo 3)');
+  if (!r.moradores.length) f.push('Ao menos um morador (passo 4)');
+  else if (!r.moradores.some(m => m.parentesco === 'Responsável')) f.push('Indicar quem é o responsável entre os moradores (passo 4)');
   return f;
 }
 
-function abrirMorador(i) {
-  const m = i != null ? S.rascunho.moradores[i] : { nome: '', sexo: '', nascimento: '', parentesco: S.rascunho.moradores.length ? '' : 'Responsável', raca: '', cns: '', escolaridade: '', ocupacao: '', condicoes: [], gestacao: null, vacinaEmDia: null, beneficios: [] };
+function abrirMoradorForm(i) {
+  const r = S.rascunho;
+  const m = i != null ? r.moradores[i] : { nome: r.moradores.length ? '' : r.responsavelNome, sexo: '', nascimento: '', parentesco: r.moradores.length ? '' : 'Responsável', cns: '', cpf: '', raca: '', escolaridade: '', alfabetizado: null, ocupacao: '', beneficios: [], condicoes: [], semanas: null, outraCondicao: '', vacina: '', caderneta: null, medUsa: false, medQual: '' };
+  const rad = (name, lista, val) => `<div class="opts">${lista.map(s => `<label class="opt"><input type="radio" name="${name}" value="${h(s)}" ${val === s ? 'checked' : ''}><span>${h(s)}</span></label>`).join('')}</div>`;
   abrirSheet(`
     <div class="sheet-head"><div><p class="eyebrow">Cadastro individual</p><h2>${i != null ? 'Editar morador' : 'Novo morador'}</h2></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
     <form id="form-morador" class="stack" data-i="${i ?? ''}">
       <fieldset><legend>Identificação</legend>
         <div class="field"><label for="m-nome">Nome completo</label><input id="m-nome" name="nome" type="text" required value="${h(m.nome)}" autocomplete="off"></div>
         <div class="grid2">
-          <div class="field"><label for="m-nasc">Data de nascimento</label><input id="m-nasc" name="nascimento" type="date" required value="${h(m.nascimento)}"></div>
-          <div class="field"><label for="m-cns">Cartão SUS (CNS) ou CPF</label><input id="m-cns" name="cns" type="text" inputmode="numeric" value="${h(m.cns)}" placeholder="Se a pessoa tiver"></div>
-        </div>
-        <div class="field"><span class="lbl">Sexo</span><div class="opts">${['F', 'M'].map(s => `<label class="opt"><input type="radio" name="sexo" value="${s}" ${m.sexo === s ? 'checked' : ''} required><span>${s === 'F' ? 'Feminino' : 'Masculino'}</span></label>`).join('')}</div></div>
-        <div class="grid2">
+          <div class="field"><label for="m-nasc">Data de nascimento</label><input id="m-nasc" name="nascimento" type="date" required value="${h(m.nascimento)}"><span class="hint" id="m-idade">${m.nascimento ? 'Idade: ' + idadeTxt(m.nascimento) : 'A idade é calculada automaticamente'}</span></div>
+          <div class="field"><span class="lbl">Sexo</span><div class="opts">${['F', 'M'].map(s => `<label class="opt"><input type="radio" name="sexo" value="${s}" ${m.sexo === s ? 'checked' : ''} required><span>${s === 'F' ? 'Feminino' : 'Masculino'}</span></label>`).join('')}</div></div>
+          <div class="field"><label for="m-cns">Cartão SUS (CNS)</label><input id="m-cns" name="cns" type="text" inputmode="numeric" value="${h(m.cns)}" placeholder="Opcional · 15 dígitos"></div>
+          <div class="field"><label for="m-cpf">CPF</label><input id="m-cpf" name="cpf" type="text" inputmode="numeric" value="${h(m.cpf)}" placeholder="Opcional"></div>
           <div class="field"><label for="m-par">Parentesco com o responsável</label><select id="m-par" name="parentesco" required><option value="">Selecione</option>${OP.parentesco.map(p => `<option ${m.parentesco === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
-          <div class="field"><label for="m-raca">Raça / cor (autodeclarada)</label><select id="m-raca" name="raca"><option value="">Selecione</option>${OP.raca.map(p => `<option ${m.raca === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
+          <div class="field"><label for="m-raca">Raça / cor (IBGE, autodeclarada)</label><select id="m-raca" name="raca"><option value="">Selecione</option>${OP.raca.map(p => `<option ${m.raca === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
           <div class="field"><label for="m-esc">Escolaridade</label><select id="m-esc" name="escolaridade"><option value="">Selecione</option>${OP.escolaridade.map(p => `<option ${m.escolaridade === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
-          <div class="field"><label for="m-oc">Ocupação</label><input id="m-oc" name="ocupacao" type="text" value="${h(m.ocupacao)}" placeholder="Ex.: agricultor(a)"></div>
+          <div class="field"><span class="lbl">Sabe ler e escrever?</span>${rad('alfabetizado', ['Sim', 'Não'], m.alfabetizado === true ? 'Sim' : m.alfabetizado === false ? 'Não' : '')}</div>
         </div>
+        <div class="field"><label for="m-oc">Ocupação</label><input id="m-oc" name="ocupacao" type="text" value="${h(m.ocupacao)}" placeholder="Ex.: pescador(a), agricultor(a), estudante"></div>
+        <div class="field"><span class="lbl">Recebe benefício individual? Qual?</span><div class="opts">${OP.benefPessoa.map(c => `<label class="opt"><input type="checkbox" name="beneficios" value="${h(c)}" ${m.beneficios.includes(c) ? 'checked' : ''}><span>${h(c)}</span></label>`).join('')}</div><span class="hint">Deixe em branco se não recebe.</span></div>
       </fieldset>
       <fieldset><legend>Saúde</legend>
-        <div class="field"><span class="lbl">Condições referidas</span><div class="opts">${OP.condicoes.map(c => `<label class="opt"><input type="checkbox" name="condicoes" value="${h(c)}" ${m.condicoes.includes(c) ? 'checked' : ''}><span>${h(c)}</span></label>`).join('')}</div></div>
+        <div class="field"><span class="lbl">Condições de saúde</span><div class="opts">${OP.condicoes.map(c => `<label class="opt"><input type="checkbox" name="condicoes" value="${h(c)}" ${m.condicoes.includes(c) ? 'checked' : ''}><span>${h(c)}</span></label>`).join('')}</div></div>
         <div class="grid2">
-          <div class="field"><label for="m-sem">Se gestante: semanas</label><input id="m-sem" name="semanas" type="number" min="1" max="42" value="${m.gestacao ? m.gestacao.semanas : ''}"></div>
-          <div class="field"><span class="lbl">Faz pré-natal?</span><div class="opts">${['Sim', 'Não'].map(s => `<label class="opt"><input type="radio" name="preNatal" value="${s}" ${m.gestacao && (m.gestacao.preNatal ? 'Sim' : 'Não') === s ? 'checked' : ''}><span>${s}</span></label>`).join('')}</div></div>
+          <div class="field"><label for="m-sem">Se gestante: semanas</label><input id="m-sem" name="semanas" type="number" min="1" max="42" inputmode="numeric" value="${m.semanas ?? ''}"></div>
+          <div class="field"><label for="m-outra">Se outra: qual</label><input id="m-outra" name="outraCondicao" type="text" value="${h(m.outraCondicao)}"></div>
         </div>
-        <div class="field"><span class="lbl">Caderneta de vacinação (crianças)</span><div class="opts">${[['Em dia', true], ['Atrasada', false], ['Não se aplica', null]].map(([t, v]) => `<label class="opt"><input type="radio" name="vacina" value="${t}" ${m.vacinaEmDia === v ? 'checked' : ''}><span>${t}</span></label>`).join('')}</div></div>
+        <div class="grid2">
+          <div class="field"><span class="lbl">Vacinação em dia?</span>${rad('vacina', ['Sim', 'Não', 'Não sabe'], m.vacina)}</div>
+          <div class="field"><span class="lbl">Criança: tem caderneta?</span>${rad('caderneta', ['Sim', 'Não'], m.caderneta)}</div>
+        </div>
+        <div class="grid2">
+          <div class="field"><span class="lbl">Faz uso contínuo de medicamento?</span>${rad('medUsa', ['Sim', 'Não'], m.medUsa ? 'Sim' : (i != null ? 'Não' : ''))}</div>
+          <div class="field"><label for="m-medq">Qual</label><input id="m-medq" name="medQual" type="text" list="lista-meds2" value="${h(m.medQual)}" placeholder="Ex.: Losartana 50 mg"></div>
+        </div>
+        <datalist id="lista-meds2">${OP.meds.map(x => `<option value="${h(x)}">`).join('')}</datalist>
       </fieldset>
-      <fieldset><legend>Benefícios individuais</legend><div class="opts">${OP.benefPessoa.map(c => `<label class="opt"><input type="checkbox" name="beneficios" value="${h(c)}" ${m.beneficios.includes(c) ? 'checked' : ''}><span>${h(c)}</span></label>`).join('')}</div></fieldset>
       <div class="row">
         ${i != null ? '<button type="button" class="btn" data-act="remover-morador" data-i="' + i + '">Remover</button>' : ''}
         <button class="btn primary" type="submit" style="flex:1">${ico('check')} Salvar morador</button>
@@ -807,27 +1216,25 @@ function abrirMorador(i) {
 /* ---------- Sincronizar ---------- */
 function vSync() {
   const pend = pendentes();
-  const tam = pend.reduce((n, d) => n + 2 + d.moradores.length * 1.4, 0);
+  const itens = pend.reduce((n, d) => n + pendItens(d.pend), 0);
   return `<div class="stack">
     <h1>Sincronizar</h1>
-    <div class="card stack" style="gap:12px">
-      <label class="switch"><span><b>Conexão com a internet</b><br><span class="muted" style="font-size:.86rem">No protótipo, ligue para simular a volta do sinal. No app real, isso é detectado sozinho.</span></span><input type="checkbox" id="sw-net" data-act="toggle-net" ${S.online ? 'checked' : ''} aria-label="Simular conexão"></label>
-    </div>
+    <div class="card"><label class="switch"><span><b>Conexão com a internet</b><br><span class="muted" style="font-size:.86rem">No protótipo, ligue para simular a volta do sinal. No app real isso é detectado sozinho.</span></span><input type="checkbox" id="sw-net" data-act="toggle-net" ${S.online ? 'checked' : ''} aria-label="Simular conexão"></label></div>
     <div class="sync-card ${S.online ? 'on' : 'off'}">
       <div class="ico">${ico(S.online ? 'cloud' : 'wifiOff')}</div>
-      <h2 class="num">${pend.length} ${pend.length === 1 ? 'registro' : 'registros'} na fila</h2>
-      <p class="muted">${pend.length ? `cerca de ${Math.max(1, Math.round(tam))} KB · ` : ''}${S.online ? 'pronto para enviar' : 'tudo seguro no aparelho, envia quando houver sinal'}</p>
+      <h2 class="num">${itens} ${itens === 1 ? 'registro' : 'registros'} na fila</h2>
+      <p class="muted">${pend.length} ${pend.length === 1 ? 'família' : 'famílias'} · ${S.online ? 'pronto para enviar' : 'tudo seguro no aparelho, envia quando houver sinal'}</p>
       <div class="actions" style="flex-direction:column;align-items:stretch">
         ${UI.sincronizando ? `<div class="progress"><i style="width:${UI.progresso}%"></i></div><p class="muted num" style="font-size:.86rem">Enviando… ${UI.progresso}%</p>` :
-        `<button class="btn primary" data-act="sync-now" ${!S.online || !pend.length ? 'disabled' : ''}>${ico('cloud')} ${S.online ? 'Enviar agora' : 'Aguardando internet'}</button>`}
+        `<button class="btn primary" data-act="sync-now" ${!S.online || !itens ? 'disabled' : ''}>${ico('cloud')} ${S.online ? 'Enviar agora' : 'Aguardando internet'}</button>`}
       </div>
     </div>
-    ${pend.length ? `<h2>Na fila</h2><div class="list">${pend.map(d => `<button class="item" data-act="abrir-dom" data-id="${d.id}"><span class="t">${h(d.tipoPendente || 'Atualização')} · ${h(responsavel(d).nome)}</span><span class="mono muted">${h(d.codigo)}</span><span class="s">${h(d.localidade)} · salvo ${fmtQuando(d.atualizadoEm)}</span></button>`).join('')}</div>` : ''}
+    ${pend.length ? `<h2>Na fila</h2><div class="list">${pend.map(d => `<button class="item" data-act="abrir-dom" data-id="${d.id}"><span class="t">${h(d.responsavelNome)}</span><span class="mono muted">${h(d.codigo)}</span><span class="s">${h(pendTexto(d.pend))} · ${fmtQuando(d.atualizadoEm)}</span></button>`).join('')}</div>` : ''}
     <h2>Histórico de envios</h2>
     <div class="list">${[...S.syncs].reverse().map(s => `<div class="item"><span class="t num">${s.qtd} ${s.qtd === 1 ? 'registro enviado' : 'registros enviados'}</span><span class="chip ok">Concluído</span><span class="s">${fmtQuando(s.quando)}</span></div>`).join('')}</div>
     <h2>Como o envio funciona</h2>
     <div class="flow">
-      <div><b>Coleta</b><span class="muted">O formulário é salvo no próprio celular, com ou sem sinal.</span></div>
+      <div><b>Coleta</b><span class="muted">Família, moradores e atendimentos são salvos no próprio celular, com ou sem sinal.</span></div>
       <div><b>Fila</b><span class="muted">Cada registro ganha um código único e entra na fila de envio.</span></div>
       <div><b>Envio</b><span class="muted">Com internet, a fila sobe para a nuvem. Se cair no meio, retoma de onde parou.</span></div>
       <div><b>Confirmação</b><span class="muted">O servidor confirma cada registro e o celular marca como “Na nuvem”.</span></div>
@@ -837,124 +1244,161 @@ function vSync() {
 function sincronizar() {
   const pend = pendentes();
   if (!S.online || !pend.length || UI.sincronizando) return;
+  const total = pend.reduce((n, d) => n + pendItens(d.pend), 0);
   UI.sincronizando = true; UI.progresso = 0; render();
   let k = 0;
   const passo = () => {
-    pend[k].status = 'sincronizado'; delete pend[k].tipoPendente; k++;
+    pend[k].pend = null; k++;
     UI.progresso = Math.round(k / pend.length * 100);
-    if (k < pend.length) { if (UI.tab === 'sync') render(); setTimeout(passo, 450); }
+    if (k < pend.length) { if (UI.tab === 'sync') render(); setTimeout(passo, 420); }
     else {
-      S.syncs.push({ quando: new Date().toISOString(), qtd: pend.length, ok: true });
+      S.syncs.push({ quando: new Date().toISOString(), qtd: total });
       UI.sincronizando = false; salvar(); render();
-      toast(`${pend.length} ${pend.length === 1 ? 'registro enviado' : 'registros enviados'} para a nuvem`);
+      toast(`${total} ${total === 1 ? 'registro enviado' : 'registros enviados'} para a nuvem`);
     }
   };
-  setTimeout(passo, 450);
+  setTimeout(passo, 420);
 }
 
-/* ---------- Painel ---------- */
+/* ---------- Painel (calculado no próprio aparelho) ---------- */
 const FAIXAS = [[0, 4], [5, 9], [10, 14], [15, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 200]];
-function indicadores(doms) {
+function periodo() {
+  const fim = d => { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; };
+  let ate = fim(HOJE), de = null, rot = 'Todo o período';
+  if (UI.periodo === '15' || UI.periodo === '30') { de = new Date(HOJE); de.setDate(de.getDate() - Number(UI.periodo)); de.setHours(0, 0, 0, 0); rot = `Últimos ${UI.periodo} dias`; }
+  if (UI.periodo === 'custom') { if (UI.de) de = new Date(UI.de + 'T00:00:00'); if (UI.ate) ate = fim(UI.ate + 'T12:00:00'); rot = `${de ? fmtData(de) : 'início'} a ${fmtData(ate)}`; }
+  return { de, ate, rot };
+}
+function dadosPainel(soSinc = false) {
+  const p = periodo();
+  const doms = S.domicilios.filter(d => (UI.local === 'Todas' || d.localidade === UI.local) && new Date(d.criadoEm) <= p.ate && (!soSinc || !d.pend || d.pend.cadastro !== 'Nova família'));
+  const atends = doms.flatMap(d => d.atendimentos.map(a => ({ a, d }))).filter(({ a }) => { const t = new Date(a.data); return t <= p.ate && (!p.de || t >= p.de); });
   const pes = doms.flatMap(d => d.moradores);
-  const ids = pes.map(p => idade(p.nascimento));
-  const cond = Object.fromEntries(OP.condicoes.map(c => [c, pes.filter(p => p.condicoes.includes(c)).length]));
+  const tem = c => pes.filter(m => m.condicoes.includes(c)).length;
+  const benef = OP.benefPessoa.map(b => ({ b, familias: doms.filter(d => d.beneficiosFamilia.includes(b)).length, pessoas: pes.filter(m => m.beneficios.includes(b)).length }));
+  const lista = atends.filter(({ a }) => a.encaminhamento.sim || a.retorno.sim).map(({ a, d }) => ({ a, d, m: achaMorador(d, a.moradorId) }))
+    .sort((x, y) => OP.urgencia.indexOf(y.a.encaminhamento.urgencia || 'Eletivo') - OP.urgencia.indexOf(x.a.encaminhamento.urgencia || 'Eletivo') + (y.a.encaminhamento.sim - x.a.encaminhamento.sim) * 10);
   return {
-    doms: doms.length, pessoas: pes.length,
-    media: doms.length ? (pes.length / doms.length) : 0,
-    criancas: ids.filter(i => i <= 4).length, idosos: ids.filter(i => i >= 60).length,
-    cond, vacAtraso: pes.filter(p => p.vacinaEmDia === false).length,
-    gestSemPN: pes.filter(p => p.gestacao && !p.gestacao.preNatal).length,
-    famBF: doms.filter(d => d.beneficiosFamilia.includes('Bolsa Família')).length,
-    famQualquer: doms.filter(d => d.beneficiosFamilia.length || d.moradores.some(m => m.beneficios.length)).length,
-    benef: Object.fromEntries([...OP.benefFamilia.map(b => [b, doms.filter(d => d.beneficiosFamilia.includes(b)).length]), ...OP.benefPessoa.map(b => [b, pes.filter(p => p.beneficios.includes(b)).length])]),
-    renda: Object.fromEntries(OP.renda.map(r => [r, doms.filter(d => d.renda === r).length])),
-    aguaTratada: doms.filter(d => d.tratamento && d.tratamento !== 'Sem tratamento').length,
-    esgotoAdequado: doms.filter(d => ['Rede coletora', 'Fossa séptica'].includes(d.esgoto)).length,
-    lixoColetado: doms.filter(d => d.lixo === 'Coletado').length,
-    energia: doms.filter(d => d.energia).length,
-    piramide: FAIXAS.map(([a, b]) => ({ faixa: b > 100 ? a + '+' : a + '–' + b, M: pes.filter(p => p.sexo === 'M' && idade(p.nascimento) >= a && idade(p.nascimento) <= b).length, F: pes.filter(p => p.sexo === 'F' && idade(p.nascimento) >= a && idade(p.nascimento) <= b).length }))
+    p, doms, atends, pes, lista,
+    familias: doms.length, moradores: pes.length, atendimentos: atends.length,
+    gestantes: tem('Gestante'), hipertensos: tem('Hipertensão'), diabeticos: tem('Diabetes'),
+    menores5: pes.filter(m => idade(m.nascimento) < 5).length, idosos: pes.filter(m => idade(m.nascimento) >= 60).length,
+    cond: OP.condicoes.map(c => [c, tem(c)]).filter(([, v]) => v).sort((a, b) => b[1] - a[1]),
+    semAgua: doms.filter(d => d.tratamento === 'Sem tratamento').length,
+    semBanheiro: doms.filter(d => ['Sem banheiro', 'A céu aberto'].includes(d.esgoto)).length,
+    semEnergia: doms.filter(d => d.energia === 'Não').length,
+    semPosto: doms.filter(d => d.posto.acesso === 'Não').length,
+    famComBenef: doms.filter(d => d.beneficiosFamilia.some(b => b !== 'Nenhum')).length,
+    pesComBenef: doms.reduce((n, d) => n + (Number(d.pessoasComBeneficio) || 0), 0),
+    benef, renda: OP.renda.map(r => [r, doms.filter(d => d.renda === r).length]),
+    enc: { total: lista.filter(x => x.a.encaminhamento.sim).length, urg: lista.filter(x => x.a.encaminhamento.urgencia === 'Urgente').length, ret: lista.filter(x => x.a.retorno.sim).length },
+    piramide: FAIXAS.map(([a, b]) => ({ faixa: b > 100 ? a + '+' : a + '–' + b, M: pes.filter(m => m.sexo === 'M' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length, F: pes.filter(m => m.sexo === 'F' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length }))
   };
 }
 const hbar = (lab, v, total, cls = '', mostrarPct = true) => `<div class="hbar ${cls}"><span class="lab">${h(lab)}</span><span class="track"><i style="width:${total ? Math.max(1.5, v / total * 100) : 0}%"></i></span><span class="val">${mostrarPct ? pct(v, total) + '%' : v}</span></div>`;
-function vPainel() {
-  const doms = UI.painelLocal === 'Todas' ? S.domicilios : S.domicilios.filter(d => d.localidade === UI.painelLocal);
-  const I = indicadores(doms);
-  const naoEnviados = doms.filter(d => d.status === 'pendente').length;
+function piramideHTML(I) {
   const maxP = Math.max(1, ...I.piramide.flatMap(p => [p.M, p.F]));
-  const condOrd = Object.entries(I.cond).filter(([, v]) => v).sort((a, b) => b[1] - a[1]);
-  const maxC = Math.max(1, ...condOrd.map(c => c[1]));
+  return `<div class="pyr">${[...I.piramide].reverse().map(p => `<div class="l"><span class="v">${p.M}</span><span class="bar" style="width:${p.M / maxP * 85}%"></span></div><div class="mid">${p.faixa}</div><div class="r"><span class="bar" style="width:${p.F / maxP * 85}%"></span><span class="v">${p.F}</span></div>`).join('')}</div>`;
+}
+function vPainel() {
+  const I = dadosPainel();
+  const naoEnviados = I.doms.filter(d => d.pend).length;
+  const maxC = Math.max(1, ...I.cond.map(c => c[1]));
   return `<div class="stack">
-    <div class="row between"><div><p class="eyebrow">Diagnóstico do território</p><h1>Painel</h1></div>
-      <button class="btn small" data-act="exportar">${ico('clip')} Relatório para a Secretaria</button></div>
-    <div class="filter-chips" role="group" aria-label="Localidade">${['Todas', ...OP.localidades].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.painelLocal === l}">${h(l)}</button>`).join('')}</div>
-    ${naoEnviados ? `<p class="muted" style="font-size:.86rem"><span class="chip pend">${naoEnviados} ainda no aparelho</span> Incluídos aqui, mas a Secretaria só verá após a sincronização.</p>` : ''}
+    <div class="row between"><div><p class="eyebrow">Diagnóstico do território · calculado no aparelho, funciona offline</p><h1>Painel</h1></div>
+      <button class="btn primary small" data-act="relatorio">${ico('doc')} Gerar relatório em PDF</button></div>
+    <div class="filter-chips" role="group" aria-label="Comunidade">${['Todas', ...OP.localidades].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.local === l}">${h(l === 'Todas' ? 'Todas as comunidades' : l)}</button>`).join('')}</div>
+    <div class="filter-chips" role="group" aria-label="Período">${[['tudo', 'Todo o período'], ['15', 'Últimos 15 dias'], ['30', 'Últimos 30 dias'], ['custom', 'Escolher datas']].map(([k, n]) => `<button data-act="periodo" data-p="${k}" aria-pressed="${UI.periodo === k}">${n}</button>`).join('')}</div>
+    ${UI.periodo === 'custom' ? `<div class="row"><div class="field" style="flex:1;min-width:140px"><label for="p-de">De</label><input id="p-de" type="date" value="${h(UI.de)}"></div><div class="field" style="flex:1;min-width:140px"><label for="p-ate">Até</label><input id="p-ate" type="date" value="${h(UI.ate)}"></div></div>` : ''}
+    <p class="muted" style="font-size:.84rem">Famílias cadastradas até ${fmtData(I.p.ate)}; atendimentos de ${h(I.p.rot.toLowerCase())}.${naoEnviados ? ` <span class="chip pend">${naoEnviados} famílias ainda no aparelho</span>` : ''}</p>
     <div class="kpis">
-      <div class="kpi"><b>${I.doms}</b><span>domicílios cadastrados</span></div>
-      <div class="kpi"><b>${I.pessoas}</b><span>pessoas · ${I.media.toFixed(1).replace('.', ',')} por casa</span></div>
-      <div class="kpi"><b>${pct(I.famBF, I.doms)}%</b><span>famílias no Bolsa Família</span></div>
-      <div class="kpi"><b>${pct(I.famQualquer, I.doms)}%</b><span>famílias com algum benefício</span></div>
+      <div class="kpi"><b>${I.familias}</b><span>famílias</span></div>
+      <div class="kpi"><b>${I.moradores}</b><span>moradores</span></div>
+      <div class="kpi"><b>${I.atendimentos}</b><span>atendimentos</span></div>
+      <div class="kpi"><b>${I.menores5}</b><span>crianças &lt; 5 anos</span></div>
+      <div class="kpi"><b>${I.gestantes}</b><span>gestantes</span></div>
+      <div class="kpi"><b>${I.hipertensos}</b><span>hipertensos</span></div>
+      <div class="kpi"><b>${I.diabeticos}</b><span>diabéticos</span></div>
+      <div class="kpi"><b>${I.enc.total}</b><span>encaminhamentos${I.enc.urg ? ` · <b style="font-size:inherit;color:var(--danger)">${I.enc.urg} urgentes</b>` : ''}</span></div>
     </div>
     <div class="charts">
       <div class="card"><div class="row between"><h3>Pirâmide etária</h3><div class="legend"><span><i style="background:var(--river)"></i>Homens</span><span><i style="background:var(--primary)"></i>Mulheres</span></div></div>
-        <div class="pyr">${[...I.piramide].reverse().map(p => `<div class="l"><span class="v">${p.M}</span><span class="bar" style="width:${p.M / maxP * 85}%"></span></div><div class="mid">${p.faixa}</div><div class="r"><span class="bar" style="width:${p.F / maxP * 85}%"></span><span class="v">${p.F}</span></div>`).join('')}</div>
-        <p class="muted" style="font-size:.82rem">${I.criancas} crianças de 0 a 4 anos · ${I.idosos} pessoas com 60 anos ou mais</p></div>
-      <div class="card"><h3>Condições de saúde referidas</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">Número de pessoas</p>
-        <div class="hbars">${condOrd.map(([c, v]) => hbar(c, v, maxC, c === 'Gestante' ? 'river' : '', false)).join('')}</div>
-        <div class="row" style="gap:6px"><span class="chip risk">${I.vacAtraso} crianças com vacina atrasada</span><span class="chip risk">${I.gestSemPN} gestantes sem pré-natal</span></div></div>
-      <div class="card"><h3>Saneamento e moradia</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">% dos domicílios</p>
-        <div class="hbars">${hbar('Água tratada para beber', I.aguaTratada, I.doms, 'river')}${hbar('Esgoto adequado', I.esgotoAdequado, I.doms, 'river')}${hbar('Lixo coletado', I.lixoColetado, I.doms, 'river')}${hbar('Energia elétrica', I.energia, I.doms, 'river')}</div></div>
-      <div class="card"><h3>Benefícios sociais</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">Famílias (programas familiares) e pessoas (individuais)</p>
-        <div class="hbars">${Object.entries(I.benef).filter(([, v]) => v).map(([b, v]) => hbar(b + (OP.benefPessoa.includes(b) ? ' (pessoas)' : ''), v, Math.max(...Object.values(I.benef), 1), 'sun', false)).join('')}</div></div>
-      <div class="card" style="grid-column:1/-1"><h3>Renda familiar</h3>
-        <div class="hbars">${Object.entries(I.renda).map(([r, v]) => hbar(r, v, I.doms)).join('')}</div></div>
+        ${piramideHTML(I)}<p class="muted" style="font-size:.82rem">${I.idosos} pessoas com 60 anos ou mais</p></div>
+      <div class="card"><h3>Casas em situação de risco</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">% das ${I.familias} casas</p>
+        <div class="hbars">${hbar('Sem água tratada', I.semAgua, I.familias, 'sun')}${hbar('Sem banheiro (inclui céu aberto)', I.semBanheiro, I.familias, 'sun')}${hbar('Sem energia elétrica', I.semEnergia, I.familias, 'sun')}${hbar('Sem acesso a posto de saúde', I.semPosto, I.familias, 'sun')}</div></div>
+      <div class="card"><h3>Condições de saúde</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">Número de pessoas</p>
+        <div class="hbars">${I.cond.map(([c, v]) => hbar(c, v, maxC, c === 'Gestante' ? 'river' : '', false)).join('')}</div></div>
+      <div class="card"><h3>Benefícios do governo</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">${I.famComBenef} famílias (${pct(I.famComBenef, I.familias)}%) e ${I.pesComBenef} pessoas recebem algum benefício</p>
+        <div class="scroll-x"><table class="agg"><thead><tr><th>Benefício</th><th>Famílias</th><th>Pessoas</th></tr></thead><tbody>${I.benef.map(b => `<tr><td>${h(b.b)}</td><td>${b.familias}</td><td>${b.pessoas}</td></tr>`).join('')}</tbody></table></div></div>
+      <div class="card" style="grid-column:1/-1"><div class="row between"><h3>Precisam de encaminhamento ou retorno</h3><span class="muted num" style="font-size:.84rem">${I.lista.length} pessoas</span></div>
+        <div class="list">${I.lista.length ? I.lista.slice(0, 12).map(({ a, d, m }) => `<button class="item" data-act="ver-atend" data-d="${d.id}" data-a="${a.id}"><span class="t">${h(m ? m.nome : '—')}</span><span class="muted" style="font-size:.84rem">${fmtData(a.data)}</span><span class="s">${h(d.localidade)} · ${h(a.hipotese || a.queixa)}</span><span></span><span class="chips">${a.encaminhamento.sim ? `<span class="chip ${a.encaminhamento.urgencia === 'Urgente' ? 'risk' : 'pend'}">${h(a.encaminhamento.destino)} · ${h(a.encaminhamento.urgencia)}</span>` : ''}${a.retorno.sim ? `<span class="chip river">Retorno${a.retorno.dias ? ' em ' + a.retorno.dias + ' dias' : ''}</span>` : ''}</span></button>`).join('') : '<p class="item muted">Ninguém no período selecionado.</p>'}</div>
+        ${I.lista.length > 12 ? `<p class="muted" style="font-size:.84rem">E mais ${I.lista.length - 12}. O relatório interno traz a lista completa.</p>` : ''}</div>
+      <div class="card" style="grid-column:1/-1"><h3>Renda familiar</h3><div class="hbars">${I.renda.map(([r, v]) => hbar(r, v, I.familias)).join('')}</div></div>
     </div>
   </div>`;
 }
-function abrirExport() {
-  const linhas = OP.localidades.map(l => { const I = indicadores(S.domicilios.filter(d => d.localidade === l && d.status === 'sincronizado')); return [l, I.doms, I.pessoas, I.criancas, I.idosos, I.cond['Gestante'], I.cond['Hipertensão'], I.cond['Diabetes'], I.famBF, I.benef['BPC'], I.doms - I.aguaTratada]; });
-  const cab = ['Localidade', 'Domicílios', 'Pessoas', '0–4 anos', '60+ anos', 'Gestantes', 'Hipertensos', 'Diabéticos', 'Famílias BF', 'Pessoas BPC', 'Água s/ tratam.'];
-  const csv = [cab, ...linhas].map(l => l.map(c => /[;"]/.test(String(c)) ? `"${String(c).replace(/"/g, '""')}"` : c).join(';')).join('\n');
+
+/* ---------- Relatório (PDF) ---------- */
+function relatorioHTML(I, nominal) {
+  const tl = (l, v, p) => `<tr><td>${h(l)}</td><td>${v}</td>${p != null ? `<td>${p}%</td>` : '<td></td>'}</tr>`;
+  return `<article class="report">
+    <header><div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(UI.local === 'Todas' ? 'Todas as comunidades atendidas' : UI.local)}</h1>
+      <p>${h(S.perfil ? S.perfil.equipe : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
+    <section><h2>Resumo</h2><table><tbody>
+      ${tl('Famílias cadastradas', I.familias)}${tl('Moradores', I.moradores)}${tl('Atendimentos no período', I.atendimentos)}
+      ${tl('Crianças menores de 5 anos', I.menores5, pct(I.menores5, I.moradores))}${tl('Pessoas com 60 anos ou mais', I.idosos, pct(I.idosos, I.moradores))}
+      ${tl('Gestantes', I.gestantes)}${tl('Hipertensos', I.hipertensos, pct(I.hipertensos, I.moradores))}${tl('Diabéticos', I.diabeticos, pct(I.diabeticos, I.moradores))}
+    </tbody></table></section>
+    <section><h2>Faixa etária e sexo</h2><table><thead><tr><th>Faixa</th><th>Homens</th><th>Mulheres</th><th>Total</th></tr></thead><tbody>
+      ${I.piramide.map(p => `<tr><td>${p.faixa} anos</td><td>${p.M}</td><td>${p.F}</td><td>${p.M + p.F}</td></tr>`).join('')}</tbody></table></section>
+    <section><h2>Condições das casas</h2><table><thead><tr><th>Indicador</th><th>Casas</th><th>%</th></tr></thead><tbody>
+      ${tl('Sem água tratada', I.semAgua, pct(I.semAgua, I.familias))}${tl('Sem banheiro (inclui céu aberto)', I.semBanheiro, pct(I.semBanheiro, I.familias))}${tl('Sem energia elétrica', I.semEnergia, pct(I.semEnergia, I.familias))}${tl('Sem acesso a posto de saúde', I.semPosto, pct(I.semPosto, I.familias))}
+    </tbody></table></section>
+    <section><h2>Condições de saúde referidas</h2><table><thead><tr><th>Condição</th><th>Pessoas</th><th>%</th></tr></thead><tbody>${I.cond.map(([c, v]) => tl(c, v, pct(v, I.moradores))).join('')}</tbody></table></section>
+    <section><h2>Benefícios do governo</h2><table><thead><tr><th>Benefício</th><th>Famílias</th><th>Pessoas</th></tr></thead><tbody>
+      ${I.benef.map(b => `<tr><td>${h(b.b)}</td><td>${b.familias}</td><td>${b.pessoas}</td></tr>`).join('')}
+      <tr class="tot"><td>Com algum benefício</td><td>${I.famComBenef}</td><td>${I.pesComBenef}</td></tr></tbody></table></section>
+    <section><h2>Encaminhamentos e retornos</h2><table><tbody>
+      ${tl('Encaminhamentos', I.enc.total)}${tl('Dos quais urgentes', I.enc.urg)}${tl('Retornos / acompanhamentos', I.enc.ret)}</tbody></table>
+      ${nominal && I.lista.length ? `<table class="nominal"><thead><tr><th>Nome</th><th>Comunidade</th><th>Hipótese</th><th>Destino / urgência</th><th>Retorno</th></tr></thead><tbody>${I.lista.map(({ a, d, m }) => `<tr><td>${h(m ? m.nome : '—')}</td><td>${h(d.localidade)}</td><td>${h(a.hipotese || a.queixa)}</td><td>${a.encaminhamento.sim ? h(a.encaminhamento.destino) + ' · ' + h(a.encaminhamento.urgencia) : '—'}</td><td>${a.retorno.sim ? (a.retorno.dias ? a.retorno.dias + ' dias' : 'Sim') : '—'}</td></tr>`).join('')}</tbody></table>` : ''}</section>
+    <footer>${nominal ? 'Contém lista nominal: uso restrito à rede de saúde, não divulgar.' : 'Relatório agregado, sem identificação de pessoas.'} Dados coletados em campo e consolidados pelo aplicativo Saúde em Campo. Valores deste protótipo são fictícios.</footer>
+  </article>`;
+}
+function abrirRelatorio() {
+  const nominal = !!UI.nominal;
+  const I = dadosPainel(true);
   abrirSheet(`
-    <div class="sheet-head"><div><p class="eyebrow">Relatório agregado · sem nomes</p><h2>Envio para a Secretaria de Saúde</h2><p class="muted" style="font-size:.88rem">Só números por localidade. Nomes, CNS e endereços nunca saem neste relatório. Inclui apenas registros já sincronizados.</p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
+    <div class="sheet-head"><div><p class="eyebrow">Para a Secretaria de Saúde</p><h2>Relatório em PDF</h2><p class="muted" style="font-size:.88rem">${h(UI.local === 'Todas' ? 'Todas as comunidades' : UI.local)} · ${h(I.p.rot)}. Gerado no aparelho, sem internet. Só entram famílias já salvas.</p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
     <div class="stack">
-      <div class="scroll-x card" style="padding:6px 8px"><table class="agg"><thead><tr>${cab.map(c => `<th>${h(c)}</th>`).join('')}</tr></thead><tbody>${linhas.map(l => `<tr>${l.map(c => `<td>${h(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
-      <div class="field"><label for="csv-out">Planilha (CSV, separado por ponto e vírgula)</label><textarea id="csv-out" readonly class="mono" style="min-height:140px;font-size:.78rem">${h(csv)}</textarea></div>
-      <button class="btn primary" data-act="copiar-csv">Copiar planilha</button>
-      <p class="muted" style="font-size:.82rem">Na versão final: exportação em .xlsx e .csv, envio automático mensal e formato compatível com o e-SUS APS (Cadastro Domiciliar e Individual).</p>
+      <label class="consent" style="background:var(--surface-2)"><input type="checkbox" id="r-nominal" ${nominal ? 'checked' : ''}><span><b>Incluir lista nominal de encaminhamentos</b><br><span class="muted" style="font-size:.84rem">Só para entrega direta à equipe de regulação. Por padrão o relatório não tem nomes.</span></span></label>
+      ${EMBUTIDO ? `<p class="card" style="background:var(--river-soft);border-color:transparent;font-size:.9rem">Neste link de visualização o navegador bloqueia a impressão. No app instalado, o botão abaixo abre “Salvar como PDF” do celular ou computador.</p>` : ''}
+      <button class="btn primary" data-act="imprimir" ${EMBUTIDO ? 'disabled' : ''}>${ico('doc')} Salvar PDF</button>
+      <div class="report-wrap">${relatorioHTML(I, nominal)}</div>
     </div>`);
 }
 
 /* ---------- Projeto ---------- */
 function vProjeto() {
-  return `<div class="stack prose" style="max-width:none">
+  return `<div class="stack">
     <div class="prose"><p class="eyebrow">Concepção</p><h1>Sobre o projeto</h1>
-      <p>Aplicativo gratuito para equipes missionárias de saúde registrarem, em campo e sem internet, o cadastro das famílias atendidas na atenção primária: quem mora em cada casa, condições de saúde, saneamento, renda e benefícios do governo. Quando o celular encontra sinal, tudo sobe para a nuvem e vira um diagnóstico do território que pode ser compartilhado com a Secretaria Municipal de Saúde.</p></div>
+      <p>Aplicativo gratuito para equipes missionárias de saúde registrarem, em campo e sem internet, o censo das famílias (domicílio e moradores) e os atendimentos de cada pessoa. Quando o celular encontra sinal, tudo sobe para a nuvem. O painel e o relatório em PDF funcionam offline e podem ser entregues à Secretaria de Saúde.</p></div>
     <div class="flow">
-      <div><b>Celular</b><span class="muted">App instalável (PWA). Funciona 100% offline, guarda os dados criptografados no aparelho.</span></div>
-      <div><b>Fila de envio</b><span class="muted">Cada registro tem um código único criado no celular, então não há duplicidade.</span></div>
-      <div><b>Nuvem</b><span class="muted">Supabase (banco Postgres) com regras de acesso por equipe e por perfil.</span></div>
-      <div><b>Relatórios</b><span class="muted">Painel do território e exportação agregada, sem nomes, para os gestores.</span></div>
+      <div><b>Família</b><span class="muted">Domicílio: localização, composição, moradia, saneamento, renda, benefícios e acesso ao posto.</span></div>
+      <div><b>Moradores</b><span class="muted">Cadastro individual: documentos, escolaridade, benefícios, condições de saúde e vacinação.</span></div>
+      <div><b>Atendimentos</b><span class="muted">Sinais vitais, IMC automático, CID-10, conduta, medicamentos, encaminhamento e retorno.</span></div>
+      <div><b>Painel e PDF</b><span class="muted">Indicadores por comunidade e período; relatório sem nomes para a Secretaria.</span></div>
     </div>
     <div class="charts">
       <div class="card prose"><h3>Quem usa</h3><ul>
-        <li><b>Missionário(a) / agente:</b> cadastra casas e moradores, registra visitas.</li>
-        <li><b>Médico(a) e enfermeiro(a):</b> tudo acima, mais dados clínicos e alertas.</li>
-        <li><b>Coordenador(a) da missão:</b> vê o painel de todas as equipes e exporta relatórios.</li>
-        <li><b>Secretaria de Saúde:</b> recebe só números agregados, nunca nomes.</li></ul></div>
+        <li><b>Missionário(a) / agente:</b> cadastra famílias e moradores.</li>
+        <li><b>Médico(a), enfermeiro(a), dentista:</b> registram atendimentos.</li>
+        <li><b>Coordenador(a):</b> acompanha o painel e gera relatórios.</li>
+        <li><b>Secretaria de Saúde:</b> recebe só números agregados.</li></ul></div>
       <div class="card prose"><h3>Proteção de dados (LGPD)</h3><ul>
-        <li>Dados de saúde são sensíveis: consentimento registrado em cada cadastro.</li>
-        <li>Login com PIN no aparelho; dados locais criptografados.</li>
-        <li>Cada equipe só enxerga as próprias famílias (regras no banco).</li>
-        <li>Relatórios externos são sempre anônimos e agregados.</li></ul></div>
-      <div class="card prose"><h3>Próximas etapas</h3><ul>
-        <li>Validar este protótipo com 2 ou 3 missionários em campo.</li>
-        <li>Fechar a ficha com a Secretaria (campos do e-SUS APS).</li>
-        <li>Construir a versão funcional: PWA + IndexedDB + Supabase.</li>
-        <li>Piloto em uma comunidade, depois expansão.</li></ul></div>
-      <div class="card prose"><h3>Custo</h3><ul>
-        <li>Hospedagem do app: GitHub Pages ou Vercel, gratuito.</li>
-        <li>Banco e login: Supabase, plano gratuito no início.</li>
-        <li>Sem loja de aplicativos: instala direto pelo navegador.</li></ul></div>
+        <li>Consentimento da família registrado em cada cadastro.</li>
+        <li>PIN no aparelho; dados locais criptografados.</li>
+        <li>Cada equipe só enxerga as próprias famílias.</li>
+        <li>Lista nominal só sai com escolha explícita.</li></ul></div>
     </div>
     <div class="row"><button class="btn" data-act="reset">Restaurar dados de exemplo</button></div>
   </div>`;
@@ -967,10 +1411,10 @@ function abrirLogin() {
   el.className = 'login'; el.id = 'login';
   el.innerHTML = `<div class="box">
     <div><span class="brand-mark" style="width:52px;height:52px;border-radius:14px" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px">${ICON.plus}</svg></span></div>
-    <div><h1>Saúde em Campo</h1><p style="opacity:.85">Cadastro territorial da atenção primária, feito para funcionar sem internet.</p></div>
+    <div><h1>Saúde em Campo</h1><p style="opacity:.85">Censo das famílias e atendimentos da atenção primária, feito para funcionar sem internet.</p></div>
     <form class="card stack" id="form-login">
       <div class="field"><label for="l-nome">Profissional</label><input id="l-nome" type="text" value="Dra. Ana Ribeiro"></div>
-      <div class="field"><label for="l-perfil">Perfil</label><select id="l-perfil"><option>Médico(a)</option><option>Enfermeiro(a)</option><option>Missionário(a) / agente</option><option>Coordenador(a)</option></select></div>
+      <div class="field"><label for="l-perfil">Perfil</label><select id="l-perfil"><option>Médico(a)</option><option>Enfermeiro(a)</option><option>Dentista</option><option>Missionário(a) / agente</option><option>Coordenador(a)</option></select></div>
       <div class="field"><label for="l-eq">Equipe</label><select id="l-eq"><option>Missão Rio Purus · Equipe 1</option><option>Missão Rio Purus · Equipe 2</option></select></div>
       <div class="field"><label for="l-pin">PIN do aparelho</label><input id="l-pin" type="password" inputmode="numeric" value="2468" maxlength="6"><span class="hint">No primeiro acesso é preciso internet. Depois, o PIN libera o app offline.</span></div>
       <button class="btn primary block" type="submit">Entrar</button>
@@ -983,11 +1427,11 @@ function abrirLogin() {
 /* ---------- Overlays e toast ---------- */
 function abrirSheet(html) {
   document.getElementById('overlay').innerHTML = `<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;
-  const f = document.querySelector('.sheet input, .sheet button'); if (f && f.tagName === 'INPUT' && f.type === 'text') f.focus();
+  const s = document.querySelector('.sheet'); if (s) s.scrollTop = 0;
 }
 function fecharSheet() { document.getElementById('overlay').innerHTML = ''; }
 let toastT;
-function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3200); }
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3400); }
 
 /* ---------- Eventos ---------- */
 document.addEventListener('click', e => {
@@ -998,37 +1442,47 @@ document.addEventListener('click', e => {
     case 'go': UI.tab = a.dataset.tab; fecharSheet(); render(); window.scrollTo(0, 0); break;
     case 'toggle-net':
       S.online = !S.online; salvar(); render();
-      toast(S.online ? (pendentes().length ? `Internet disponível: ${pendentes().length} registros prontos para enviar` : 'Internet disponível') : 'Sem internet: os registros ficam guardados no aparelho');
+      toast(S.online ? (pendentes().length ? 'Internet disponível: registros prontos para enviar' : 'Internet disponível') : 'Sem internet: os registros ficam guardados no aparelho');
       break;
     case 'sync-now': sincronizar(); break;
-    case 'novo-dom':
+    case 'nova-familia':
       if (!S.rascunho || S.rascunho.id) { S.rascunho = novoRascunho(); UI.passo = 0; }
       UI.tab = 'novo'; fecharSheet(); render(); window.scrollTo(0, 0); break;
     case 'abrir-dom': abrirDom(a.dataset.id); break;
+    case 'abrir-morador': abrirMorador(a.dataset.d, a.dataset.m); break;
+    case 'novo-atend': abrirAtendForm(a.dataset.d, a.dataset.m); break;
+    case 'ver-atend': abrirAtendVer(a.dataset.d, a.dataset.a); break;
     case 'fechar': case 'scrim': fecharSheet(); break;
     case 'filtro': UI.filtro = a.dataset.f; render(); break;
-    case 'painel-local': UI.painelLocal = a.dataset.l; render(); break;
-    case 'visita': abrirVisita(a.dataset.id); break;
+    case 'painel-local': UI.local = a.dataset.l; render(); break;
+    case 'periodo': UI.periodo = a.dataset.p; render(); break;
+    case 'relatorio': abrirRelatorio(); break;
+    case 'imprimir': {
+      document.getElementById('print-area').innerHTML = relatorioHTML(dadosPainel(true), !!UI.nominal);
+      try { window.print(); } catch (err) { toast('Não foi possível abrir a impressão neste navegador'); }
+      break;
+    }
     case 'editar-dom': {
       const d = S.domicilios.find(x => x.id === a.dataset.id);
       S.rascunho = JSON.parse(JSON.stringify(d)); UI.passo = 0; UI.tab = 'novo'; fecharSheet(); salvar(); render(); window.scrollTo(0, 0); break;
     }
-    case 'passo': UI.passo = Math.max(0, Math.min(3, UI.passo + Number(a.dataset.d))); salvar(); render(); window.scrollTo(0, 0); break;
+    case 'passo': UI.passo = Math.max(0, Math.min(PASSOS.length - 1, UI.passo + Number(a.dataset.dir))); salvar(); render(); window.scrollTo(0, 0); break;
     case 'descartar': S.rascunho = null; UI.passo = 0; salvar(); UI.tab = 'inicio'; render(); toast('Rascunho descartado'); break;
     case 'gps':
       a.disabled = true; a.textContent = 'Buscando satélites…';
       setTimeout(() => { S.rascunho.coords = { lat: (-7.24 - Math.random() * .06).toFixed(5), lng: (-64.76 - Math.random() * .08).toFixed(5), prec: 4 + Math.floor(Math.random() * 8) }; salvar(); render(); }, 1100);
       break;
-    case 'add-morador': abrirMorador(null); break;
-    case 'edit-morador': abrirMorador(Number(a.dataset.i)); break;
+    case 'add-morador': abrirMoradorForm(null); break;
+    case 'edit-morador': abrirMoradorForm(Number(a.dataset.i)); break;
     case 'remover-morador': S.rascunho.moradores.splice(Number(a.dataset.i), 1); salvar(); fecharSheet(); render(); break;
     case 'salvar-dom': salvarDom(); break;
-    case 'exportar': abrirExport(); break;
-    case 'copiar-csv': {
-      const ta = document.getElementById('csv-out');
-      const ok = () => toast('Planilha copiada');
-      try { navigator.clipboard.writeText(ta.value).then(ok, () => { ta.select(); toast('Texto selecionado: use Copiar do celular'); }); } catch (err) { ta.select(); toast('Texto selecionado: use Copiar do celular'); }
-      break;
+    case 'add-med': document.getElementById('meds').insertAdjacentHTML('beforeend', medRow()); document.querySelector('#meds .med-row:last-child input').focus(); break;
+    case 'rm-med': { const row = a.closest('.med-row'); if (document.querySelectorAll('#meds .med-row').length > 1) row.remove(); else row.querySelectorAll('input').forEach(i => i.value = ''); break; }
+    case 'cid-pick': {
+      document.getElementById('a-cid').value = a.dataset.c;
+      document.getElementById('cid-busca').value = a.dataset.c + ' – ' + a.dataset.n;
+      const hip = document.getElementById('a-hip'); if (!hip.value) hip.value = a.dataset.n;
+      document.getElementById('cid-res').innerHTML = ''; break;
     }
     case 'reset': S = { ...gerarExemplo(), online: false, rascunho: null, logado: true, perfil: S.perfil }; UI.passo = 0; salvar(); UI.tab = 'inicio'; render(); toast('Dados de exemplo restaurados'); break;
   }
@@ -1037,21 +1491,33 @@ document.addEventListener('click', e => {
 document.addEventListener('input', e => {
   const t = e.target;
   if (t.id === 'busca') { UI.busca = t.value; document.getElementById('lista-familias').innerHTML = listaFamiliasHTML(); return; }
+  if (t.id === 'busca-inicio') { UI.buscaInicio = t.value; document.getElementById('home-res').innerHTML = homeResHTML(); return; }
+  if (t.id === 'cid-busca') { document.getElementById('a-cid').value = ''; buscaCID(t.value); return; }
+  if (t.closest('#form-atend')) { atualizarCalculosAtend(); return; }
+  if (t.id === 'm-nasc') { document.getElementById('m-idade').textContent = t.value ? 'Idade: ' + idadeTxt(t.value) : 'A idade é calculada automaticamente'; return; }
   campoRascunho(t);
 });
-document.addEventListener('change', e => campoRascunho(e.target));
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'p-de' || t.id === 'p-ate') { UI[t.id === 'p-de' ? 'de' : 'ate'] = t.value; render(); return; }
+  if (t.id === 'r-nominal') { UI.nominal = t.checked; document.querySelector('.report-wrap').innerHTML = relatorioHTML(dadosPainel(true), UI.nominal); return; }
+  if (t.closest('#form-atend') || t.closest('#form-morador')) return;
+  campoRascunho(t);
+});
 function campoRascunho(t) {
   if (!S.rascunho || UI.tab !== 'novo') return;
   const r = S.rascunho;
   if (t.dataset.f) {
     const f = t.dataset.f;
-    if (t.type === 'checkbox') r[f] = t.checked;
-    else if (f === 'energia') r.energia = t.value === 'Sim';
-    else r[f] = t.value;
+    setPath(r, f, t.type === 'checkbox' ? t.checked : t.value);
     if (f === 'localidade') r.microarea = String(OP.localidades.indexOf(t.value) + 1).padStart(2, '0');
+    if (f.startsWith('comp.')) { const el = document.getElementById('comp-hint'); if (el) el.innerHTML = compHint(); }
   } else if (t.dataset.g) {
-    const g = t.dataset.g; const set = new Set(r[g]);
-    t.checked ? set.add(t.value) : set.delete(t.value); r[g] = [...set];
+    const g = t.dataset.g; let set = new Set(r[g]);
+    if (t.checked) { if (t.value === 'Nenhum') set = new Set(['Nenhum']); else { set.delete('Nenhum'); set.add(t.value); } } else set.delete(t.value);
+    const mudou = (t.value === 'Nenhum' && t.checked && r[g].length > 0) || (t.value !== 'Nenhum' && r[g].includes('Nenhum'));
+    r[g] = [...set];
+    if (mudou) { const y = window.scrollY; render(); window.scrollTo(0, y); }
   }
   salvar();
 }
@@ -1066,25 +1532,40 @@ document.addEventListener('submit', e => {
   if (f.id === 'form-morador') {
     const fd = new FormData(f);
     const cond = fd.getAll('condicoes');
-    const vac = fd.get('vacina');
+    const nasc = fd.get('nascimento');
+    const crianca = nasc && idade(nasc) < 12;
     const m = {
-      id: uid(), nome: (fd.get('nome') || '').trim(), sexo: fd.get('sexo'), nascimento: fd.get('nascimento'), parentesco: fd.get('parentesco'),
-      raca: fd.get('raca'), cns: (fd.get('cns') || '').replace(/\D/g, ''), escolaridade: fd.get('escolaridade'), ocupacao: fd.get('ocupacao'),
-      condicoes: cond, gestacao: cond.includes('Gestante') ? { semanas: Number(fd.get('semanas')) || 0, preNatal: fd.get('preNatal') === 'Sim' } : null,
-      vacinaEmDia: vac === 'Em dia' ? true : vac === 'Atrasada' ? false : null, beneficios: fd.getAll('beneficios')
+      id: uid(), nome: (fd.get('nome') || '').trim(), sexo: fd.get('sexo'), nascimento: nasc, parentesco: fd.get('parentesco'),
+      cns: (fd.get('cns') || '').replace(/\D/g, ''), cpf: (fd.get('cpf') || '').replace(/\D/g, ''),
+      raca: fd.get('raca'), escolaridade: fd.get('escolaridade'), alfabetizado: fd.get('alfabetizado') === 'Sim' ? true : fd.get('alfabetizado') === 'Não' ? false : null,
+      ocupacao: fd.get('ocupacao'), beneficios: fd.getAll('beneficios'), condicoes: cond,
+      semanas: cond.includes('Gestante') ? (Number(fd.get('semanas')) || null) : null, outraCondicao: cond.includes('Outra') ? fd.get('outraCondicao') : '',
+      vacina: fd.get('vacina') || '', caderneta: crianca ? (fd.get('caderneta') || null) : null,
+      medUsa: fd.get('medUsa') === 'Sim', medQual: fd.get('medUsa') === 'Sim' ? fd.get('medQual') : ''
     };
     const i = f.dataset.i;
     if (i !== '') { m.id = S.rascunho.moradores[i].id; S.rascunho.moradores[i] = m; } else S.rascunho.moradores.push(m);
-    salvar(); fecharSheet(); render(); toast(m.nome.split(' ')[0] + ' adicionado(a)');
+    if (m.parentesco === 'Responsável' && !S.rascunho.responsavelNome) S.rascunho.responsavelNome = m.nome;
+    salvar(); fecharSheet(); render(); toast(m.nome.split(' ')[0] + ' salvo(a) no cadastro');
     return;
   }
-  if (f.id === 'form-visita') {
+  if (f.id === 'form-atend') {
     const fd = new FormData(f);
-    const d = S.domicilios.find(x => x.id === f.dataset.id);
-    d.visitas.push({ id: uid(), data: new Date().toISOString(), motivo: fd.get('motivo'), desfecho: fd.get('desfecho'), obs: fd.get('obs'), por: S.perfil ? S.perfil.nome : 'Equipe' });
-    d.status = 'pendente'; d.tipoPendente = d.tipoPendente === 'Novo cadastro' ? 'Novo cadastro' : 'Visita registrada'; d.atualizadoEm = new Date().toISOString();
-    salvar(); fecharSheet(); render();
-    toast(S.online ? 'Visita salva. Toque em Enviar agora para subir.' : 'Visita salva no aparelho. Será enviada quando houver internet.');
+    const d = S.domicilios.find(x => x.id === f.dataset.d);
+    const nomes = fd.getAll('med_nome'), qtds = fd.getAll('med_qtd');
+    const dataSel = fd.get('data'); const agora = new Date();
+    const quando = dataSel ? new Date(dataSel + 'T' + agora.toTimeString().slice(0, 8)) : agora;
+    const at = {
+      id: uid(), moradorId: f.dataset.m, data: quando.toISOString(), profTipo: fd.get('profTipo'), profNome: fd.get('profNome') || 'Profissional',
+      queixa: fd.get('queixa'), pas: num(fd.get('pas')), pad: num(fd.get('pad')), fc: num(fd.get('fc')), temp: num(fd.get('temp')), glic: num(fd.get('glic')), sat: num(fd.get('sat')),
+      peso: num(fd.get('peso')), altura: num(fd.get('altura')), hipotese: fd.get('hipotese'), cid: fd.get('cid'), conduta: fd.get('conduta'),
+      meds: nomes.map((n, k) => ({ nome: n.trim(), qtd: Number(qtds[k]) || 1 })).filter(x => x.nome), exames: fd.get('exames'),
+      encaminhamento: fd.get('encSim') === 'Sim' ? { sim: true, destino: fd.get('encDestino') || 'A definir', urgencia: fd.get('encUrg') } : { sim: false },
+      retorno: fd.get('retSim') === 'Sim' ? { sim: true, dias: num(fd.get('retDias')) } : { sim: false }
+    };
+    d.atendimentos.push(at); marcarPend(d, null, 1); salvar(); render();
+    abrirMorador(d.id, at.moradorId);
+    toast(S.online ? 'Atendimento salvo. Pronto para enviar.' : 'Atendimento salvo no aparelho. Será enviado quando houver internet.');
   }
 });
 
@@ -1093,25 +1574,27 @@ function salvarDom() {
   if (falta.length) { toast('Complete os campos indicados antes de salvar'); return; }
   if (!r.consentimento) { toast('Marque a autorização da família para salvar'); return; }
   const agora = new Date().toISOString();
+  const base = { ...r, comodos: Number(r.comodos) || 1, pessoasComBeneficio: Number(r.pessoasComBeneficio) || r.moradores.filter(m => m.beneficios.length).length, posto: { ...r.posto, km: num(r.posto.km) } };
+  let id;
   if (r.id) {
     const i = S.domicilios.findIndex(d => d.id === r.id);
-    const d = { ...r, comodos: Number(r.comodos) || 1, animais: Number(r.animais) || 0, status: 'pendente', tipoPendente: S.domicilios[i].tipoPendente === 'Novo cadastro' ? 'Novo cadastro' : 'Atualização de cadastro', atualizadoEm: agora, versao: (r.versao || 1) + 1 };
-    S.domicilios[i] = d;
+    S.domicilios[i] = { ...base, versao: (r.versao || 1) + 1 };
+    marcarPend(S.domicilios[i], 'Atualização de cadastro'); id = r.id;
   } else {
-    const n = S.domicilios.length + 1;
-    S.domicilios.unshift({ ...r, id: uid(), codigo: 'DOM-' + String(n).padStart(4, '0'), comodos: Number(r.comodos) || 1, animais: Number(r.animais) || 0, status: 'pendente', tipoPendente: 'Novo cadastro', criadoEm: agora, atualizadoEm: agora, versao: 1, visitas: [{ id: uid(), data: agora, motivo: 'Atualização de cadastro', desfecho: 'Realizada', obs: r.observacoes || 'Cadastro inicial em campo', por: S.perfil ? S.perfil.nome : 'Equipe' }] });
+    id = uid();
+    const d = { ...base, id, codigo: 'FAM-' + String(S.domicilios.length + 1).padStart(4, '0'), criadoEm: agora, atualizadoEm: agora, versao: 1, pend: null, atendimentos: [] };
+    marcarPend(d, 'Nova família'); S.domicilios.unshift(d);
   }
-  S.rascunho = null; UI.passo = 0; UI.tab = 'inicio'; salvar(); render(); window.scrollTo(0, 0);
-  toast(S.online ? 'Domicílio salvo. Pronto para enviar.' : 'Domicílio salvo no aparelho. Será enviado quando houver internet.');
+  S.rascunho = null; UI.passo = 0; UI.tab = 'familias'; salvar(); render(); window.scrollTo(0, 0);
+  abrirDom(id);
+  toast('Família salva no aparelho. Agora registre o atendimento de cada morador.');
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharSheet(); });
 
-/* PWA: permite abrir o app sem internet depois do primeiro acesso (quando servido por http/https). */
-if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-  try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) { /* ambiente sem suporte */ }
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !EMBUTIDO) {
+  try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) { /* sem suporte */ }
 }
-
 render();
 </script>
 </body>

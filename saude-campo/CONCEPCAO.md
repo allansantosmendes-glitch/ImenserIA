@@ -28,50 +28,87 @@ viram um diagnóstico do território e relatórios agregados (sem nomes) para os
 | Coordenador(a) da missão | Acompanha equipes, exporta relatórios | Todas as equipes da missão |
 | Gestor externo (Secretaria / DSEI) | Recebe relatórios | **Somente números agregados** |
 
-## 3. O dia a dia no app (fluxo representado no protótipo)
+## 3. O dia a dia no app (fluxo do protótipo)
 
-1. **Entrar com PIN** — o primeiro acesso exige internet (baixa equipe, território e
-   listas). Depois, o PIN libera o app offline.
-2. **Início** — estado da conexão, quantos registros estão guardados no aparelho, meta de
-   visitas do dia e a lista de **alertas** (gestante sem pré-natal, criança com vacina
-   atrasada, idoso acamado, hipertenso + diabético, água sem tratamento com criança < 5 anos).
-3. **Famílias** — busca por nome, código ou localidade; filtros (aguardando envio,
-   prioridade, gestante, benefício, crônicos). Ficha da família com moradores, domicílio
-   e histórico de visitas.
-4. **Cadastrar domicílio** em 4 passos, com rascunho salvo automaticamente:
-   1. *Domicílio*: localidade, endereço, ponto de referência, **GPS** (funciona sem
-      internet), situação do imóvel, material, cômodos, energia, água, tratamento da água,
-      esgoto, lixo.
-   2. *Moradores*: cadastro individual (nome, nascimento, sexo, CNS/CPF, parentesco,
-      raça/cor, escolaridade, ocupação, condições de saúde, gestação e pré-natal,
-      vacinação, benefícios individuais).
-   3. *Renda e benefícios*: faixa de renda familiar, Bolsa Família, Auxílio Gás, Tarifa
-      Social etc.
-   4. *Revisão + consentimento* da família (LGPD).
-5. **Registrar visita** em uma família já cadastrada (motivo, desfecho, observações).
-6. **Sincronizar** — fila de envio, envio com barra de progresso e histórico.
-7. **Painel** — domicílios, pessoas, média por casa, pirâmide etária, condições de saúde,
-   saneamento, benefícios e renda, filtrável por localidade.
-8. **Relatório para a Secretaria** — tabela agregada por localidade (CSV), sem nomes.
+**Tela inicial → Nova família → domicílio → moradores → “Novo atendimento” para cada morador.**
+Na tela inicial há busca pelo nome do responsável ou de qualquer morador para voltar a uma
+família já cadastrada.
 
-## 4. Dados coletados (modelo inicial)
+1. **Entrar com PIN**: o primeiro acesso exige internet; depois o app abre offline.
+2. **Início**: busca, “Nova família”, estado da conexão e da fila, atendimentos do dia,
+   alertas (encaminhamento urgente, sinais vitais críticos, criança com vacina atrasada,
+   gestante sem atendimento, acamado, água sem tratamento com criança < 5 anos).
+3. **Nova família** em 5 passos, com rascunho salvo automaticamente:
+   Família → Moradia → Renda e acesso → Moradores → Revisão + consentimento.
+4. **Ficha da família**: composição, alertas, moradores (cada um com botão **Atender**),
+   dados do domicílio e últimos atendimentos.
+5. **Novo atendimento** (por morador): sinais vitais com alertas automáticos, IMC
+   calculado na hora, curva de IMC para idade em crianças e adolescentes, CID-10 com busca
+   offline, medicamentos entregues, exames, encaminhamento e retorno.
+6. **Sincronizar**: fila de envio por família (cadastro + atendimentos) e histórico.
+7. **Painel** (calculado no aparelho, funciona offline) com filtros por comunidade e por
+   data, e o botão **Gerar relatório em PDF** para a Secretaria de Saúde.
 
-Os campos seguem a lógica das fichas do **e-SUS APS** (Cadastro Domiciliar e Territorial
-e Cadastro Individual), para facilitar a conversa e, no futuro, a integração com o
-Ministério.
+## 4. Telas e campos
 
-- **domicilio**: id (UUID gerado no celular), código, equipe, localidade, microárea,
-  endereço, referência, latitude/longitude/precisão, situação, material, cômodos,
-  energia, animais, água, tratamento, esgoto, lixo, renda, benefícios familiares,
-  consentimento, versão, criado_em, atualizado_em, criado_por.
-- **morador**: id, domicilio_id, nome, nascimento, sexo, CNS/CPF, parentesco, raça/cor,
-  escolaridade, ocupação, condições (lista), gestação (semanas, pré-natal), vacinação,
-  benefícios individuais.
-- **visita**: id, domicilio_id, data, motivo, desfecho, observação, profissional.
-- **equipe**, **profissional**, **localidade**: cadastros de apoio.
+### 4.1 Domicílio (censo da casa)
+- Comunidade/localidade, ponto de referência, GPS
+- Nome do responsável pela família
+- Número de moradores: total, crianças 0–11, adolescentes 12–17, adultos 18–59, idosos 60+
+  (o app confere se a soma bate com o total)
+- Tipo de moradia (palafita, madeira, alvenaria, outro), número de cômodos
+- Energia elétrica (sim, não, gerador, solar)
+- Água: origem (rio, poço, chuva, rede, outro) e tratamento (fervida, filtrada, clorada, sem tratamento)
+- Esgoto/banheiro (fossa, a céu aberto, rio, banheiro com descarga, sem banheiro)
+- Destino do lixo (queimado, enterrado, jogado no rio/mato, coletado)
+- Animais em casa (cão, gato, outros, nenhum)
+- Renda familiar aproximada (faixas de salário mínimo)
+- Benefícios recebidos pela família, vários ao mesmo tempo (Bolsa Família, BPC/LOAS,
+  aposentadoria, pensão, seguro-defeso, outro, nenhum) e quantas pessoas recebem algum
+- Acesso a posto de saúde (sim/não), distância em km, tempo e meio de transporte
 
-> Antes de programar, vale fechar esta lista com a Secretaria de Saúde local: o que ela
-> realmente precisa receber e em qual formato.
+### 4.2 Morador (vários por domicílio)
+- Nome, data de nascimento (idade calculada automaticamente), sexo
+- CNS e/ou CPF (opcionais)
+- Parentesco com o responsável
+- Raça/cor (padrão IBGE), escolaridade, sabe ler/escrever
+- Ocupação; benefício individual (qual)
+- Condições: gestante (semanas), hipertensão, diabetes, doença respiratória, tuberculose,
+  hanseníase, malária recente, verminose, deficiência, saúde mental, álcool/tabaco,
+  acamado, outra (qual)
+- Vacinação em dia (sim/não/não sabe); para crianças, se tem caderneta
+- Uso contínuo de medicamento (qual)
+
+### 4.3 Atendimento (vários por morador)
+- Data, tipo de profissional (médico, enfermeiro, dentista, outro) e nome
+- Queixa principal
+- Sinais vitais: PA, FC, temperatura, glicemia capilar, saturação (com alertas)
+- Peso, altura, IMC automático; em menores de 19 anos, classificação e curva de IMC para idade
+- Hipótese diagnóstica + CID-10 opcional com busca (lista offline dos códigos mais comuns)
+- Conduta, medicamentos entregues (nome + quantidade), exames solicitados
+- Encaminhamento (sim/não, para onde, urgência: eletivo, prioritário, urgente)
+- Retorno/acompanhamento (sim/não, em quantos dias)
+
+> No protótipo, a curva de IMC usa valores aproximados da referência da OMS. A versão
+> final deve usar as tabelas oficiais completas (escores-z por idade e sexo).
+
+### 4.4 Painel e relatórios (offline)
+- Totais de famílias, moradores e atendimentos
+- Pirâmide etária; gestantes, hipertensos, diabéticos, crianças < 5 anos
+- % de casas sem água tratada, sem banheiro, sem energia e sem acesso a posto
+- Famílias e pessoas por benefício do governo
+- Lista de pessoas que precisam de encaminhamento ou retorno
+- Filtros por comunidade e por data
+- **Gerar relatório em PDF** com esses números. Por padrão sem nomes; a lista nominal de
+  encaminhamentos só entra se a equipe marcar a opção, para entrega direta à regulação.
+
+### 4.5 Modelo de dados (tabelas)
+- **familia** (domicílio): campos de 4.1 + id (UUID gerado no celular), código, equipe,
+  versão, criado_em, atualizado_em, criado_por.
+- **morador**: campos de 4.2 + familia_id.
+- **atendimento**: campos de 4.3 + morador_id, familia_id, profissional_id.
+- **medicamento_entregue**: atendimento_id, nome, quantidade.
+- **equipe**, **profissional**, **localidade**, **cid10**: cadastros de apoio.
 
 ## 5. Como funciona offline (arquitetura proposta)
 

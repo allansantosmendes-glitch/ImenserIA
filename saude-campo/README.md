@@ -18,11 +18,14 @@ Acesse `http://localhost:8000`. No celular, use "Adicionar à tela inicial".
 
 ## O que dá para testar
 
-- Entrar com PIN (simulado) e ver o resumo do dia, alertas e registros de hoje.
-- Buscar e filtrar famílias; abrir a ficha completa e registrar uma visita.
-- Cadastrar um domicílio novo em 4 passos (com GPS simulado e consentimento).
+- Entrar com PIN (simulado); buscar família pelo nome do responsável ou morador.
+- **Nova família** em 5 passos: família e composição, moradia e saneamento, renda,
+  benefícios e acesso ao posto, moradores, revisão com consentimento.
+- Na ficha da família, **Atender** cada morador: sinais vitais com alertas, IMC
+  automático (com curva para crianças), CID-10 com busca, medicamentos, encaminhamento e retorno.
 - Ligar/desligar a "internet" no botão Offline/Online e sincronizar a fila.
-- Ver o painel do território e gerar o relatório agregado para a Secretaria.
+- **Painel** com filtros por comunidade e data, lista de encaminhamentos/retornos e
+  **Gerar relatório em PDF** (abre o "Salvar como PDF" do navegador).
 - "Sobre o projeto" → "Restaurar dados de exemplo" volta ao estado inicial.
 
 A concepção completa está em [`CONCEPCAO.md`](CONCEPCAO.md).
