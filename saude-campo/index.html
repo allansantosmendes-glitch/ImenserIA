@@ -5,30 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Saúde em Campo</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="theme-color" content="#1E6B4E">
+<meta name="theme-color" content="#0C371D">
+<link rel="icon" href="marca/icone-192.png">
+<link rel="apple-touch-icon" href="marca/icone-192.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 /* Layout: app de campo — barra superior com estado da conexão, conteúdo em coluna única
    no celular; no computador a navegação vira um trilho lateral. Paleta "mata e rio". */
+/* Paleta tirada dos logos: verde-mata e dourado da Ação Missionária Norte (Pará),
+   creme das letras, laranja da MUB como segundo destaque. */
 :root {
-  --bg: #F1F5F0;
+  --bg: #F7F4EA;
   --surface: #FFFFFF;
-  --surface-2: #E6EDE5;
-  --ink: #13261F;
-  --muted: #56675E;
-  --line: #D2DCD3;
-  --primary: #1E6B4E;
+  --surface-2: #EEEADD;
+  --ink: #13231A;
+  --muted: #5B675E;
+  --line: #DDD8C8;
+  --primary: #17603A;
   --primary-ink: #FFFFFF;
-  --primary-soft: #D7EADD;
+  --primary-soft: #DCECDF;
+  --brand-dark: #0C371D;
+  --brand-ink: #F8F1DC;
+  --gold: #FDB413;
+  --gold-ink: #1D1806;
+  --orange: #FA850E;
   --river: #2A6A8C;
   --river-soft: #D6E7F0;
-  --sun: #B97A0E;
-  --sun-soft: #FBEBC9;
+  --sun: #A9640A;
+  --sun-soft: #FCE8C4;
   --danger: #B23E2C;
   --danger-soft: #F6DDD7;
-  --shadow: 0 1px 2px rgba(19,38,31,.06), 0 8px 24px rgba(19,38,31,.08);
+  --shadow: 0 1px 2px rgba(12,55,29,.06), 0 8px 24px rgba(12,55,29,.09);
   --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
   --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
@@ -36,17 +45,19 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0E1613; --surface: #16211C; --surface-2: #1E2B25; --ink: #E5EEE8; --muted: #9AACA2;
-    --line: #2A3A32; --primary: #5CC497; --primary-ink: #08170F; --primary-soft: #1C3A2C;
-    --river: #74B6D8; --river-soft: #17303D; --sun: #F0B54C; --sun-soft: #3A2D12;
+    --bg: #0C1510; --surface: #14211A; --surface-2: #1C2C23; --ink: #EEEADC; --muted: #A4AF9F;
+    --line: #2A3B30; --primary: #5FC48F; --primary-ink: #07170E; --primary-soft: #1A3A28;
+    --brand-dark: #08251A; --brand-ink: #F8F1DC; --gold: #FDB92B; --gold-ink: #1D1806; --orange: #FB9534;
+    --river: #74B6D8; --river-soft: #17303D; --sun: #F3B54A; --sun-soft: #3A2C10;
     --danger: #EF8A75; --danger-soft: #3E201A; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0E1613; --surface: #16211C; --surface-2: #1E2B25; --ink: #E5EEE8; --muted: #9AACA2;
-  --line: #2A3A32; --primary: #5CC497; --primary-ink: #08170F; --primary-soft: #1C3A2C;
-  --river: #74B6D8; --river-soft: #17303D; --sun: #F0B54C; --sun-soft: #3A2D12;
+  --bg: #0C1510; --surface: #14211A; --surface-2: #1C2C23; --ink: #EEEADC; --muted: #A4AF9F;
+  --line: #2A3B30; --primary: #5FC48F; --primary-ink: #07170E; --primary-soft: #1A3A28;
+  --brand-dark: #08251A; --brand-ink: #F8F1DC; --gold: #FDB92B; --gold-ink: #1D1806; --orange: #FB9534;
+  --river: #74B6D8; --river-soft: #17303D; --sun: #F3B54A; --sun-soft: #3A2C10;
   --danger: #EF8A75; --danger-soft: #3E201A; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
   color-scheme: dark;
 }
@@ -71,14 +82,14 @@ svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-widt
 .app { min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
 .topbar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
-  background: var(--primary); color: var(--primary-ink);
-  padding-block: 10px;
+  background: var(--brand-dark); color: var(--brand-ink); border-bottom: 3px solid var(--gold);
+  padding-block: 9px;
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: flex; align-items: center; gap: 12px;
 }
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--primary); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--brand-dark); }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-.brand-mark { width: 32px; height: 32px; border-radius: 9px; background: var(--primary-ink); color: var(--primary); display: grid; place-items: center; flex: none; }
+.brand-mark { width: 32px; height: 32px; border-radius: 9px; background: var(--brand-ink); color: var(--brand-dark); display: grid; place-items: center; flex: none; }
 .brand-mark svg { width: 20px; height: 20px; stroke-width: 2.2; }
 .brand b { font-family: var(--f-display); font-weight: 800; font-size: 1.08rem; display: block; line-height: 1.1; }
 .brand small { opacity: .82; font-size: .78rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -113,7 +124,7 @@ nav.tabs button {
   font-size: .72rem; color: var(--muted); position: relative;
 }
 nav.tabs button[aria-current="page"] { color: var(--primary); font-weight: 700; }
-nav.tabs button.novo span.plus { width: 46px; height: 46px; margin-top: -22px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); display: grid; place-items: center; box-shadow: var(--shadow); }
+nav.tabs button.novo span.plus { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); border: 3px solid var(--surface); display: grid; place-items: center; box-shadow: var(--shadow); }
 nav.tabs .badge { position: absolute; top: 4px; left: calc(50% + 6px); }
 .badge { background: var(--sun); color: var(--surface); border-radius: 999px; font-size: .68rem; font-weight: 700; padding: 1px 6px; line-height: 1.4; }
 nav.tabs .extra { display: none; }
@@ -173,7 +184,7 @@ nav.tabs .extra { display: none; }
 .progress > i { display: block; height: 100%; background: var(--primary); border-radius: inherit; transition: width .3s ease; }
 .quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
 .quick button { text-align: left; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); }
-.quick button.main { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+.quick button.main { background: var(--brand-dark); color: var(--brand-ink); border-color: var(--brand-dark); box-shadow: inset 0 -4px 0 var(--gold); }
 .quick button b { font-size: 1rem; }
 .quick button small { opacity: .8; font-size: .8rem; }
 
@@ -285,7 +296,7 @@ dl.review dd { margin: 0; min-width: 0; }
 @media (min-width: 720px) { .scrim { align-items: center; } .sheet { border-radius: 20px; max-height: 86vh; } }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 12px; font-size: .92rem; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 @media (min-width: 900px) { .toast { bottom: 24px; } }
-.login { position: fixed; inset: 0; z-index: 80; background: var(--primary); color: var(--primary-ink); overflow: auto; display: grid; place-items: center; padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.login { position: fixed; inset: 0; z-index: 80; background: var(--brand-dark); color: var(--brand-ink); border-top: 4px solid var(--gold); overflow: auto; display: grid; place-items: center; padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .login .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 18px; }
 .login .card { color: var(--ink); }
 .login h1 { font-size: 2.2rem; }
@@ -328,18 +339,17 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 .med-quick button:hover { border-style: solid; color: var(--ink); }
 .evolucao p { margin-top: 8px; white-space: normal; line-height: 1.6; }
 #a-evol { min-height: 180px; }
-.mono-mark { position: relative; overflow: hidden; }
-.mono-mark span { font-family: var(--f-display); font-weight: 800; font-size: .7rem; letter-spacing: .02em; }
-.mono-mark img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--primary-ink); padding: 2px; }
-.brand-mark.big { width: 56px; height: 56px; border-radius: 16px; }
-.brand-mark.big span { font-size: 1.1rem; }
-.login-brand { display: flex; align-items: center; gap: 14px; }
+.brand b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-mark.logos { width: auto; height: 38px; background: none; border-radius: 0; display: flex; gap: 4px; }
+.logos img { height: 100%; width: auto; aspect-ratio: 1; object-fit: contain; }
+.brand-mark.big.logos { height: 84px; gap: 10px; }
+@media (max-width: 439px) { .net .net-txt { display: none; } .net { padding: 7px; } }
+@media (max-width: 479px) { .topbar .brand-mark.logos { height: 32px; gap: 3px; } .brand { gap: 8px; } }
+.login-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .login-brand b { display: block; font-family: var(--f-display); font-size: 1.05rem; line-height: 1.2; }
-.login-brand > div span { opacity: .85; font-size: .9rem; }
+.login-brand > div span { color: var(--gold); font-size: .95rem; font-weight: 700; }
 .report .r-org { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.report .r-mark { width: 40px; height: 40px; border-radius: 10px; background: #1E6B4E; color: #FFFFFF; display: grid; place-items: center; flex: none; }
-.report .r-mark span { font-size: .78rem; }
-.report .r-mark img { background: #FFFFFF; }
+.report .r-mark { height: 52px; display: flex; gap: 6px; flex: none; }
 .report .r-org b { display: block; font-size: .95rem; color: #1B1F1D; }
 .report .r-org div span { font-size: .8rem; color: #5A645F; }
 .linkish { background: none; border: 0; padding: 0; text-align: left; min-width: 0; display: block; }
@@ -350,9 +360,9 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 /* Relatório: folha branca deliberada (papel), igual nos dois temas */
 .report-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
 .report { background: #FFFFFF; color: #1B1F1D; padding: 28px 26px; font: 13px/1.45 var(--f-body); min-width: 520px; }
-.report header { border-bottom: 3px solid #1E6B4E; padding-bottom: 12px; margin-bottom: 14px; }
+.report header { border-bottom: 3px solid #FDB413; padding-bottom: 12px; margin-bottom: 14px; }
 .report h1 { font-size: 1.45rem; color: #1B1F1D; }
-.report h2 { font-size: 1rem; margin: 16px 0 6px; color: #1E6B4E; }
+.report h2 { font-size: 1rem; margin: 16px 0 6px; color: #17603A; }
 .report .r-eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #5A645F; font-weight: 700; }
 .report p { color: #3B4440; }
 .report table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
@@ -401,9 +411,12 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
    Todos os dados são gerados de forma fictícia. A versão real
    guardará tudo em IndexedDB e sincronizará com o Supabase.
    ========================================================= */
-/* Identidade da organização. Para trocar o logo, coloque o arquivo em marca/logo.png.
+/* Identidade da organização. Os logos ficam na pasta marca/.
    Para trocar as cores, edite --primary (e as demais cores) no topo do <style>. */
-const MARCA = { sigla: 'MUB', nome: 'MUB – Missões Urbanas Brazil', programa: 'Ação Missionária', logo: 'marca/logo.png' };
+const MARCA = {
+  nome: 'MUB – Missões Urbanas Brazil', programa: 'Ação Missionária Norte · Pará',
+  logos: [{ src: 'marca/acao-missionaria-norte.png', alt: 'Ação Missionária Norte · Pará' }, { src: 'marca/mub.png', alt: 'MUB – Missões Urbanas Brazil' }]
+};
 const HOJE = new Date();
 const LS_KEY = 'saudecampo-prototipo-v2';
 const META_DIA = 12;
@@ -430,7 +443,7 @@ const ICON = {
 };
 function marcaHTML(cls, extra = '') {
   if (!MARCA) return `<span class="${cls}" ${extra} aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>`;
-  return `<span class="${cls} mono-mark" ${extra} aria-hidden="true"><span>${h(MARCA.sigla)}</span>${MARCA.logo ? `<img src="${h(MARCA.logo)}" alt="" onload="this.parentNode.classList.add('has-logo')" onerror="this.remove()">` : ''}</span>`;
+  return `<span class="${cls} logos" ${extra}>${MARCA.logos.map(l => `<img src="${h(l.src)}" alt="${h(l.alt)}" onerror="this.remove()">`).join('')}</span>`;
 }
 const ico = (n, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 const h = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -748,7 +761,8 @@ function render() {
     </button>`).join('');
   const pill = document.getElementById('net-pill');
   pill.className = 'net ' + (S.online ? 'on' : 'off');
-  pill.innerHTML = S.online ? `${ico('wifi')} Online` : `${ico('wifiOff')} Offline`;
+  pill.innerHTML = S.online ? `${ico('wifi')}<span class="net-txt">Online</span>` : `${ico('wifiOff')}<span class="net-txt">Offline</span>`;
+  pill.setAttribute('aria-label', (S.online ? 'Online' : 'Offline') + ': tocar para simular a conexão');
   document.getElementById('sub-equipe').textContent = [MARCA && MARCA.programa, S.perfil ? S.perfil.equipe : 'Atenção primária'].filter(Boolean).join(' · ');
   const bm = document.getElementById('brand-mark'); if (bm && !bm.dataset.ok) bm.outerHTML = marcaHTML('brand-mark', 'id="brand-mark" data-ok="1"');
   const views = { inicio: vInicio, familias: vFamilias, novo: vNovo, sync: vSync, painel: vPainel, projeto: vProjeto };
@@ -1385,7 +1399,7 @@ function relatorioHTML(I, nominal) {
   const tl = (l, v, p) => `<tr><td>${h(l)}</td><td>${v}</td>${p != null ? `<td>${p}%</td>` : '<td></td>'}</tr>`;
   return `<article class="report">
     <header>${MARCA ? `<div class="r-org">${marcaHTML('r-mark')}<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div></div>` : ''}<div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(UI.local === 'Todas' ? 'Todas as comunidades atendidas' : UI.local)}</h1>
-      <p>${h(S.perfil ? S.perfil.equipe : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
+      <p>${h(S.perfil ? (MARCA ? MARCA.programa + ' · ' : '') + S.perfil.equipe : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
     <section><h2>Resumo</h2><table><tbody>
       ${tl('Famílias cadastradas', I.familias)}${tl('Moradores', I.moradores)}${tl('Atendimentos no período', I.atendimentos)}
       ${tl('Crianças menores de 5 anos', I.menores5, pct(I.menores5, I.moradores))}${tl('Pessoas com 60 anos ou mais', I.idosos, pct(I.idosos, I.moradores))}
@@ -1457,7 +1471,7 @@ function abrirLogin() {
     <form class="card stack" id="form-login">
       <div class="field"><label for="l-nome">Profissional</label><input id="l-nome" type="text" value="Dra. Ana Ribeiro"></div>
       <div class="field"><label for="l-perfil">Perfil</label><select id="l-perfil"><option>Médico(a)</option><option>Enfermeiro(a)</option><option>Dentista</option><option>Missionário(a) / agente</option><option>Coordenador(a)</option></select></div>
-      <div class="field"><label for="l-eq">Equipe</label><select id="l-eq"><option>Missão Rio Purus · Equipe 1</option><option>Missão Rio Purus · Equipe 2</option></select></div>
+      <div class="field"><label for="l-eq">Equipe</label><select id="l-eq"><option>Equipe 1</option><option>Equipe 2</option><option>Equipe 3</option></select></div>
       <div class="field"><label for="l-pin">PIN do aparelho</label><input id="l-pin" type="password" inputmode="numeric" value="2468" maxlength="6"><span class="hint">No primeiro acesso é preciso internet. Depois, o PIN libera o app offline.</span></div>
       <button class="btn primary block" type="submit">Entrar</button>
     </form>

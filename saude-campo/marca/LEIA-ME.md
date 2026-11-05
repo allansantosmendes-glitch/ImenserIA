@@ -1,9 +1,11 @@
-# Identidade visual (MUB · Ação Missionária)
+# Identidade visual
 
-- **Logo:** salve o logo da MUB como `logo.png` nesta pasta (de preferência quadrado,
-  fundo transparente ou branco, 512×512 px). Ele aparece no topo do app, na tela de entrada
-  e no cabeçalho do relatório em PDF. Sem o arquivo, o app mostra a sigla "MUB".
-- **Nome:** fica no começo do script em `index.html`:
-  `const MARCA = { sigla: 'MUB', nome: 'MUB – Missões Urbanas Brazil', programa: 'Ação Missionária', ... }`
-- **Cores:** edite `--primary` (cor principal) e as demais cores no topo do `<style>` de
-  `index.html`. Há duas versões de cada cor: tema claro e tema escuro.
+- `acao-missionaria-norte.png`: logo da Ação Missionária Norte · Pará
+- `mub.png`: logo da MUB – Missões Urbanas Brazil
+- `icone-192.png`: ícone do app instalado na tela do celular
+
+Os nomes ficam no começo do script de `index.html` (`const MARCA = {...}`).
+As cores ficam no topo do `<style>` de `index.html`: verde-mata (`--brand-dark`,
+`--primary`) e dourado (`--gold`) tirados do logo da Ação Missionária, creme
+(`--brand-ink`) das letras e laranja da MUB (`--orange`). Cada cor tem versão para tema
+claro e escuro.
