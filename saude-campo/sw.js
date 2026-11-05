@@ -1,6 +1,7 @@
 // Service worker do protótipo: guarda o app no aparelho para abrir sem internet.
-const CACHE = 'saude-campo-v2';
+const CACHE = 'saude-campo-v3';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icon.svg'];
+// O logo (marca/logo.png) é guardado no primeiro acesso em que for carregado.
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(ARQUIVOS)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', e => {

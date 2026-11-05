@@ -68,7 +68,7 @@ button { cursor: pointer; }
 svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 
 /* ---------- Shell ---------- */
-.app { min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+.app { min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
 .topbar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
   background: var(--primary); color: var(--primary-ink);
@@ -318,8 +318,30 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 .cid-res { display: flex; flex-direction: column; gap: 4px; }
 .cid-res button { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 12px; }
 .cid-res button:hover { background: var(--surface-2); }
-.med-row { display: grid; grid-template-columns: 1fr 76px 40px; gap: 8px; align-items: center; }
-.med-row input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); min-height: 46px; min-width: 0; }
+.med-row { display: grid; grid-template-columns: 1fr 96px 40px; grid-template-areas: "nome qtd rm" "pos pos pos"; gap: 8px 10px; align-items: end; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.med-row .med-nome { grid-area: nome; } .med-row .med-qtd { grid-area: qtd; } .med-row .med-pos { grid-area: pos; } .med-row .med-rm { grid-area: rm; align-self: end; margin-bottom: 4px; }
+.med-row label { font-size: .8rem !important; }
+.med-row input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); min-height: 46px; min-width: 0; }
+@media (max-width: 479px) { .med-row { grid-template-columns: 1fr 40px; grid-template-areas: "nome rm" "qtd qtd" "pos pos"; } }
+.med-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.med-quick button { border: 1px dashed var(--line); background: transparent; border-radius: 999px; padding: 5px 11px; font-size: .8rem; color: var(--muted); }
+.med-quick button:hover { border-style: solid; color: var(--ink); }
+.evolucao p { margin-top: 8px; white-space: normal; line-height: 1.6; }
+#a-evol { min-height: 180px; }
+.mono-mark { position: relative; overflow: hidden; }
+.mono-mark span { font-family: var(--f-display); font-weight: 800; font-size: .7rem; letter-spacing: .02em; }
+.mono-mark img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--primary-ink); padding: 2px; }
+.brand-mark.big { width: 56px; height: 56px; border-radius: 16px; }
+.brand-mark.big span { font-size: 1.1rem; }
+.login-brand { display: flex; align-items: center; gap: 14px; }
+.login-brand b { display: block; font-family: var(--f-display); font-size: 1.05rem; line-height: 1.2; }
+.login-brand > div span { opacity: .85; font-size: .9rem; }
+.report .r-org { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.report .r-mark { width: 40px; height: 40px; border-radius: 10px; background: #1E6B4E; color: #FFFFFF; display: grid; place-items: center; flex: none; }
+.report .r-mark span { font-size: .78rem; }
+.report .r-mark img { background: #FFFFFF; }
+.report .r-org b { display: block; font-size: .95rem; color: #1B1F1D; }
+.report .r-org div span { font-size: .8rem; color: #5A645F; }
 .linkish { background: none; border: 0; padding: 0; text-align: left; min-width: 0; display: block; }
 .linkish:hover b { text-decoration: underline; }
 .member .btn.primary svg { width: 18px; height: 18px; }
@@ -357,7 +379,7 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 <div class="app">
   <header class="topbar">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>
+      <span class="brand-mark" id="brand-mark" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>
       <div><b>Saúde em Campo</b><small id="sub-equipe">Atenção primária · censo e atendimentos</small></div>
     </div>
     <button class="net off" id="net-pill" data-act="toggle-net" title="Simular conexão"></button>
@@ -379,6 +401,9 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
    Todos os dados são gerados de forma fictícia. A versão real
    guardará tudo em IndexedDB e sincronizará com o Supabase.
    ========================================================= */
+/* Identidade da organização. Para trocar o logo, coloque o arquivo em marca/logo.png.
+   Para trocar as cores, edite --primary (e as demais cores) no topo do <style>. */
+const MARCA = { sigla: 'MUB', nome: 'MUB – Missões Urbanas Brazil', programa: 'Ação Missionária', logo: 'marca/logo.png' };
 const HOJE = new Date();
 const LS_KEY = 'saudecampo-prototipo-v2';
 const META_DIA = 12;
@@ -403,6 +428,10 @@ const ICON = {
   back: '<path d="M15 5l-7 7 7 7"/>',
   doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>'
 };
+function marcaHTML(cls, extra = '') {
+  if (!MARCA) return `<span class="${cls}" ${extra} aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>`;
+  return `<span class="${cls} mono-mark" ${extra} aria-hidden="true"><span>${h(MARCA.sigla)}</span>${MARCA.logo ? `<img src="${h(MARCA.logo)}" alt="" onload="this.parentNode.classList.add('has-logo')" onerror="this.remove()">` : ''}</span>`;
+}
 const ico = (n, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
 const h = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -558,7 +587,8 @@ function gerarExemplo() {
       pas, pad, fc: ri(64, 104), temp: febre ? +(37.9 + r() * 1.6).toFixed(1) : +(36.1 + r() * 1).toFixed(1),
       glic: has('Diabetes') ? ri(130, 290) : chance(.4) ? ri(74, 118) : null, sat: has('Doença respiratória') ? ri(89, 96) : ri(95, 99),
       peso: +peso.toFixed(1), altura: Math.round(alt), hipotese: hip, cid, conduta,
-      meds: meds.map(([nome, qtd]) => ({ nome, qtd })), exames,
+      meds: meds.map(([nome, qtd]) => ({ nome, qtd, pos: qtd >= 28 ? '1 comprimido ao dia' : qtd === 1 ? 'Dose única' : 'Conforme orientação, se dor ou febre' })), exames,
+      evolucao: `Paciente refere: ${q.toLowerCase()}. Ao exame: bom estado geral, ${pas ? 'PA ' + pas + 'x' + pad + ' mmHg, ' : ''}corado e hidratado. Avaliação: ${hip.toLowerCase()}. Plano: ${conduta.charAt(0).toLowerCase() + conduta.slice(1)}`,
       encaminhamento: enc ? { sim: true, destino: cid === 'B54' ? 'Laboratório municipal' : cid === 'Z34' ? 'Maternidade' : pick(['Hospital regional', 'UBS da sede do município', 'Centro de especialidades']), urgencia: pas >= 170 ? 'Urgente' : pick(['Eletivo', 'Prioritário']) } : { sim: false },
       retorno: (hip_ || has('Diabetes') || has('Gestante')) ? { sim: chance(.75), dias: 30 } : chance(.18) ? { sim: true, dias: 15 } : { sim: false }
     };
@@ -719,7 +749,8 @@ function render() {
   const pill = document.getElementById('net-pill');
   pill.className = 'net ' + (S.online ? 'on' : 'off');
   pill.innerHTML = S.online ? `${ico('wifi')} Online` : `${ico('wifiOff')} Offline`;
-  if (S.perfil) document.getElementById('sub-equipe').textContent = S.perfil.equipe;
+  document.getElementById('sub-equipe').textContent = [MARCA && MARCA.programa, S.perfil ? S.perfil.equipe : 'Atenção primária'].filter(Boolean).join(' · ');
+  const bm = document.getElementById('brand-mark'); if (bm && !bm.dataset.ok) bm.outerHTML = marcaHTML('brand-mark', 'id="brand-mark" data-ok="1"');
   const views = { inicio: vInicio, familias: vFamilias, novo: vNovo, sync: vSync, painel: vPainel, projeto: vProjeto };
   document.getElementById('view').innerHTML = views[UI.tab]();
   if (!S.logado) abrirLogin();
@@ -935,11 +966,12 @@ function abrirAtendVer(dId, aId) {
         <dt>Peso / altura</dt><dd>${fmtNum(a.peso)} kg · ${a.altura ?? '—'} cm</dd>
         <dt>Hipótese</dt><dd>${h(a.hipotese || '—')}${a.cid ? ` · <span class="mono">${h(a.cid)}</span> ${h(cidNome(a.cid))}` : ''}</dd>
         <dt>Conduta</dt><dd>${h(a.conduta || '—')}</dd>
-        <dt>Medicamentos</dt><dd>${a.meds.length ? a.meds.map(x => h(x.nome) + ' (' + x.qtd + ')').join('<br>') : 'Nenhum'}</dd>
+        <dt>Medicamentos</dt><dd>${a.meds.length ? a.meds.map(x => '<b>' + h(x.nome) + '</b> · ' + x.qtd + (x.pos ? '<br><span class="muted">' + h(x.pos) + '</span>' : '')).join('<br>') : 'Nenhum'}</dd>
         <dt>Exames</dt><dd>${h(a.exames || 'Nenhum')}</dd>
         <dt>Encaminhamento</dt><dd>${a.encaminhamento.sim ? h(a.encaminhamento.destino) + ' · ' + h(a.encaminhamento.urgencia) : 'Não'}</dd>
         <dt>Retorno</dt><dd>${a.retorno.sim ? 'Sim' + (a.retorno.dias ? ', em ' + a.retorno.dias + ' dias' : '') : 'Não'}</dd>
       </dl></div>
+      <div class="card evolucao"><h3>Evolução médica</h3><p>${a.evolucao ? h(a.evolucao).replace(/\n/g, '<br>') : '<span class="muted">Sem evolução registrada.</span>'}</p></div>
     </div>`);
 }
 
@@ -1011,8 +1043,10 @@ function abrirAtendForm(dId, mId) {
         <div class="field"><label for="a-hip">Hipótese diagnóstica</label><input id="a-hip" name="hipotese" type="text" placeholder="Ex.: hipertensão descompensada"></div>
         <div class="field"><label for="cid-busca">CID-10 (opcional)</label><input id="cid-busca" type="search" placeholder="Busque por código ou nome, ex.: I10 ou malária" autocomplete="off"><input type="hidden" name="cid" id="a-cid"><div id="cid-res" class="cid-res"></div></div>
         <div class="field"><label for="a-cond">Conduta</label><textarea id="a-cond" name="conduta"></textarea></div>
-        <div class="field"><span class="lbl">Medicamentos entregues</span><div id="meds" class="stack" style="gap:8px">${medRow()}</div>
-          <button type="button" class="btn small" data-act="add-med" style="align-self:flex-start">${ico('plus')} Adicionar medicamento</button></div>
+        <div class="field"><span class="lbl">Medicamentos entregues</span><span class="hint">Escreva o nome do remédio ou toque em um dos mais usados.</span>
+          <div id="meds" class="stack" style="gap:10px">${medRow()}</div>
+          <div class="med-quick" aria-label="Remédios mais usados">${OP.meds.slice(0, 10).map(x => `<button type="button" data-act="med-pick" data-n="${h(x)}">${h(x)}</button>`).join('')}</div>
+          <button type="button" class="btn small" data-act="add-med" style="align-self:flex-start">${ico('plus')} Adicionar outro remédio</button></div>
         <div class="field"><label for="a-ex">Exames solicitados</label><input id="a-ex" name="exames" type="text" placeholder="Ex.: hemograma, gota espessa"></div>
       </fieldset>
       <fieldset><legend>Encaminhamento e retorno</legend>
@@ -1026,12 +1060,20 @@ function abrirAtendForm(dId, mId) {
           <div class="field"><label for="a-ret">Retorno em (dias)</label><input id="a-ret" name="retDias" type="number" inputmode="numeric" placeholder="30"></div>
         </div>
       </fieldset>
+      <fieldset><legend>Evolução médica</legend>
+        <div class="field"><label for="a-evol" class="muted" style="font-weight:400">Registro livre do atendimento: história, exame físico, avaliação e plano.</label>
+        <textarea id="a-evol" name="evolucao" rows="8" placeholder="Ex.: Paciente refere cefaleia há 3 dias, sem uso da medicação. Ao exame: BEG, corado, hidratado, PA 160x100. Avaliação: HAS descompensada por má adesão. Plano: reiniciar losartana, orientar dieta hipossódica, retorno em 30 dias."></textarea></div>
+      </fieldset>
       <datalist id="lista-destinos">${OP.destinos.map(x => `<option value="${h(x)}">`).join('')}</datalist>
       <datalist id="lista-meds">${OP.meds.map(x => `<option value="${h(x)}">`).join('')}</datalist>
       <button class="btn primary block" type="submit">${ico('check')} Salvar atendimento no aparelho</button>
     </form>`);
 }
-const medRow = () => `<div class="med-row"><input name="med_nome" type="text" list="lista-meds" placeholder="Medicamento e dose" aria-label="Medicamento"><input name="med_qtd" type="number" inputmode="numeric" placeholder="Qtd" aria-label="Quantidade"><button type="button" class="icon-btn" data-act="rm-med" aria-label="Remover medicamento">${ico('close')}</button></div>`;
+const medRow = () => `<div class="med-row">
+  <div class="field med-nome"><label>Nome do remédio</label><input name="med_nome" type="text" list="lista-meds" placeholder="Escreva o nome e a dose, ex.: Amoxicilina 500 mg" autocomplete="off"></div>
+  <div class="field med-qtd"><label>Quantidade</label><input name="med_qtd" type="number" inputmode="numeric" placeholder="Ex.: 21"></div>
+  <div class="field med-pos"><label>Como tomar</label><input name="med_pos" type="text" placeholder="Ex.: 1 comprimido de 8 em 8 horas por 7 dias"></div>
+  <button type="button" class="icon-btn med-rm" data-act="rm-med" aria-label="Remover remédio">${ico('close')}</button></div>`;
 function atualizarCalculosAtend() {
   const f = document.getElementById('form-atend'); if (!f) return;
   const v = n => num(f.elements[n].value);
@@ -1342,7 +1384,7 @@ function vPainel() {
 function relatorioHTML(I, nominal) {
   const tl = (l, v, p) => `<tr><td>${h(l)}</td><td>${v}</td>${p != null ? `<td>${p}%</td>` : '<td></td>'}</tr>`;
   return `<article class="report">
-    <header><div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(UI.local === 'Todas' ? 'Todas as comunidades atendidas' : UI.local)}</h1>
+    <header>${MARCA ? `<div class="r-org">${marcaHTML('r-mark')}<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div></div>` : ''}<div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(UI.local === 'Todas' ? 'Todas as comunidades atendidas' : UI.local)}</h1>
       <p>${h(S.perfil ? S.perfil.equipe : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
     <section><h2>Resumo</h2><table><tbody>
       ${tl('Famílias cadastradas', I.familias)}${tl('Moradores', I.moradores)}${tl('Atendimentos no período', I.atendimentos)}
@@ -1361,7 +1403,7 @@ function relatorioHTML(I, nominal) {
     <section><h2>Encaminhamentos e retornos</h2><table><tbody>
       ${tl('Encaminhamentos', I.enc.total)}${tl('Dos quais urgentes', I.enc.urg)}${tl('Retornos / acompanhamentos', I.enc.ret)}</tbody></table>
       ${nominal && I.lista.length ? `<table class="nominal"><thead><tr><th>Nome</th><th>Comunidade</th><th>Hipótese</th><th>Destino / urgência</th><th>Retorno</th></tr></thead><tbody>${I.lista.map(({ a, d, m }) => `<tr><td>${h(m ? m.nome : '—')}</td><td>${h(d.localidade)}</td><td>${h(a.hipotese || a.queixa)}</td><td>${a.encaminhamento.sim ? h(a.encaminhamento.destino) + ' · ' + h(a.encaminhamento.urgencia) : '—'}</td><td>${a.retorno.sim ? (a.retorno.dias ? a.retorno.dias + ' dias' : 'Sim') : '—'}</td></tr>`).join('')}</tbody></table>` : ''}</section>
-    <footer>${nominal ? 'Contém lista nominal: uso restrito à rede de saúde, não divulgar.' : 'Relatório agregado, sem identificação de pessoas.'} Dados coletados em campo e consolidados pelo aplicativo Saúde em Campo. Valores deste protótipo são fictícios.</footer>
+    <footer>${nominal ? 'Contém lista nominal: uso restrito à rede de saúde, não divulgar.' : 'Relatório agregado, sem identificação de pessoas.'} Dados coletados em campo${MARCA ? ' pela ' + h(MARCA.programa) + ' da ' + h(MARCA.nome) : ''} e consolidados pelo aplicativo Saúde em Campo. Valores deste protótipo são fictícios.</footer>
   </article>`;
 }
 function abrirRelatorio() {
@@ -1381,7 +1423,7 @@ function abrirRelatorio() {
 function vProjeto() {
   return `<div class="stack">
     <div class="prose"><p class="eyebrow">Concepção</p><h1>Sobre o projeto</h1>
-      <p>Aplicativo gratuito para equipes missionárias de saúde registrarem, em campo e sem internet, o censo das famílias (domicílio e moradores) e os atendimentos de cada pessoa. Quando o celular encontra sinal, tudo sobe para a nuvem. O painel e o relatório em PDF funcionam offline e podem ser entregues à Secretaria de Saúde.</p></div>
+      ${MARCA ? `<p><b>${h(MARCA.nome)} · ${h(MARCA.programa)}</b></p>` : ''}<p>Aplicativo gratuito para equipes missionárias de saúde registrarem, em campo e sem internet, o censo das famílias (domicílio e moradores) e os atendimentos de cada pessoa. Quando o celular encontra sinal, tudo sobe para a nuvem. O painel e o relatório em PDF funcionam offline e podem ser entregues à Secretaria de Saúde.</p></div>
     <div class="flow">
       <div><b>Família</b><span class="muted">Domicílio: localização, composição, moradia, saneamento, renda, benefícios e acesso ao posto.</span></div>
       <div><b>Moradores</b><span class="muted">Cadastro individual: documentos, escolaridade, benefícios, condições de saúde e vacinação.</span></div>
@@ -1410,7 +1452,7 @@ function abrirLogin() {
   const el = document.createElement('div');
   el.className = 'login'; el.id = 'login';
   el.innerHTML = `<div class="box">
-    <div><span class="brand-mark" style="width:52px;height:52px;border-radius:14px" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" style="width:30px;height:30px">${ICON.plus}</svg></span></div>
+    <div class="login-brand">${marcaHTML('brand-mark big')}${MARCA ? `<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div>` : ''}</div>
     <div><h1>Saúde em Campo</h1><p style="opacity:.85">Censo das famílias e atendimentos da atenção primária, feito para funcionar sem internet.</p></div>
     <form class="card stack" id="form-login">
       <div class="field"><label for="l-nome">Profissional</label><input id="l-nome" type="text" value="Dra. Ana Ribeiro"></div>
@@ -1476,7 +1518,12 @@ document.addEventListener('click', e => {
     case 'edit-morador': abrirMoradorForm(Number(a.dataset.i)); break;
     case 'remover-morador': S.rascunho.moradores.splice(Number(a.dataset.i), 1); salvar(); fecharSheet(); render(); break;
     case 'salvar-dom': salvarDom(); break;
-    case 'add-med': document.getElementById('meds').insertAdjacentHTML('beforeend', medRow()); document.querySelector('#meds .med-row:last-child input').focus(); break;
+    case 'med-pick': {
+      let alvo = [...document.querySelectorAll('#meds input[name=med_nome]')].find(i => !i.value);
+      if (!alvo) { document.getElementById('meds').insertAdjacentHTML('beforeend', medRow()); alvo = document.querySelector('#meds .med-row:last-child input[name=med_nome]'); }
+      alvo.value = a.dataset.n; alvo.closest('.med-row').querySelector('input[name=med_qtd]').focus(); break;
+    }
+    case 'add-med': document.getElementById('meds').insertAdjacentHTML('beforeend', medRow()); document.querySelector('#meds .med-row:last-child input[name=med_nome]').focus(); break;
     case 'rm-med': { const row = a.closest('.med-row'); if (document.querySelectorAll('#meds .med-row').length > 1) row.remove(); else row.querySelectorAll('input').forEach(i => i.value = ''); break; }
     case 'cid-pick': {
       document.getElementById('a-cid').value = a.dataset.c;
@@ -1552,14 +1599,15 @@ document.addEventListener('submit', e => {
   if (f.id === 'form-atend') {
     const fd = new FormData(f);
     const d = S.domicilios.find(x => x.id === f.dataset.d);
-    const nomes = fd.getAll('med_nome'), qtds = fd.getAll('med_qtd');
+    const nomes = fd.getAll('med_nome'), qtds = fd.getAll('med_qtd'), poss = fd.getAll('med_pos');
     const dataSel = fd.get('data'); const agora = new Date();
     const quando = dataSel ? new Date(dataSel + 'T' + agora.toTimeString().slice(0, 8)) : agora;
     const at = {
       id: uid(), moradorId: f.dataset.m, data: quando.toISOString(), profTipo: fd.get('profTipo'), profNome: fd.get('profNome') || 'Profissional',
       queixa: fd.get('queixa'), pas: num(fd.get('pas')), pad: num(fd.get('pad')), fc: num(fd.get('fc')), temp: num(fd.get('temp')), glic: num(fd.get('glic')), sat: num(fd.get('sat')),
       peso: num(fd.get('peso')), altura: num(fd.get('altura')), hipotese: fd.get('hipotese'), cid: fd.get('cid'), conduta: fd.get('conduta'),
-      meds: nomes.map((n, k) => ({ nome: n.trim(), qtd: Number(qtds[k]) || 1 })).filter(x => x.nome), exames: fd.get('exames'),
+      meds: nomes.map((n, k) => ({ nome: n.trim(), qtd: Number(qtds[k]) || 1, pos: (poss[k] || '').trim() })).filter(x => x.nome), exames: fd.get('exames'),
+      evolucao: (fd.get('evolucao') || '').trim(),
       encaminhamento: fd.get('encSim') === 'Sim' ? { sim: true, destino: fd.get('encDestino') || 'A definir', urgencia: fd.get('encUrg') } : { sim: false },
       retorno: fd.get('retSim') === 'Sim' ? { sim: true, dias: num(fd.get('retDias')) } : { sim: false }
     };

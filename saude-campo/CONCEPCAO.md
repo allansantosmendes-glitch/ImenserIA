@@ -1,5 +1,7 @@
 # Saúde em Campo — Concepção do projeto
 
+**MUB – Missões Urbanas Brazil · Ação Missionária**
+
 > Documento de concepção. Acompanha o protótipo navegável em `saude-campo/index.html`
 > (somente front-end, dados fictícios, sem backend).
 
@@ -85,9 +87,12 @@ família já cadastrada.
 - Sinais vitais: PA, FC, temperatura, glicemia capilar, saturação (com alertas)
 - Peso, altura, IMC automático; em menores de 19 anos, classificação e curva de IMC para idade
 - Hipótese diagnóstica + CID-10 opcional com busca (lista offline dos códigos mais comuns)
-- Conduta, medicamentos entregues (nome + quantidade), exames solicitados
+- Conduta, medicamentos entregues (nome escrito livremente ou escolhido entre os mais usados,
+  quantidade e como tomar), exames solicitados
 - Encaminhamento (sim/não, para onde, urgência: eletivo, prioritário, urgente)
 - Retorno/acompanhamento (sim/não, em quantos dias)
+- **Evolução médica**: texto livre no final do atendimento (história, exame físico,
+  avaliação e plano)
 
 > No protótipo, a curva de IMC usa valores aproximados da referência da OMS. A versão
 > final deve usar as tabelas oficiais completas (escores-z por idade e sexo).
@@ -106,8 +111,8 @@ família já cadastrada.
 - **familia** (domicílio): campos de 4.1 + id (UUID gerado no celular), código, equipe,
   versão, criado_em, atualizado_em, criado_por.
 - **morador**: campos de 4.2 + familia_id.
-- **atendimento**: campos de 4.3 + morador_id, familia_id, profissional_id.
-- **medicamento_entregue**: atendimento_id, nome, quantidade.
+- **atendimento**: campos de 4.3 (incluindo evolução médica) + morador_id, familia_id, profissional_id.
+- **medicamento_entregue**: atendimento_id, nome, quantidade, como tomar.
 - **equipe**, **profissional**, **localidade**, **cid10**: cadastros de apoio.
 
 ## 5. Como funciona offline (arquitetura proposta)
