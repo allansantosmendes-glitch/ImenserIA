@@ -30,6 +30,29 @@ viram um diagnóstico do território e relatórios agregados (sem nomes) para os
 | Coordenador(a) da missão | Acompanha equipes, exporta relatórios | Todas as equipes da missão |
 | Gestor externo (Secretaria / DSEI) | Recebe relatórios | **Somente números agregados** |
 
+## 2.1 Acesso: conta individual com e-mail e senha
+
+O app é de uso restrito da equipe (missionários e profissionais de saúde).
+
+- **Primeiro acesso: “Criar conta”.** A pessoa preenche nome completo, e-mail (que é o
+  login), função (médico, enfermeiro, dentista, técnico de enfermagem, missionário/agente,
+  coordenador), equipe, **código de acesso da equipe** e cria uma senha (mínimo 6
+  caracteres, digitada duas vezes).
+- **Código de acesso:** a coordenação passa o código só para quem é da equipe. Sem ele não
+  é possível criar conta. Na versão real, o ideal é o coordenador **convidar por e-mail**
+  ou **aprovar** cada conta nova antes do primeiro uso.
+- **Depois: “Entrar”** com e-mail e senha toda vez que o app é aberto. Botão “Sair” na
+  tela inicial e em “Sobre o projeto”.
+- **Quem preencheu:** cada família guarda quem cadastrou e quem atualizou, e cada
+  atendimento guarda o nome e o e-mail de quem registrou. Isso aparece na ficha da família,
+  no atendimento e na fila de envio. No atendimento o nome do profissional vem da conta
+  conectada e não pode ser trocado.
+- **Sem internet:** o primeiro login precisa de internet (para criar a conta no
+  Supabase). Depois, o app guarda a sessão de forma segura para permitir entrar offline.
+- **Versão real:** contas no Supabase Auth (senha nunca guardada em texto, recuperação de
+  senha por e-mail), papéis por função e regras de acesso por equipe no banco. No
+  protótipo, as contas ficam só no aparelho e a senha é guardada como código (hash).
+
 ## 3. O dia a dia no app (fluxo do protótipo)
 
 **Tela inicial → Nova família → domicílio → moradores → “Novo atendimento” para cada morador.**
@@ -109,11 +132,13 @@ família já cadastrada.
 
 ### 4.5 Modelo de dados (tabelas)
 - **familia** (domicílio): campos de 4.1 + id (UUID gerado no celular), código, equipe,
-  versão, criado_em, atualizado_em, criado_por.
+  versão, criado_em, atualizado_em, criado_por, atualizado_por.
 - **morador**: campos de 4.2 + familia_id.
 - **atendimento**: campos de 4.3 (incluindo evolução médica) + morador_id, familia_id, profissional_id.
 - **medicamento_entregue**: atendimento_id, nome, quantidade, como tomar.
-- **equipe**, **profissional**, **localidade**, **cid10**: cadastros de apoio.
+- **usuario** (conta): nome completo, e-mail (login), função, equipe, criado_em, último acesso.
+  A senha fica no Supabase Auth.
+- **equipe**, **localidade**, **cid10**: cadastros de apoio.
 
 ## 5. Como funciona offline (arquitetura proposta)
 

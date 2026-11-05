@@ -18,7 +18,10 @@ Acesse `http://localhost:8000`. No celular, use "Adicionar à tela inicial".
 
 ## O que dá para testar
 
-- Entrar com PIN (simulado); buscar família pelo nome do responsável ou morador.
+- **Primeiro acesso:** criar conta com nome completo, e-mail (login), função, equipe,
+  código de acesso da equipe (no protótipo: `NORTE2026`) e senha. Depois, entrar sempre
+  com e-mail e senha. Cada cadastro e atendimento registra quem preencheu.
+- Buscar família pelo nome do responsável ou morador.
 - **Nova família** em 5 passos: família e composição, moradia e saneamento, renda,
   benefícios e acesso ao posto, moradores, revisão com consentimento.
 - Na ficha da família, **Atender** cada morador: sinais vitais com alertas, IMC

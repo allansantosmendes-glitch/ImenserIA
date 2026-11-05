@@ -346,7 +346,17 @@ table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase
 @media (max-width: 439px) { .net .net-txt { display: none; } .net { padding: 7px; } }
 @media (max-width: 479px) { .topbar .brand-mark.logos { height: 32px; gap: 3px; } .brand { gap: 8px; } }
 .login-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
-.login .box > div:nth-child(2) { text-align: center; }
+.login .login-title { text-align: center; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: rgba(0,0,0,.25); border-radius: 12px; padding: 4px; gap: 4px; }
+.seg button { border: 0; background: transparent; color: var(--brand-ink); padding: 10px; border-radius: 9px; font-weight: 700; }
+.seg button[aria-selected="true"] { background: var(--gold); color: var(--gold-ink); }
+.login .card h2 { font-size: 1.25rem; }
+.form-erro { background: var(--danger-soft); color: var(--danger); border-radius: 10px; padding: 10px 12px; font-size: .9rem; font-weight: 700; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--primary); font-weight: 700; text-decoration: underline; }
+.center { text-align: center; }
+.autoria { font-size: .84rem; margin-top: 4px; }
+.field input[type="email"] { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); min-height: 46px; }
+.field input[readonly] { background: var(--surface-2); color: var(--muted); }
 .login-brand b { display: block; font-family: var(--f-display); font-size: 1.05rem; line-height: 1.2; }
 .login-brand > div span { color: var(--gold); font-size: .95rem; font-weight: 700; }
 .report .r-org { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 14px; }
@@ -419,7 +429,9 @@ const MARCA = {
   logos: [{ src: 'marca/acao-missionaria-norte.png', alt: 'Ação Missionária Norte · Pará' }, { src: 'marca/mub.png', alt: 'MUB – Missões Urbanas Brazil' }]
 };
 const HOJE = new Date();
-const LS_KEY = 'saudecampo-prototipo-v2';
+const LS_KEY = 'saudecampo-prototipo-v3';
+/* Código que o coordenador passa aos missionários e profissionais para criarem a conta. */
+const CODIGO_CONVITE = 'NORTE2026';
 const META_DIA = 12;
 const EMBUTIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
 
@@ -521,6 +533,7 @@ function gerarExemplo() {
   const NF = ['Maria', 'Ana', 'Francisca', 'Raimunda', 'Antônia', 'Juliana', 'Larissa', 'Beatriz', 'Alice', 'Helena', 'Sofia', 'Luzia', 'Rosa', 'Joana', 'Cleide'];
   const SB = ['Silva', 'Souza', 'Oliveira', 'Lima', 'Pereira', 'Costa', 'Ferreira', 'Rodrigues', 'Almeida', 'Nascimento', 'Araújo', 'Barbosa', 'Cardoso', 'Moraes', 'Freitas'];
   const PROF = [['Dra. Ana Ribeiro', 'Médico(a)'], ['Enf. Paulo Mendes', 'Enfermeiro(a)'], ['Enf. Rute Sales', 'Enfermeiro(a)'], ['Dr. Caio Lins', 'Dentista']];
+  const autor = pr => ({ nome: pr[0], email: pr[0].replace(/^(Dra?|Enf)\. /, '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ /g, '.') + '@exemplo.org' });
   const digitos = n => Array.from({ length: n }, () => Math.floor(r() * 10)).join('');
 
   function pessoa(sexo, idade, parentesco, sob) {
@@ -597,7 +610,7 @@ function gerarExemplo() {
     const febre = cid === 'B54' || (cid === 'J06.9' && chance(.5));
     const enc = (pas && pas >= 170 && chance(.7)) || cid === 'B54' && chance(.4) || chance(.06);
     return {
-      id: uid(), moradorId: m.id, data: quando.toISOString(), profTipo: p[1], profNome: p[0], queixa: q,
+      id: uid(), moradorId: m.id, data: quando.toISOString(), profTipo: p[1], profNome: p[0], por: autor(p), queixa: q,
       pas, pad, fc: ri(64, 104), temp: febre ? +(37.9 + r() * 1.6).toFixed(1) : +(36.1 + r() * 1).toFixed(1),
       glic: has('Diabetes') ? ri(130, 290) : chance(.4) ? ri(74, 118) : null, sat: has('Doença respiratória') ? ri(89, 96) : ri(95, 99),
       peso: +peso.toFixed(1), altura: Math.round(alt), hipotese: hip, cid, conduta,
@@ -643,7 +656,7 @@ function gerarExemplo() {
       renda, beneficiosFamilia: bf.size ? [...bf] : ['Nenhum'], pessoasComBeneficio: mor.filter(m => m.beneficios.length).length,
       posto: { acesso: chance(.72) ? 'Sim' : 'Não', km, tempo: km < 8 ? 'Até 30 min' : km < 20 ? '30 min a 1 h' : km < 50 ? '1 a 3 h' : km < 80 ? '3 a 6 h' : 'Mais de 6 h', meio: chance(.8) ? 'Barco / rabeta' : 'A pé' },
       moradores: mor, consentimento: true, observacoes: '',
-      criadoEm: criado.toISOString(), atualizadoEm: criado.toISOString(), versao: 1, pend: null, atendimentos: []
+      criadoEm: criado.toISOString(), atualizadoEm: criado.toISOString(), criadoPor: autor(pick(PROF.slice(0, 3))), versao: 1, pend: null, atendimentos: []
     };
     mor.forEach(m => {
       if (chance(.45)) {
@@ -669,9 +682,10 @@ function gerarExemplo() {
 }
 
 /* ---------- Estado ---------- */
-let S = carregar() || { ...gerarExemplo(), online: false, rascunho: null, perfil: null };
-S.logado = false;
-const UI = { tab: 'inicio', filtro: 'todos', busca: '', buscaInicio: '', local: 'Todas', periodo: 'tudo', de: '', ate: '', passo: 0, sincronizando: false, progresso: 0 };
+let S = carregar() || { ...gerarExemplo(), online: false, rascunho: null, perfil: null, contas: [] };
+S.contas = S.contas || [];
+S.logado = false; S.perfil = null; // pede e-mail e senha toda vez que o app é aberto
+const UI = { loginAba: null, tab: 'inicio', filtro: 'todos', busca: '', buscaInicio: '', local: 'Todas', periodo: 'tudo', de: '', ate: '', passo: 0, sincronizando: false, progresso: 0 };
 function carregar() { try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } }
 function salvar() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) { /* sem armazenamento: segue em memória */ } }
 
@@ -768,7 +782,7 @@ function render() {
   const bm = document.getElementById('brand-mark'); if (bm && !bm.dataset.ok) bm.outerHTML = marcaHTML('brand-mark', 'id="brand-mark" data-ok="1"');
   const views = { inicio: vInicio, familias: vFamilias, novo: vNovo, sync: vSync, painel: vPainel, projeto: vProjeto };
   document.getElementById('view').innerHTML = views[UI.tab]();
-  if (!S.logado) abrirLogin();
+  if (!S.logado && !document.getElementById('login')) abrirLogin();
 }
 
 /* ---------- Início ---------- */
@@ -792,7 +806,7 @@ function vInicio() {
   const saud = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
   const nome = S.perfil ? S.perfil.nome.split(' ').slice(0, 2).join(' ') : 'equipe';
   return `<div class="stack">
-    <div class="hello"><p class="eyebrow">${h(HOJE.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p><h1>${saud}, ${h(nome)}</h1></div>
+    <div class="hello row between"><div><p class="eyebrow">${h(HOJE.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p><h1>${saud}, ${h(nome)}</h1>${S.perfil ? `<p class="muted" style="font-size:.86rem">${h(S.perfil.papel)} · <span class="mono">${h(S.perfil.email)}</span></p>` : ''}</div><button class="btn small ghost" data-act="sair">Sair</button></div>
     <div class="search">${ico('search')}<input id="busca-inicio" type="search" placeholder="Buscar família pelo nome do responsável ou morador" value="${h(UI.buscaInicio)}" aria-label="Buscar família"></div>
     <div id="home-res">${homeResHTML()}</div>
     <div class="quick">
@@ -893,6 +907,7 @@ function abrirDom(id) {
         ${d.pend ? `<span class="chip pend">Aguardando envio · ${h(pendTexto(d.pend))}</span>` : '<span class="chip ok">Sincronizado</span>'}
         <span class="chip">Versão ${d.versao}</span>
       </div>
+      ${d.criadoPor ? `<p class="muted autoria">Cadastrada por <b>${h(d.criadoPor.nome)}</b> em ${fmtData(d.criadoEm)}${d.atualizadoPor ? ` · atualizada por <b>${h(d.atualizadoPor.nome)}</b>` : ''}</p>` : ''}
       ${al.length ? `<div class="list">${al.map(a => alertaItem(a, d)).join('')}</div>` : ''}
       <div class="comp">
         ${[['Total', c.total], ['0–11 anos', c.criancas], ['12–17', c.adolescentes], ['18–59', c.adultos], ['60+', c.idosos]].map(([l, v]) => `<div><b class="num">${v ?? '—'}</b><span>${l}</span></div>`).join('')}
@@ -967,7 +982,7 @@ function abrirAtendVer(dId, aId) {
   abrirSheet(`
     <div class="sheet-head">
       <div><button class="btn small ghost" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}" style="margin-left:-10px">${ico('back')} ${h(m.nome.split(' ')[0])}</button>
-      <h2>${h(a.hipotese || 'Atendimento')}</h2><p class="muted">${fmtData(a.data)} às ${fmtHora(a.data)} · ${h(a.profNome)} (${h(a.profTipo)})</p></div>
+      <h2>${h(a.hipotese || 'Atendimento')}</h2><p class="muted">${fmtData(a.data)} às ${fmtHora(a.data)} · ${h(a.profNome)} (${h(a.profTipo)})</p>${a.por && a.por.email ? `<p class="muted autoria">Registrado pela conta <span class="mono">${h(a.por.email)}</span></p>` : ''}</div>
       <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
     </div>
     <div class="stack">
@@ -1030,7 +1045,7 @@ function abrirAtendForm(dId, mId) {
       <fieldset><legend>Atendimento</legend>
         <div class="grid2">
           <div class="field"><label for="a-data">Data</label><input id="a-data" name="data" type="date" value="${hojeISO}" required></div>
-          <div class="field"><label for="a-prof">Nome do profissional</label><input id="a-prof" name="profNome" type="text" value="${h(S.perfil ? S.perfil.nome : '')}"></div>
+          <div class="field"><label for="a-prof">Profissional (conta conectada)</label><input id="a-prof" type="text" value="${h(quem().nome)}" readonly><span class="hint mono">${h(quem().email)}</span></div>
         </div>
         <div class="field"><span class="lbl">Profissional</span><div class="opts">${OP.profissionais.map(p => `<label class="opt"><input type="radio" name="profTipo" value="${h(p)}" ${p === (OP.profissionais.includes(papel) ? papel : 'Médico(a)') ? 'checked' : ''}><span>${h(p)}</span></label>`).join('')}</div></div>
         <div class="field"><label for="a-queixa">Queixa principal</label><textarea id="a-queixa" name="queixa" placeholder="Nas palavras do paciente" required></textarea></div>
@@ -1286,7 +1301,7 @@ function vSync() {
         `<button class="btn primary" data-act="sync-now" ${!S.online || !itens ? 'disabled' : ''}>${ico('cloud')} ${S.online ? 'Enviar agora' : 'Aguardando internet'}</button>`}
       </div>
     </div>
-    ${pend.length ? `<h2>Na fila</h2><div class="list">${pend.map(d => `<button class="item" data-act="abrir-dom" data-id="${d.id}"><span class="t">${h(d.responsavelNome)}</span><span class="mono muted">${h(d.codigo)}</span><span class="s">${h(pendTexto(d.pend))} · ${fmtQuando(d.atualizadoEm)}</span></button>`).join('')}</div>` : ''}
+    ${pend.length ? `<h2>Na fila</h2><div class="list">${pend.map(d => `<button class="item" data-act="abrir-dom" data-id="${d.id}"><span class="t">${h(d.responsavelNome)}</span><span class="mono muted">${h(d.codigo)}</span><span class="s">${h(pendTexto(d.pend))} · ${fmtQuando(d.atualizadoEm)}${(d.atualizadoPor || d.criadoPor) ? ' · por ' + h((d.atualizadoPor || d.criadoPor).nome) : ''}</span></button>`).join('')}</div>` : ''}
     <h2>Histórico de envios</h2>
     <div class="list">${[...S.syncs].reverse().map(s => `<div class="item"><span class="t num">${s.qtd} ${s.qtd === 1 ? 'registro enviado' : 'registros enviados'}</span><span class="chip ok">Concluído</span><span class="s">${fmtQuando(s.quando)}</span></div>`).join('')}</div>
     <h2>Como o envio funciona</h2>
@@ -1457,29 +1472,73 @@ function vProjeto() {
         <li>Cada equipe só enxerga as próprias famílias.</li>
         <li>Lista nominal só sai com escolha explícita.</li></ul></div>
     </div>
+    ${S.perfil ? `<div class="card row between"><div><b>${h(S.perfil.nome)}</b><br><span class="muted" style="font-size:.88rem">${h(S.perfil.papel)} · ${h(S.perfil.equipe)} · <span class="mono">${h(S.perfil.email)}</span></span></div><button class="btn small" data-act="sair">Sair da conta</button></div>
+    <p class="muted" style="font-size:.86rem">${S.contas.length} ${S.contas.length === 1 ? 'conta criada' : 'contas criadas'} neste aparelho.</p>` : ''}
     <div class="row"><button class="btn" data-act="reset">Restaurar dados de exemplo</button></div>
   </div>`;
 }
 
-/* ---------- Login ---------- */
-function abrirLogin() {
-  if (document.getElementById('login')) return;
-  const el = document.createElement('div');
-  el.className = 'login'; el.id = 'login';
-  el.innerHTML = `<div class="box">
-    <div class="login-brand">${marcaHTML('brand-mark big')}${MARCA ? `<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div>` : ''}</div>
-    <div><h1>Saúde em Campo</h1><p style="opacity:.85">Censo das famílias e atendimentos da atenção primária, feito para funcionar sem internet.</p></div>
-    <form class="card stack" id="form-login">
-      <div class="field"><label for="l-nome">Profissional</label><input id="l-nome" type="text" value="Dra. Ana Ribeiro"></div>
-      <div class="field"><label for="l-perfil">Perfil</label><select id="l-perfil"><option>Médico(a)</option><option>Enfermeiro(a)</option><option>Dentista</option><option>Missionário(a) / agente</option><option>Coordenador(a)</option></select></div>
-      <div class="field"><label for="l-eq">Equipe</label><select id="l-eq"><option>Equipe 1</option><option>Equipe 2</option><option>Equipe 3</option></select></div>
-      <div class="field"><label for="l-pin">PIN do aparelho</label><input id="l-pin" type="password" inputmode="numeric" value="2468" maxlength="6"><span class="hint">No primeiro acesso é preciso internet. Depois, o PIN libera o app offline.</span></div>
-      <button class="btn primary block" type="submit">Entrar</button>
-    </form>
-    <p style="opacity:.75;font-size:.82rem">Protótipo para visualização. Nenhum dado real é coletado.</p>
-  </div>`;
-  document.body.appendChild(el);
+/* ---------- Entrada: criar conta e entrar com e-mail e senha ----------
+   Protótipo: as contas ficam só neste aparelho e a senha é guardada como hash.
+   Na versão real, as contas ficam no Supabase Auth e só entra quem tem convite. */
+const PAPEIS = ['Médico(a)', 'Enfermeiro(a)', 'Dentista', 'Técnico(a) de enfermagem', 'Missionário(a) / agente', 'Coordenador(a)'];
+async function hashSenha(email, senha) {
+  const txt = email.trim().toLowerCase() + ':' + senha;
+  try {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) { let x = 5381; for (const c of txt) x = (x * 33 + c.charCodeAt(0)) >>> 0; return 'f' + x.toString(16); }
 }
+const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
+function loginHTML() {
+  const aba = UI.loginAba || (S.contas.length ? 'entrar' : 'criar');
+  const entrar = `
+    <form class="card stack" id="form-login" novalidate>
+      <div><h2>Entrar</h2><p class="muted" style="font-size:.88rem">Use o e-mail e a senha da sua conta.</p></div>
+      <div class="field"><label for="l-email">E-mail</label><input id="l-email" type="email" autocomplete="username" inputmode="email" required></div>
+      <div class="field"><label for="l-senha">Senha</label><input id="l-senha" type="password" autocomplete="current-password" required></div>
+      <p class="form-erro" id="login-erro" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">Entrar</button>
+      <p class="muted center" style="font-size:.88rem">Primeiro acesso? <button type="button" class="linkbtn" data-act="login-aba" data-aba="criar">Criar minha conta</button></p>
+    </form>`;
+  const criar = `
+    <form class="card stack" id="form-conta" novalidate>
+      <div><h2>Criar conta</h2><p class="muted" style="font-size:.88rem">Primeiro acesso. Cada missionário ou profissional cria a própria conta, assim fica registrado quem preencheu cada cadastro e atendimento.</p></div>
+      <div class="field"><label for="c-nome">Nome completo</label><input id="c-nome" type="text" autocomplete="name" required></div>
+      <div class="field"><label for="c-email">E-mail (será o seu login)</label><input id="c-email" type="email" autocomplete="username" inputmode="email" required></div>
+      <div class="grid2">
+        <div class="field"><label for="c-papel">Função</label><select id="c-papel" required><option value="">Selecione</option>${PAPEIS.map(x => `<option>${h(x)}</option>`).join('')}</select></div>
+        <div class="field"><label for="c-eq">Equipe</label><select id="c-eq" required><option>Equipe 1</option><option>Equipe 2</option><option>Equipe 3</option></select></div>
+      </div>
+      <div class="field"><label for="c-conv">Código de acesso da equipe</label><input id="c-conv" type="text" autocomplete="off" autocapitalize="characters" required><span class="hint">Fornecido pela coordenação. Só missionários e profissionais da equipe recebem. No protótipo: <b class="mono">${CODIGO_CONVITE}</b></span></div>
+      <div class="grid2">
+        <div class="field"><label for="c-senha">Crie uma senha</label><input id="c-senha" type="password" autocomplete="new-password" minlength="6" required><span class="hint">Mínimo de 6 caracteres</span></div>
+        <div class="field"><label for="c-senha2">Repita a senha</label><input id="c-senha2" type="password" autocomplete="new-password" required></div>
+      </div>
+      <p class="form-erro" id="conta-erro" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">Criar conta e entrar</button>
+      <p class="muted center" style="font-size:.88rem">Já tem conta? <button type="button" class="linkbtn" data-act="login-aba" data-aba="entrar">Entrar</button></p>
+    </form>`;
+  return `<div class="box">
+    <div class="login-brand">${marcaHTML('brand-mark big')}${MARCA ? `<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div>` : ''}</div>
+    <div class="login-title"><h1>Saúde em Campo</h1><p style="opacity:.85">Censo das famílias e atendimentos da atenção primária, feito para funcionar sem internet.</p></div>
+    <div class="seg" role="tablist"><button type="button" role="tab" data-act="login-aba" data-aba="entrar" aria-selected="${aba === 'entrar'}">Entrar</button><button type="button" role="tab" data-act="login-aba" data-aba="criar" aria-selected="${aba === 'criar'}">Criar conta</button></div>
+    ${aba === 'entrar' ? entrar : criar}
+    <p class="center" style="opacity:.75;font-size:.82rem">Acesso restrito à equipe missionária. Protótipo: nenhum dado real é coletado.</p>
+  </div>`;
+}
+function abrirLogin() {
+  let el = document.getElementById('login');
+  if (!el) { el = document.createElement('div'); el.className = 'login'; el.id = 'login'; document.body.appendChild(el); }
+  el.innerHTML = loginHTML(); document.body.style.overflow = 'hidden';
+}
+function erroForm(id, msg) { const e = document.getElementById(id); e.textContent = msg; e.hidden = false; }
+function entrarComo(conta) {
+  S.perfil = { id: conta.id, nome: conta.nome, email: conta.email, papel: conta.papel, equipe: conta.equipe };
+  S.logado = true; conta.ultimoAcesso = new Date().toISOString(); salvar();
+  document.getElementById('login').remove(); document.body.style.overflow = ''; UI.tab = 'inicio'; render(); window.scrollTo(0, 0);
+}
+const quem = () => S.perfil ? { nome: S.perfil.nome, email: S.perfil.email } : { nome: 'Equipe', email: '' };
 
 /* ---------- Overlays e toast ---------- */
 function abrirSheet(html) {
@@ -1502,6 +1561,8 @@ document.addEventListener('click', e => {
       toast(S.online ? (pendentes().length ? 'Internet disponível: registros prontos para enviar' : 'Internet disponível') : 'Sem internet: os registros ficam guardados no aparelho');
       break;
     case 'sync-now': sincronizar(); break;
+    case 'login-aba': UI.loginAba = a.dataset.aba; abrirLogin(); break;
+    case 'sair': S.logado = false; S.perfil = null; UI.loginAba = 'entrar'; fecharSheet(); salvar(); render(); break;
     case 'nova-familia':
       if (!S.rascunho || S.rascunho.id) { S.rascunho = novoRascunho(); UI.passo = 0; }
       UI.tab = 'novo'; fecharSheet(); render(); window.scrollTo(0, 0); break;
@@ -1546,7 +1607,7 @@ document.addEventListener('click', e => {
       const hip = document.getElementById('a-hip'); if (!hip.value) hip.value = a.dataset.n;
       document.getElementById('cid-res').innerHTML = ''; break;
     }
-    case 'reset': S = { ...gerarExemplo(), online: false, rascunho: null, logado: true, perfil: S.perfil }; UI.passo = 0; salvar(); UI.tab = 'inicio'; render(); toast('Dados de exemplo restaurados'); break;
+    case 'reset': S = { ...gerarExemplo(), online: false, rascunho: null, logado: true, perfil: S.perfil, contas: S.contas }; UI.passo = 0; salvar(); UI.tab = 'inicio'; render(); toast('Dados de exemplo restaurados'); break;
   }
 });
 
@@ -1588,8 +1649,28 @@ document.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.target;
   if (f.id === 'form-login') {
-    S.perfil = { nome: f.querySelector('#l-nome').value || 'Profissional', papel: f.querySelector('#l-perfil').value, equipe: f.querySelector('#l-eq').value };
-    S.logado = true; salvar(); document.getElementById('login').remove(); render(); return;
+    const email = f.querySelector('#l-email').value.trim().toLowerCase(), senha = f.querySelector('#l-senha').value;
+    if (!email || !senha) { erroForm('login-erro', 'Preencha o e-mail e a senha.'); return; }
+    const conta = S.contas.find(c => c.email === email);
+    if (!conta) { erroForm('login-erro', 'Não existe conta com esse e-mail neste aparelho. Se é seu primeiro acesso, toque em “Criar minha conta”.'); return; }
+    hashSenha(email, senha).then(hs => hs === conta.hash ? entrarComo(conta) : erroForm('login-erro', 'Senha incorreta. Confira e tente de novo.'));
+    return;
+  }
+  if (f.id === 'form-conta') {
+    const v = id => f.querySelector(id).value;
+    const nome = v('#c-nome').trim().replace(/\s+/g, ' '), email = v('#c-email').trim().toLowerCase();
+    if (nome.split(' ').length < 2) return erroForm('conta-erro', 'Escreva o nome completo (nome e sobrenome).');
+    if (!emailOk(email)) return erroForm('conta-erro', 'Escreva um e-mail válido, por exemplo nome@gmail.com.');
+    if (S.contas.some(c => c.email === email)) return erroForm('conta-erro', 'Já existe uma conta com esse e-mail. Toque em “Entrar”.');
+    if (!v('#c-papel')) return erroForm('conta-erro', 'Escolha a sua função na equipe.');
+    if (v('#c-conv').trim().toUpperCase() !== CODIGO_CONVITE) return erroForm('conta-erro', 'Código de acesso incorreto. Peça o código à coordenação da missão.');
+    if (v('#c-senha').length < 6) return erroForm('conta-erro', 'A senha precisa ter pelo menos 6 caracteres.');
+    if (v('#c-senha') !== v('#c-senha2')) return erroForm('conta-erro', 'As duas senhas estão diferentes. Digite de novo.');
+    hashSenha(email, v('#c-senha')).then(hash => {
+      const conta = { id: uid(), nome, email, papel: v('#c-papel'), equipe: v('#c-eq'), hash, criadoEm: new Date().toISOString() };
+      S.contas.push(conta); entrarComo(conta); toast('Conta criada. Bem-vindo(a), ' + nome.split(' ')[0] + '!');
+    });
+    return;
   }
   if (f.id === 'form-morador') {
     const fd = new FormData(f);
@@ -1618,7 +1699,7 @@ document.addEventListener('submit', e => {
     const dataSel = fd.get('data'); const agora = new Date();
     const quando = dataSel ? new Date(dataSel + 'T' + agora.toTimeString().slice(0, 8)) : agora;
     const at = {
-      id: uid(), moradorId: f.dataset.m, data: quando.toISOString(), profTipo: fd.get('profTipo'), profNome: fd.get('profNome') || 'Profissional',
+      id: uid(), moradorId: f.dataset.m, data: quando.toISOString(), profTipo: fd.get('profTipo'), profNome: quem().nome, por: quem(),
       queixa: fd.get('queixa'), pas: num(fd.get('pas')), pad: num(fd.get('pad')), fc: num(fd.get('fc')), temp: num(fd.get('temp')), glic: num(fd.get('glic')), sat: num(fd.get('sat')),
       peso: num(fd.get('peso')), altura: num(fd.get('altura')), hipotese: fd.get('hipotese'), cid: fd.get('cid'), conduta: fd.get('conduta'),
       meds: nomes.map((n, k) => ({ nome: n.trim(), qtd: Number(qtds[k]) || 1, pos: (poss[k] || '').trim() })).filter(x => x.nome), exames: fd.get('exames'),
@@ -1641,11 +1722,11 @@ function salvarDom() {
   let id;
   if (r.id) {
     const i = S.domicilios.findIndex(d => d.id === r.id);
-    S.domicilios[i] = { ...base, versao: (r.versao || 1) + 1 };
+    S.domicilios[i] = { ...base, versao: (r.versao || 1) + 1, atualizadoPor: quem() };
     marcarPend(S.domicilios[i], 'Atualização de cadastro'); id = r.id;
   } else {
     id = uid();
-    const d = { ...base, id, codigo: 'FAM-' + String(S.domicilios.length + 1).padStart(4, '0'), criadoEm: agora, atualizadoEm: agora, versao: 1, pend: null, atendimentos: [] };
+    const d = { ...base, id, codigo: 'FAM-' + String(S.domicilios.length + 1).padStart(4, '0'), criadoEm: agora, atualizadoEm: agora, criadoPor: quem(), versao: 1, pend: null, atendimentos: [] };
     marcarPend(d, 'Nova família'); S.domicilios.unshift(d);
   }
   S.rascunho = null; UI.passo = 0; UI.tab = 'familias'; salvar(); render(); window.scrollTo(0, 0);
