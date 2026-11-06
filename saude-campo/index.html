@@ -464,7 +464,6 @@ const h = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&
 /* ---------- Listas de opções ---------- */
 const OP = {
   localidades: ['Vila Piriá'],
-  equipes: ['Equipe 1', 'Equipe 2', 'Equipe 3', 'Equipe 4'],
   moradia: ['Palafita', 'Madeira', 'Alvenaria', 'Outro'],
   energia: ['Sim', 'Não', 'Gerador', 'Solar'],
   agua: ['Rio', 'Poço', 'Chuva', 'Rede', 'Outro'],
@@ -644,7 +643,7 @@ function gerarExemplo() {
     const criado = new Date(HOJE); criado.setDate(criado.getDate() - dias); criado.setHours(ri(7, 16), ri(0, 59));
     const d = {
       id: uid(), codigo: 'FAM-' + String(i).padStart(4, '0'),
-      localidade: loc, microarea: String(OP.localidades.indexOf(loc) + 1).padStart(2, '0'),
+      localidade: loc, microarea: '01',
       referencia: pick(['Casa azul na beira do rio', 'Ao lado da igreja', 'Próximo à escola', 'Depois do campo de futebol', 'Porto do Seu Chico']),
       coords: { lat: (-1.465 - r() * .012).toFixed(5), lng: (-46.125 - r() * .015).toFixed(5), prec: ri(4, 15) },
       responsavelNome: mor[0].nome, comp: composicao(mor),
@@ -779,7 +778,7 @@ function render() {
   pill.className = 'net ' + (S.online ? 'on' : 'off');
   pill.innerHTML = S.online ? `${ico('wifi')}<span class="net-txt">Online</span>` : `${ico('wifiOff')}<span class="net-txt">Offline</span>`;
   pill.setAttribute('aria-label', (S.online ? 'Online' : 'Offline') + ': tocar para simular a conexão');
-  document.getElementById('sub-equipe').textContent = [MARCA && MARCA.programa, S.perfil ? S.perfil.equipe : 'Atenção primária'].filter(Boolean).join(' · ');
+  document.getElementById('sub-equipe').textContent = [MARCA ? MARCA.programa : 'Atenção primária', S.perfil && S.perfil.nome.split(' ')[0]].filter(Boolean).join(' · ');
   const bm = document.getElementById('brand-mark'); if (bm && !bm.dataset.ok) bm.outerHTML = marcaHTML('brand-mark', 'id="brand-mark" data-ok="1"');
   const views = { inicio: vInicio, familias: vFamilias, novo: vNovo, sync: vSync, painel: vPainel, projeto: vProjeto };
   document.getElementById('view').innerHTML = views[UI.tab]();
@@ -1142,12 +1141,15 @@ function compHint() {
 function vNovo() {
   if (!S.rascunho) { S.rascunho = novoRascunho(); UI.passo = 0; }
   const r = S.rascunho;
+  const locSel = r.locSel || (r.localidade && !OP.localidades.includes(r.localidade) ? 'Outro' : (r.localidade || OP.localidades[0]));
   const passos = `<div class="steps">${PASSOS.map((p, i) => `<div class="${i < UI.passo ? 'done' : i === UI.passo ? 'now' : ''}">${p}</div>`).join('')}</div>`;
   let corpo = '';
   if (UI.passo === 0) corpo = `
     <fieldset><legend>Onde fica</legend>
       <div class="grid2">
-        <div class="field"><label for="f-loc">Comunidade / localidade</label><select id="f-loc" data-f="localidade"><option value="">Selecione</option>${OP.localidades.map(l => `<option ${r.localidade === l ? 'selected' : ''}>${h(l)}</option>`).join('')}</select></div>
+        <div class="field"><label for="f-loc">Comunidade / localidade</label><select id="f-loc" data-f="locSel">${OP.localidades.map(l => `<option ${locSel === l ? 'selected' : ''}>${h(l)}</option>`).join('')}<option value="Outro" ${locSel === 'Outro' ? 'selected' : ''}>Outro lugar (escrever)</option></select>
+          <div class="field" id="f-loc-outro-wrap" ${locSel === 'Outro' ? '' : 'hidden'} style="margin-top:8px"><label for="f-loc-outro">Nome do lugar</label><input id="f-loc-outro" type="text" data-f="localidadeOutro" list="locais-usados" value="${h(locSel === 'Outro' ? r.localidade : '')}" placeholder="Ex.: Comunidade Boa Vista" autocomplete="off">
+          <datalist id="locais-usados">${locaisUsados().filter(l => !OP.localidades.includes(l)).map(l => `<option value="${h(l)}">`).join('')}</datalist></div></div>
         <div class="field"><label for="f-ref">Ponto de referência</label><input id="f-ref" type="text" data-f="referencia" value="${h(r.referencia)}" placeholder="Ex.: casa azul ao lado da igreja"></div>
       </div>
       <div class="gps">${ico('pin')}<div style="flex:1;min-width:160px">${r.coords ? `<b class="mono">${r.coords.lat}, ${r.coords.lng}</b><br><span class="muted" style="font-size:.84rem">Precisão de ±${r.coords.prec} m · GPS funciona sem internet</span>` : '<b>Localização da casa</b><br><span class="muted" style="font-size:.84rem">Usa o GPS do celular, mesmo sem internet</span>'}</div>
@@ -1229,7 +1231,7 @@ function vNovo() {
 }
 function validarRascunho() {
   const r = S.rascunho; const f = [];
-  if (!r.localidade) f.push('Comunidade / localidade (passo 1)');
+  if (!r.localidade) f.push(r.locSel === 'Outro' ? 'Nome do lugar, em “Outro lugar” (passo 1)' : 'Comunidade / localidade (passo 1)');
   if (!r.responsavelNome.trim()) f.push('Nome do responsável (passo 1)');
   if (!r.comp.total) f.push('Total de moradores (passo 1)');
   if (!r.moradia) f.push('Tipo de moradia (passo 2)');
@@ -1369,7 +1371,8 @@ function dadosPainel(soSinc = false) {
     piramide: FAIXAS.map(([a, b]) => ({ faixa: b > 100 ? a + '+' : a + '–' + b, M: pes.filter(m => m.sexo === 'M' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length, F: pes.filter(m => m.sexo === 'F' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length }))
   };
 }
-const nomeLocal = () => UI.local !== 'Todas' ? UI.local : OP.localidades.length === 1 ? OP.localidades[0] : 'Todas as comunidades atendidas';
+function locaisUsados() { const l = [...new Set([...OP.localidades, ...S.domicilios.map(d => d.localidade).filter(Boolean)])]; return l; }
+const nomeLocal = () => UI.local !== 'Todas' ? UI.local : locaisUsados().length === 1 ? locaisUsados()[0] : 'Todos os lugares atendidos';
 const hbar = (lab, v, total, cls = '', mostrarPct = true) => `<div class="hbar ${cls}"><span class="lab">${h(lab)}</span><span class="track"><i style="width:${total ? Math.max(1.5, v / total * 100) : 0}%"></i></span><span class="val">${mostrarPct ? pct(v, total) + '%' : v}</span></div>`;
 function piramideHTML(I) {
   const maxP = Math.max(1, ...I.piramide.flatMap(p => [p.M, p.F]));
@@ -1382,8 +1385,8 @@ function vPainel() {
   return `<div class="stack">
     <div class="row between"><div><p class="eyebrow">Diagnóstico do território · calculado no aparelho, funciona offline</p><h1>Painel</h1></div>
       <button class="btn primary small" data-act="relatorio">${ico('doc')} Gerar relatório em PDF</button></div>
-    ${OP.localidades.length > 1 ? '' : `<p class="chip ok" style="align-self:flex-start">${h(OP.localidades[0])}</p>`}
-    <div class="filter-chips" role="group" aria-label="Comunidade" ${OP.localidades.length > 1 ? '' : 'hidden'}>${['Todas', ...OP.localidades].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.local === l}">${h(l === 'Todas' ? 'Todas as comunidades' : l)}</button>`).join('')}</div>
+    ${locaisUsados().length > 1 ? '' : `<p class="chip ok" style="align-self:flex-start">${h(locaisUsados()[0])}</p>`}
+    <div class="filter-chips" role="group" aria-label="Lugar" ${locaisUsados().length > 1 ? '' : 'hidden'}>${['Todas', ...locaisUsados()].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.local === l}">${h(l === 'Todas' ? 'Todos os lugares' : l)}</button>`).join('')}</div>
     <div class="filter-chips" role="group" aria-label="Período">${[['tudo', 'Todo o período'], ['15', 'Últimos 15 dias'], ['30', 'Últimos 30 dias'], ['custom', 'Escolher datas']].map(([k, n]) => `<button data-act="periodo" data-p="${k}" aria-pressed="${UI.periodo === k}">${n}</button>`).join('')}</div>
     ${UI.periodo === 'custom' ? `<div class="row"><div class="field" style="flex:1;min-width:140px"><label for="p-de">De</label><input id="p-de" type="date" value="${h(UI.de)}"></div><div class="field" style="flex:1;min-width:140px"><label for="p-ate">Até</label><input id="p-ate" type="date" value="${h(UI.ate)}"></div></div>` : ''}
     <p class="muted" style="font-size:.84rem">Famílias cadastradas até ${fmtData(I.p.ate)}; atendimentos de ${h(I.p.rot.toLowerCase())}.${naoEnviados ? ` <span class="chip pend">${naoEnviados} famílias ainda no aparelho</span>` : ''}</p>
@@ -1419,7 +1422,7 @@ function relatorioHTML(I, nominal) {
   const tl = (l, v, p) => `<tr><td>${h(l)}</td><td>${v}</td>${p != null ? `<td>${p}%</td>` : '<td></td>'}</tr>`;
   return `<article class="report">
     <header>${MARCA ? `<div class="r-org">${marcaHTML('r-mark')}<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div></div>` : ''}<div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(nomeLocal())}</h1>
-      <p>${h(S.perfil ? (MARCA ? MARCA.programa + ' · ' : '') + S.perfil.equipe : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
+      <p>${h(MARCA ? MARCA.programa : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
     <section><h2>Resumo</h2><table><tbody>
       ${tl('Famílias cadastradas', I.familias)}${tl('Moradores', I.moradores)}${tl('Atendimentos no período', I.atendimentos)}
       ${tl('Crianças menores de 5 anos', I.menores5, pct(I.menores5, I.moradores))}${tl('Pessoas com 60 anos ou mais', I.idosos, pct(I.idosos, I.moradores))}
@@ -1476,7 +1479,7 @@ function vProjeto() {
         <li>Cada equipe só enxerga as próprias famílias.</li>
         <li>Lista nominal só sai com escolha explícita.</li></ul></div>
     </div>
-    ${S.perfil ? `<div class="card row between"><div><b>${h(S.perfil.nome)}</b><br><span class="muted" style="font-size:.88rem">${h(S.perfil.papel)} · ${h(S.perfil.equipe)} · <span class="mono">${h(S.perfil.email)}</span></span></div><button class="btn small" data-act="sair">Sair da conta</button></div>
+    ${S.perfil ? `<div class="card row between"><div><b>${h(S.perfil.nome)}</b><br><span class="muted" style="font-size:.88rem">${h(S.perfil.papel)} · <span class="mono">${h(S.perfil.email)}</span></span></div><button class="btn small" data-act="sair">Sair da conta</button></div>
     <p class="muted" style="font-size:.86rem">${S.contas.length} ${S.contas.length === 1 ? 'conta criada' : 'contas criadas'} neste aparelho.</p>` : ''}
     <div class="row"><button class="btn" data-act="reset">Restaurar dados de exemplo</button></div>
   </div>`;
@@ -1510,10 +1513,7 @@ function loginHTML() {
       <div><h2>Criar conta</h2><p class="muted" style="font-size:.88rem">Primeiro acesso. Cada missionário ou profissional cria a própria conta, assim fica registrado quem preencheu cada cadastro e atendimento.</p></div>
       <div class="field"><label for="c-nome">Nome completo</label><input id="c-nome" type="text" autocomplete="name" required></div>
       <div class="field"><label for="c-email">E-mail (será o seu login)</label><input id="c-email" type="email" autocomplete="username" inputmode="email" required></div>
-      <div class="grid2">
-        <div class="field"><label for="c-papel">Função</label><select id="c-papel" required><option value="">Selecione</option>${PAPEIS.map(x => `<option>${h(x)}</option>`).join('')}</select></div>
-        <div class="field"><label for="c-eq">Equipe</label><select id="c-eq" required>${OP.equipes.map(x => `<option>${h(x)}</option>`).join('')}</select></div>
-      </div>
+      <div class="field"><label for="c-papel">Função</label><select id="c-papel" required><option value="">Selecione</option>${PAPEIS.map(x => `<option>${h(x)}</option>`).join('')}</select></div>
       <div class="field"><label for="c-conv">Código de acesso da equipe</label><input id="c-conv" type="text" autocomplete="off" autocapitalize="characters" required><span class="hint">Fornecido pela coordenação. Só missionários e profissionais da equipe recebem. No protótipo: <b class="mono">${CODIGO_CONVITE}</b></span></div>
       <div class="grid2">
         <div class="field"><label for="c-senha">Crie uma senha</label><input id="c-senha" type="password" autocomplete="new-password" minlength="6" required><span class="hint">Mínimo de 6 caracteres</span></div>
@@ -1637,7 +1637,13 @@ function campoRascunho(t) {
   if (t.dataset.f) {
     const f = t.dataset.f;
     setPath(r, f, t.type === 'checkbox' ? t.checked : t.value);
-    if (f === 'localidade') r.microarea = String(OP.localidades.indexOf(t.value) + 1).padStart(2, '0');
+    if (f === 'locSel') {
+      const outro = t.value === 'Outro';
+      document.getElementById('f-loc-outro-wrap').hidden = !outro;
+      r.localidade = outro ? (document.getElementById('f-loc-outro').value.trim()) : t.value;
+      if (outro) document.getElementById('f-loc-outro').focus();
+    }
+    if (f === 'localidadeOutro') r.localidade = t.value.trim();
     if (f.startsWith('comp.')) { const el = document.getElementById('comp-hint'); if (el) el.innerHTML = compHint(); }
   } else if (t.dataset.g) {
     const g = t.dataset.g; let set = new Set(r[g]);
@@ -1671,7 +1677,7 @@ document.addEventListener('submit', e => {
     if (v('#c-senha').length < 6) return erroForm('conta-erro', 'A senha precisa ter pelo menos 6 caracteres.');
     if (v('#c-senha') !== v('#c-senha2')) return erroForm('conta-erro', 'As duas senhas estão diferentes. Digite de novo.');
     hashSenha(email, v('#c-senha')).then(hash => {
-      const conta = { id: uid(), nome, email, papel: v('#c-papel'), equipe: v('#c-eq'), hash, criadoEm: new Date().toISOString() };
+      const conta = { id: uid(), nome, email, papel: v('#c-papel'), equipe: '', hash, criadoEm: new Date().toISOString() };
       S.contas.push(conta); entrarComo(conta); toast('Conta criada. Bem-vindo(a), ' + nome.split(' ')[0] + '!');
     });
     return;

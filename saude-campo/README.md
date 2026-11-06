@@ -18,7 +18,7 @@ Acesse `http://localhost:8000`. No celular, use "Adicionar à tela inicial".
 
 ## O que dá para testar
 
-- **Primeiro acesso:** criar conta com nome completo, e-mail (login), função, equipe,
+- **Primeiro acesso:** criar conta com nome completo, e-mail (login), função (médico, missionário ou voluntário),
   código de acesso da equipe (no protótipo: `NORTE2026`) e senha. Depois, entrar sempre
   com e-mail e senha. Cada cadastro e atendimento registra quem preencheu.
 - Buscar família pelo nome do responsável ou morador.
