@@ -1,6 +1,8 @@
 # Saúde em Campo — Concepção do projeto
 
-**MUB – Missões Urbanas Brazil · Ação Missionária**
+**MUB – Missões Urbanas Brazil · Ação Missionária Norte · Pará**
+
+Território atendido: **Vila Piriá**.
 
 > Documento de concepção. Acompanha o protótipo navegável em `saude-campo/index.html`
 > (somente front-end, dados fictícios, sem backend).
@@ -35,8 +37,7 @@ viram um diagnóstico do território e relatórios agregados (sem nomes) para os
 O app é de uso restrito da equipe (missionários e profissionais de saúde).
 
 - **Primeiro acesso: “Criar conta”.** A pessoa preenche nome completo, e-mail (que é o
-  login), função (médico, enfermeiro, dentista, técnico de enfermagem, missionário/agente,
-  coordenador), equipe, **código de acesso da equipe** e cria uma senha (mínimo 6
+  login), função (**médico, missionário ou voluntário**), equipe (**Equipe 1 a 4**), **código de acesso da equipe** e cria uma senha (mínimo 6
   caracteres, digitada duas vezes).
 - **Código de acesso:** a coordenação passa o código só para quem é da equipe. Sem ele não
   é possível criar conta. Na versão real, o ideal é o coordenador **convidar por e-mail**

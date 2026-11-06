@@ -429,7 +429,7 @@ const MARCA = {
   logos: [{ src: 'marca/acao-missionaria-norte.png', alt: 'Ação Missionária Norte · Pará' }, { src: 'marca/mub.png', alt: 'MUB – Missões Urbanas Brazil' }]
 };
 const HOJE = new Date();
-const LS_KEY = 'saudecampo-prototipo-v3';
+const LS_KEY = 'saudecampo-prototipo-v4';
 /* Código que o coordenador passa aos missionários e profissionais para criarem a conta. */
 const CODIGO_CONVITE = 'NORTE2026';
 const META_DIA = 12;
@@ -463,7 +463,8 @@ const h = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&
 
 /* ---------- Listas de opções ---------- */
 const OP = {
-  localidades: ['Comunidade São Raimundo', 'Vila Nova do Purus', 'Ramal do Açaí', 'Igarapé Grande'],
+  localidades: ['Vila Piriá'],
+  equipes: ['Equipe 1', 'Equipe 2', 'Equipe 3', 'Equipe 4'],
   moradia: ['Palafita', 'Madeira', 'Alvenaria', 'Outro'],
   energia: ['Sim', 'Não', 'Gerador', 'Solar'],
   agua: ['Rio', 'Poço', 'Chuva', 'Rede', 'Outro'],
@@ -480,7 +481,7 @@ const OP = {
   raca: ['Branca', 'Preta', 'Parda', 'Amarela', 'Indígena'],
   escolaridade: ['Sem escolaridade', 'Fundamental incompleto', 'Fundamental completo', 'Médio incompleto', 'Médio completo', 'Superior', 'Criança fora da idade escolar'],
   condicoes: ['Gestante', 'Hipertensão', 'Diabetes', 'Doença respiratória', 'Tuberculose', 'Hanseníase', 'Malária recente', 'Verminose', 'Deficiência', 'Saúde mental', 'Álcool / tabaco', 'Acamado(a)', 'Outra'],
-  profissionais: ['Médico(a)', 'Enfermeiro(a)', 'Dentista', 'Outro'],
+  profissionais: ['Médico(a)', 'Missionário(a)', 'Voluntário(a)'],
   urgencia: ['Eletivo', 'Prioritário', 'Urgente'],
   destinos: ['UBS da sede do município', 'Hospital regional', 'Maternidade', 'CAPS', 'Centro de especialidades', 'Laboratório municipal', 'CEO (odontologia)'],
   meds: ['Losartana 50 mg', 'Hidroclorotiazida 25 mg', 'Metformina 850 mg', 'Glibenclamida 5 mg', 'Paracetamol 500 mg', 'Paracetamol gotas 200 mg/mL', 'Dipirona 500 mg', 'Ibuprofeno 600 mg', 'Amoxicilina 500 mg', 'Amoxicilina suspensão 250 mg/5 mL', 'Cefalexina 500 mg', 'Albendazol 400 mg', 'Sais de reidratação oral', 'Sulfato ferroso 40 mg', 'Ácido fólico 5 mg', 'Omeprazol 20 mg', 'Salbutamol spray', 'Permetrina loção 5%']
@@ -532,7 +533,7 @@ function gerarExemplo() {
   const NM = ['João', 'José', 'Antônio', 'Francisco', 'Raimundo', 'Pedro', 'Lucas', 'Gabriel', 'Mateus', 'Davi', 'Miguel', 'Sebastião', 'Manoel', 'Paulo', 'Benedito'];
   const NF = ['Maria', 'Ana', 'Francisca', 'Raimunda', 'Antônia', 'Juliana', 'Larissa', 'Beatriz', 'Alice', 'Helena', 'Sofia', 'Luzia', 'Rosa', 'Joana', 'Cleide'];
   const SB = ['Silva', 'Souza', 'Oliveira', 'Lima', 'Pereira', 'Costa', 'Ferreira', 'Rodrigues', 'Almeida', 'Nascimento', 'Araújo', 'Barbosa', 'Cardoso', 'Moraes', 'Freitas'];
-  const PROF = [['Dra. Ana Ribeiro', 'Médico(a)'], ['Enf. Paulo Mendes', 'Enfermeiro(a)'], ['Enf. Rute Sales', 'Enfermeiro(a)'], ['Dr. Caio Lins', 'Dentista']];
+  const PROF = [['Dra. Ana Ribeiro', 'Médico(a)'], ['Paulo Mendes', 'Missionário(a)'], ['Rute Sales', 'Voluntário(a)'], ['Dr. Caio Lins', 'Médico(a)']];
   const autor = pr => ({ nome: pr[0], email: pr[0].replace(/^(Dra?|Enf)\. /, '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ /g, '.') + '@exemplo.org' });
   const digitos = n => Array.from({ length: n }, () => Math.floor(r() * 10)).join('');
 
@@ -645,7 +646,7 @@ function gerarExemplo() {
       id: uid(), codigo: 'FAM-' + String(i).padStart(4, '0'),
       localidade: loc, microarea: String(OP.localidades.indexOf(loc) + 1).padStart(2, '0'),
       referencia: pick(['Casa azul na beira do rio', 'Ao lado da igreja', 'Próximo à escola', 'Depois do campo de futebol', 'Porto do Seu Chico']),
-      coords: { lat: (-7.24 - r() * .06).toFixed(5), lng: (-64.76 - r() * .08).toFixed(5), prec: ri(4, 15) },
+      coords: { lat: (-1.465 - r() * .012).toFixed(5), lng: (-46.125 - r() * .015).toFixed(5), prec: ri(4, 15) },
       responsavelNome: mor[0].nome, comp: composicao(mor),
       moradia: pick(['Palafita', 'Madeira', 'Madeira', 'Alvenaria', 'Palafita']), comodos: ri(1, 5),
       energia: pick(['Sim', 'Sim', 'Gerador', 'Solar', 'Não']),
@@ -1126,7 +1127,8 @@ function buscaCID(q) {
 /* ---------- Cadastro da família (assistente) ---------- */
 const PASSOS = ['Família', 'Moradia', 'Renda e acesso', 'Moradores', 'Revisão'];
 function novoRascunho() {
-  return { id: null, localidade: '', microarea: '', referencia: '', coords: null, responsavelNome: '', comp: { total: '', criancas: '', adolescentes: '', adultos: '', idosos: '' }, moradia: '', comodos: '', energia: '', agua: '', tratamento: '', esgoto: '', lixo: '', animais: [], renda: '', beneficiosFamilia: [], pessoasComBeneficio: '', posto: { acesso: '', km: '', tempo: '', meio: '' }, moradores: [], atendimentos: [], consentimento: false, observacoes: '' };
+  const unica = OP.localidades.length === 1 ? OP.localidades[0] : '';
+  return { id: null, localidade: unica, microarea: unica ? '01' : '', referencia: '', coords: null, responsavelNome: '', comp: { total: '', criancas: '', adolescentes: '', adultos: '', idosos: '' }, moradia: '', comodos: '', energia: '', agua: '', tratamento: '', esgoto: '', lixo: '', animais: [], renda: '', beneficiosFamilia: [], pessoasComBeneficio: '', posto: { acesso: '', km: '', tempo: '', meio: '' }, moradores: [], atendimentos: [], consentimento: false, observacoes: '' };
 }
 const radios = (campo, lista, valor) => `<div class="opts" role="radiogroup">${lista.map(o => `<label class="opt"><input type="radio" name="${campo}" data-f="${campo}" value="${h(o)}" ${valor === o ? 'checked' : ''}><span>${h(o)}</span></label>`).join('')}</div>`;
 const checks = (grupo, lista, valores) => `<div class="opts">${lista.map(o => `<label class="opt"><input type="checkbox" data-g="${grupo}" value="${h(o)}" ${valores.includes(o) ? 'checked' : ''}><span>${h(o)}</span></label>`).join('')}</div>`;
@@ -1367,6 +1369,7 @@ function dadosPainel(soSinc = false) {
     piramide: FAIXAS.map(([a, b]) => ({ faixa: b > 100 ? a + '+' : a + '–' + b, M: pes.filter(m => m.sexo === 'M' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length, F: pes.filter(m => m.sexo === 'F' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length }))
   };
 }
+const nomeLocal = () => UI.local !== 'Todas' ? UI.local : OP.localidades.length === 1 ? OP.localidades[0] : 'Todas as comunidades atendidas';
 const hbar = (lab, v, total, cls = '', mostrarPct = true) => `<div class="hbar ${cls}"><span class="lab">${h(lab)}</span><span class="track"><i style="width:${total ? Math.max(1.5, v / total * 100) : 0}%"></i></span><span class="val">${mostrarPct ? pct(v, total) + '%' : v}</span></div>`;
 function piramideHTML(I) {
   const maxP = Math.max(1, ...I.piramide.flatMap(p => [p.M, p.F]));
@@ -1379,7 +1382,8 @@ function vPainel() {
   return `<div class="stack">
     <div class="row between"><div><p class="eyebrow">Diagnóstico do território · calculado no aparelho, funciona offline</p><h1>Painel</h1></div>
       <button class="btn primary small" data-act="relatorio">${ico('doc')} Gerar relatório em PDF</button></div>
-    <div class="filter-chips" role="group" aria-label="Comunidade">${['Todas', ...OP.localidades].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.local === l}">${h(l === 'Todas' ? 'Todas as comunidades' : l)}</button>`).join('')}</div>
+    ${OP.localidades.length > 1 ? '' : `<p class="chip ok" style="align-self:flex-start">${h(OP.localidades[0])}</p>`}
+    <div class="filter-chips" role="group" aria-label="Comunidade" ${OP.localidades.length > 1 ? '' : 'hidden'}>${['Todas', ...OP.localidades].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.local === l}">${h(l === 'Todas' ? 'Todas as comunidades' : l)}</button>`).join('')}</div>
     <div class="filter-chips" role="group" aria-label="Período">${[['tudo', 'Todo o período'], ['15', 'Últimos 15 dias'], ['30', 'Últimos 30 dias'], ['custom', 'Escolher datas']].map(([k, n]) => `<button data-act="periodo" data-p="${k}" aria-pressed="${UI.periodo === k}">${n}</button>`).join('')}</div>
     ${UI.periodo === 'custom' ? `<div class="row"><div class="field" style="flex:1;min-width:140px"><label for="p-de">De</label><input id="p-de" type="date" value="${h(UI.de)}"></div><div class="field" style="flex:1;min-width:140px"><label for="p-ate">Até</label><input id="p-ate" type="date" value="${h(UI.ate)}"></div></div>` : ''}
     <p class="muted" style="font-size:.84rem">Famílias cadastradas até ${fmtData(I.p.ate)}; atendimentos de ${h(I.p.rot.toLowerCase())}.${naoEnviados ? ` <span class="chip pend">${naoEnviados} famílias ainda no aparelho</span>` : ''}</p>
@@ -1414,7 +1418,7 @@ function vPainel() {
 function relatorioHTML(I, nominal) {
   const tl = (l, v, p) => `<tr><td>${h(l)}</td><td>${v}</td>${p != null ? `<td>${p}%</td>` : '<td></td>'}</tr>`;
   return `<article class="report">
-    <header>${MARCA ? `<div class="r-org">${marcaHTML('r-mark')}<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div></div>` : ''}<div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(UI.local === 'Todas' ? 'Todas as comunidades atendidas' : UI.local)}</h1>
+    <header>${MARCA ? `<div class="r-org">${marcaHTML('r-mark')}<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div></div>` : ''}<div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(nomeLocal())}</h1>
       <p>${h(S.perfil ? (MARCA ? MARCA.programa + ' · ' : '') + S.perfil.equipe : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
     <section><h2>Resumo</h2><table><tbody>
       ${tl('Famílias cadastradas', I.familias)}${tl('Moradores', I.moradores)}${tl('Atendimentos no período', I.atendimentos)}
@@ -1440,7 +1444,7 @@ function abrirRelatorio() {
   const nominal = !!UI.nominal;
   const I = dadosPainel(true);
   abrirSheet(`
-    <div class="sheet-head"><div><p class="eyebrow">Para a Secretaria de Saúde</p><h2>Relatório em PDF</h2><p class="muted" style="font-size:.88rem">${h(UI.local === 'Todas' ? 'Todas as comunidades' : UI.local)} · ${h(I.p.rot)}. Gerado no aparelho, sem internet. Só entram famílias já salvas.</p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
+    <div class="sheet-head"><div><p class="eyebrow">Para a Secretaria de Saúde</p><h2>Relatório em PDF</h2><p class="muted" style="font-size:.88rem">${h(nomeLocal())} · ${h(I.p.rot)}. Gerado no aparelho, sem internet. Só entram famílias já salvas.</p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
     <div class="stack">
       <label class="consent" style="background:var(--surface-2)"><input type="checkbox" id="r-nominal" ${nominal ? 'checked' : ''}><span><b>Incluir lista nominal de encaminhamentos</b><br><span class="muted" style="font-size:.84rem">Só para entrega direta à equipe de regulação. Por padrão o relatório não tem nomes.</span></span></label>
       ${EMBUTIDO ? `<p class="card" style="background:var(--river-soft);border-color:transparent;font-size:.9rem">Neste link de visualização o navegador bloqueia a impressão. No app instalado, o botão abaixo abre “Salvar como PDF” do celular ou computador.</p>` : ''}
@@ -1481,7 +1485,7 @@ function vProjeto() {
 /* ---------- Entrada: criar conta e entrar com e-mail e senha ----------
    Protótipo: as contas ficam só neste aparelho e a senha é guardada como hash.
    Na versão real, as contas ficam no Supabase Auth e só entra quem tem convite. */
-const PAPEIS = ['Médico(a)', 'Enfermeiro(a)', 'Dentista', 'Técnico(a) de enfermagem', 'Missionário(a) / agente', 'Coordenador(a)'];
+const PAPEIS = OP.profissionais;
 async function hashSenha(email, senha) {
   const txt = email.trim().toLowerCase() + ':' + senha;
   try {
@@ -1508,7 +1512,7 @@ function loginHTML() {
       <div class="field"><label for="c-email">E-mail (será o seu login)</label><input id="c-email" type="email" autocomplete="username" inputmode="email" required></div>
       <div class="grid2">
         <div class="field"><label for="c-papel">Função</label><select id="c-papel" required><option value="">Selecione</option>${PAPEIS.map(x => `<option>${h(x)}</option>`).join('')}</select></div>
-        <div class="field"><label for="c-eq">Equipe</label><select id="c-eq" required><option>Equipe 1</option><option>Equipe 2</option><option>Equipe 3</option></select></div>
+        <div class="field"><label for="c-eq">Equipe</label><select id="c-eq" required>${OP.equipes.map(x => `<option>${h(x)}</option>`).join('')}</select></div>
       </div>
       <div class="field"><label for="c-conv">Código de acesso da equipe</label><input id="c-conv" type="text" autocomplete="off" autocapitalize="characters" required><span class="hint">Fornecido pela coordenação. Só missionários e profissionais da equipe recebem. No protótipo: <b class="mono">${CODIGO_CONVITE}</b></span></div>
       <div class="grid2">
@@ -1588,7 +1592,7 @@ document.addEventListener('click', e => {
     case 'descartar': S.rascunho = null; UI.passo = 0; salvar(); UI.tab = 'inicio'; render(); toast('Rascunho descartado'); break;
     case 'gps':
       a.disabled = true; a.textContent = 'Buscando satélites…';
-      setTimeout(() => { S.rascunho.coords = { lat: (-7.24 - Math.random() * .06).toFixed(5), lng: (-64.76 - Math.random() * .08).toFixed(5), prec: 4 + Math.floor(Math.random() * 8) }; salvar(); render(); }, 1100);
+      setTimeout(() => { S.rascunho.coords = { lat: (-1.465 - Math.random() * .012).toFixed(5), lng: (-46.125 - Math.random() * .015).toFixed(5), prec: 4 + Math.floor(Math.random() * 8) }; salvar(); render(); }, 1100);
       break;
     case 'add-morador': abrirMoradorForm(null); break;
     case 'edit-morador': abrirMoradorForm(Number(a.dataset.i)); break;
