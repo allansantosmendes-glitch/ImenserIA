@@ -34,37 +34,36 @@ viram um diagnóstico do território e relatórios agregados (sem nomes) para os
 | Coordenador(a) da missão | Acompanha equipes, exporta relatórios | Todas as equipes da missão |
 | Gestor externo (Secretaria / DSEI) | Recebe relatórios | **Somente números agregados** |
 
-## 2.1 Acesso: só por convite do administrador
+## 2.1 Acesso: cadastro só pelo link do administrador
 
-O app é de uso restrito da equipe. **Ninguém cria conta sozinho.**
+O app é de uso restrito da equipe. **Ninguém se cadastra sem o link do administrador.**
 
-1. **O administrador convida.** Na tela **Equipe e convites** (só aparece para
-   administradores), ele preenche nome completo, e-mail e função da pessoa (médico,
-   missionário ou voluntário) e, se quiser, marca que ela também é administradora. O app
-   gera um **link de convite** para aquela pessoa, com botões para copiar e enviar pelo
-   WhatsApp.
-2. **A pessoa abre o link** e vê "Olá, Fulano! Você foi convidado(a) como ...". Nome e
-   e-mail já vêm preenchidos (o e-mail não pode ser trocado). Ela só **cria a senha**
-   (mínimo 6 caracteres, digitada duas vezes) e já entra no app.
-3. **Depois, entra sempre com e-mail e senha.** A tela de entrada não tem "criar conta":
-   quem não tem conta é orientado a pedir o link ao administrador.
+- **Administrador:** é o e-mail do responsável pelo projeto. No primeiro acesso ele digita
+  o próprio e-mail na tela de entrada e cria a senha. O e-mail fica guardado no app só
+  como código (hash SHA-256), sem aparecer escrito.
+- **Link de cadastro:** na tela **Equipe e convites** (só aparece para administradores),
+  ele toca em "Gerar link de cadastro" e envia o link (botões Copiar e WhatsApp). Pode
+  anotar para quem é o link, só para se lembrar.
+- **A pessoa abre o link e faz o próprio cadastro:** nome completo, e-mail (que vira o
+  login), função (médico, missionário ou voluntário) e a senha (mínimo 6 caracteres,
+  digitada duas vezes). Já entra no app.
+- **Depois, entra sempre com e-mail e senha.** A tela de entrada não tem "criar conta".
 
-Regras do convite:
-- Vale por **7 dias** e só cria a conta do e-mail convidado.
+Regras do link:
+- Cada link serve para **um cadastro** e vale por **7 dias**.
 - Link alterado ou incompleto é recusado; link já usado leva para "Entrar".
-- O administrador vê o status de cada convite (aguardando, ativado, expirado, cancelado),
-  pode **cancelar**, **gerar um novo link** e **desativar ou reativar** o acesso de quem saiu
-  da equipe.
+- O administrador vê o status de cada link (aguardando, cadastro feito por fulano,
+  expirado, cancelado), pode **cancelar**, **gerar um novo**, **desativar ou reativar** o
+  acesso de alguém e **tornar outra pessoa administradora**.
 
 **Quem preencheu:** cada família guarda quem cadastrou e quem atualizou, e cada
 atendimento guarda o nome e o e-mail de quem registrou (o nome vem da conta conectada e
 não pode ser trocado).
 
-**Versão real:** Supabase Auth com convite por e-mail (`inviteUserByEmail`), link de uso
-único assinado pelo servidor, recuperação de senha por e-mail e papéis
-(administrador, médico, missionário, voluntário) com regras de acesso no banco. No
-protótipo, as contas ficam só no aparelho onde foram ativadas, existe um administrador de
-exemplo (admin@exemplo.org / admin123) e o convite vai dentro do próprio link.
+**Versão real:** Supabase Auth com link de cadastro de uso único assinado pelo servidor,
+recuperação de senha por e-mail e papéis (administrador, médico, missionário,
+voluntário) com regras de acesso no banco. No protótipo, as contas ficam só no aparelho
+onde o cadastro foi feito.
 
 ## 3. O dia a dia no app (fluxo do protótipo)
 
@@ -151,7 +150,8 @@ família já cadastrada.
 - **medicamento_entregue**: atendimento_id, nome, quantidade, como tomar.
 - **usuario** (conta): nome completo, e-mail (login), função, administrador (sim/não), ativo,
   criado_em, último acesso.
-- **convite**: nome, e-mail, função, administrador, enviado_por, criado_em, expira_em, status.
+- **convite** (link de cadastro): para_quem (anotação), enviado_por, criado_em, expira_em,
+  usado_por, status.
   A senha fica no Supabase Auth.
 - **equipe**, **localidade**, **cid10**: cadastros de apoio.
 

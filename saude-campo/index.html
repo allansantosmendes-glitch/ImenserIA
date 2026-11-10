@@ -430,9 +430,9 @@ const MARCA = {
 };
 const HOJE = new Date();
 const LS_KEY = 'saudecampo-prototipo-v4';
-/* Acesso só por convite: o administrador gera um link para cada pessoa.
-   No protótipo, existe um administrador de exemplo para testar. */
-const ADMIN_DEMO = { nome: 'Administrador da Missão', email: 'admin@exemplo.org', senha: 'admin123' };
+/* Acesso só por convite: o administrador gera um link de cadastro para cada pessoa.
+   O e-mail do administrador fica guardado só como código SHA-256 (não aparece escrito). */
+const ADMIN_EMAIL_SHA256 = '8b6880307286e751ac90f74d4011929f14266a19982757d257ce7436a2a1524c';
 const VALIDADE_CONVITE_DIAS = 7;
 const LINK_APP = ''; // endereço público do app; vazio = endereço atual
 const META_DIA = 12;
@@ -688,7 +688,7 @@ function gerarExemplo() {
 let S = carregar() || { ...gerarExemplo(), online: false, rascunho: null, perfil: null, contas: [] };
 S.contas = S.contas || []; S.convites = S.convites || [];
 S.logado = false; S.perfil = null; // pede e-mail e senha toda vez que o app é aberto
-const UI = { convite: null, tab: 'inicio', filtro: 'todos', busca: '', buscaInicio: '', local: 'Todas', periodo: 'tudo', de: '', ate: '', passo: 0, sincronizando: false, progresso: 0 };
+const UI = { convite: null, primeiroAdmin: null, tab: 'inicio', filtro: 'todos', busca: '', buscaInicio: '', local: 'Todas', periodo: 'tudo', de: '', ate: '', passo: 0, sincronizando: false, progresso: 0 };
 function carregar() { try { const raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; } }
 function salvar() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); } catch (e) { /* sem armazenamento: segue em memória */ } }
 
@@ -1506,57 +1506,70 @@ async function hashSenha(email, senha) {
   } catch (e) { let x = 5381; for (const c of txt) x = (x * 33 + c.charCodeAt(0)) >>> 0; return 'f' + x.toString(16); }
 }
 const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
-function somaControle(o) { const t = [o.t, o.n, o.e, o.p, o.a ? 1 : 0, o.d, 'saude-campo'].join('|'); let x = 5381; for (const c of t) x = (x * 33 + c.charCodeAt(0)) >>> 0; return x.toString(36); }
+function somaControle(o) { const t = [o.t, o.d, 'saude-campo'].join('|'); let x = 5381; for (const c of t) x = (x * 33 + c.charCodeAt(0)) >>> 0; return x.toString(36); }
 function codificarConvite(o) { return [...new TextEncoder().encode(JSON.stringify({ ...o, x: somaControle(o) }))].map(b => b.toString(16).padStart(2, '0')).join(''); }
 function lerConvite(hex) {
   try {
     if (!/^[0-9a-f]+$/.test(hex) || hex.length % 2) return null;
     const o = JSON.parse(new TextDecoder().decode(new Uint8Array(hex.match(/../g).map(x => parseInt(x, 16)))));
-    return o && o.t && o.n && o.e && o.p && o.x === somaControle(o) ? o : null;
+    return o && o.t && o.d && o.x === somaControle(o) ? o : null;
   } catch (e) { return null; }
 }
-const linkConvite = c => (LINK_APP || location.href.split('#')[0]) + '#convite-' + codificarConvite({ t: c.token, n: c.nome, e: c.email, p: c.papel, a: c.admin, d: c.criadoEm.slice(0, 10) });
+const linkConvite = c => (LINK_APP || location.href.split('#')[0]) + '#convite-' + codificarConvite({ t: c.token, d: c.criadoEm.slice(0, 10) });
 const conviteExpirou = d => (HOJE - new Date(d + 'T00:00:00')) / 864e5 > VALIDADE_CONVITE_DIAS;
 function lerHashConvite() {
   const m = location.hash.match(/^#convite-([0-9a-f]+)$/);
   UI.convite = m ? (lerConvite(m[1]) || 'invalido') : null;
 }
 function limparHash() { try { history.replaceState(null, '', location.href.split('#')[0]); } catch (e) { try { location.hash = ''; } catch (e2) { /* sem acesso */ } } }
-async function garantirAdminDemo() {
-  if (S.contas.some(c => c.admin)) return;
-  S.contas.push({ id: uid(), nome: ADMIN_DEMO.nome, email: ADMIN_DEMO.email, papel: 'Missionário(a)', admin: true, ativo: true, hash: await hashSenha(ADMIN_DEMO.email, ADMIN_DEMO.senha), criadoEm: new Date().toISOString() });
-  salvar();
+async function ehEmailAdmin(email) { return (await sha256(email.trim().toLowerCase())) === ADMIN_EMAIL_SHA256; }
+async function sha256(txt) {
+  try { const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt)); return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join(''); }
+  catch (e) { return ''; }
 }
+const campoSenhas = (pfx) => `<div class="grid2">
+        <div class="field"><label for="${pfx}-senha">Crie uma senha</label><input id="${pfx}-senha" type="password" autocomplete="new-password" minlength="6" required><span class="hint">Mínimo de 6 caracteres</span></div>
+        <div class="field"><label for="${pfx}-senha2">Repita a senha</label><input id="${pfx}-senha2" type="password" autocomplete="new-password" required></div>
+      </div>`;
 function ativacaoHTML(c) {
   const card = (titulo, txt) => `<div class="card stack"><h2>${titulo}</h2><p class="muted">${txt}</p><button class="btn primary block" data-act="ir-entrar">Ir para Entrar</button></div>`;
-  if (c === 'invalido') return card('Link de convite inválido', 'Este link está incompleto ou foi alterado. Peça um novo link ao administrador da missão.');
+  if (c === 'invalido') return card('Link de cadastro inválido', 'Este link está incompleto ou foi alterado. Peça um novo link ao administrador da missão.');
   const local = S.convites.find(x => x.token === c.t);
-  if (local && local.cancelado) return card('Convite cancelado', 'O administrador cancelou este convite. Se você precisa de acesso, peça um novo link.');
-  if (S.contas.some(x => x.email === c.e)) return card('Conta já ativada', `Já existe uma conta para <b>${h(c.e)}</b>. Entre com o seu e-mail e a senha que você criou.`);
-  if (conviteExpirou(c.d)) return card('Convite expirado', `Este link valia por ${VALIDADE_CONVITE_DIAS} dias. Peça um novo link ao administrador da missão.`);
+  if (local && local.cancelado) return card('Link cancelado', 'O administrador cancelou este link. Se você precisa de acesso, peça um novo.');
+  if (S.contas.some(x => x.convite === c.t)) return card('Link já usado', 'Este link já foi usado para fazer um cadastro. Entre com o seu e-mail e a sua senha.');
+  if (conviteExpirou(c.d)) return card('Link expirado', `Este link valia por ${VALIDADE_CONVITE_DIAS} dias. Peça um novo link ao administrador da missão.`);
   return `<form class="card stack" id="form-ativar" novalidate>
-      <div><p class="eyebrow">Convite recebido</p><h2>Olá, ${h(c.n.split(' ')[0])}!</h2><p class="muted" style="font-size:.9rem">Você foi convidado(a) para a equipe como <b>${h(c.p)}</b>${c.a ? ' e <b>administrador(a)</b>' : ''}. Confira seus dados e crie a sua senha.</p></div>
-      <div class="field"><label for="v-nome">Nome completo</label><input id="v-nome" type="text" autocomplete="name" value="${h(c.n)}" required></div>
-      <div class="field"><label for="v-email">E-mail (seu login)</label><input id="v-email" type="email" value="${h(c.e)}" readonly><span class="hint">Definido pelo administrador. Para trocar, peça um novo convite.</span></div>
-      <div class="grid2">
-        <div class="field"><label for="v-senha">Crie uma senha</label><input id="v-senha" type="password" autocomplete="new-password" minlength="6" required><span class="hint">Mínimo de 6 caracteres</span></div>
-        <div class="field"><label for="v-senha2">Repita a senha</label><input id="v-senha2" type="password" autocomplete="new-password" required></div>
-      </div>
+      <div><p class="eyebrow">Convite do administrador</p><h2>Faça o seu cadastro</h2><p class="muted" style="font-size:.9rem">Preencha seus dados e crie a sua senha. Depois você entra sempre com o seu e-mail e essa senha.</p></div>
+      <div class="field"><label for="v-nome">Nome completo</label><input id="v-nome" type="text" autocomplete="name" required></div>
+      <div class="field"><label for="v-email">E-mail (será o seu login)</label><input id="v-email" type="email" autocomplete="username" inputmode="email" required></div>
+      <div class="field"><span class="lbl">Função</span><div class="opts">${PAPEIS.map(x => `<label class="opt"><input type="radio" name="v-papel" value="${h(x)}"><span>${h(x)}</span></label>`).join('')}</div></div>
+      ${campoSenhas('v')}
       <p class="form-erro" id="ativar-erro" role="alert" hidden></p>
-      <button class="btn primary block" type="submit">Ativar conta e entrar</button>
+      <button class="btn primary block" type="submit">Concluir cadastro e entrar</button>
+    </form>`;
+}
+function adminPrimeiroHTML(email) {
+  return `<form class="card stack" id="form-admin" novalidate>
+      <div><p class="eyebrow">Primeiro acesso do administrador</p><h2>Crie a sua senha</h2><p class="muted" style="font-size:.9rem">Este e-mail é o administrador da missão. Escreva seu nome e crie a senha que você vai usar para entrar.</p></div>
+      <div class="field"><label for="ad-email">E-mail</label><input id="ad-email" type="email" value="${h(email)}" readonly></div>
+      <div class="field"><label for="ad-nome">Nome completo</label><input id="ad-nome" type="text" autocomplete="name" required></div>
+      <div class="field"><span class="lbl">Função</span><div class="opts">${PAPEIS.map((x, i) => `<label class="opt"><input type="radio" name="ad-papel" value="${h(x)}" ${i === 0 ? 'checked' : ''}><span>${h(x)}</span></label>`).join('')}</div></div>
+      ${campoSenhas('ad')}
+      <p class="form-erro" id="admin-erro" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">Criar senha e entrar</button>
+      <button type="button" class="btn ghost block" data-act="ir-entrar">Voltar</button>
     </form>`;
 }
 function loginHTML() {
-  const corpo = UI.convite ? ativacaoHTML(UI.convite) : `
+  const corpo = UI.convite ? ativacaoHTML(UI.convite) : UI.primeiroAdmin ? adminPrimeiroHTML(UI.primeiroAdmin) : `
     <form class="card stack" id="form-login" novalidate>
       <div><h2>Entrar</h2><p class="muted" style="font-size:.88rem">Use o e-mail e a senha da sua conta.</p></div>
       <div class="field"><label for="l-email">E-mail</label><input id="l-email" type="email" autocomplete="username" inputmode="email" required></div>
       <div class="field"><label for="l-senha">Senha</label><input id="l-senha" type="password" autocomplete="current-password" required></div>
       <p class="form-erro" id="login-erro" role="alert" hidden></p>
       <button class="btn primary block" type="submit">Entrar</button>
-      <p class="muted center" style="font-size:.86rem">Ainda não tem conta? O acesso é só por convite: peça ao administrador da missão o seu link.</p>
-    </form>
-    <p class="demo-hint">Protótipo: para testar como administrador, entre com <b class="mono">${h(ADMIN_DEMO.email)}</b> e a senha <b class="mono">${h(ADMIN_DEMO.senha)}</b>.</p>`;
+      <p class="muted center" style="font-size:.86rem">Ainda não tem conta? O cadastro é feito pelo link que o administrador da missão envia.</p>
+    </form>`;
   return `<div class="box">
     <div class="login-brand">${marcaHTML('brand-mark big')}${MARCA ? `<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div>` : ''}</div>
     <div class="login-title"><h1>Saúde em Campo</h1><p style="opacity:.85">Censo das famílias e atendimentos da atenção primária, feito para funcionar sem internet.</p></div>
@@ -1577,57 +1590,61 @@ function entrarComo(conta) {
   document.body.style.overflow = ''; UI.tab = 'inicio'; render(); window.scrollTo(0, 0);
 }
 const quem = () => S.perfil ? { nome: S.perfil.nome, email: S.perfil.email } : { nome: 'Equipe', email: '' };
+function validarCadastro(errId, nome, email, papel, s1, s2) {
+  if (nome.split(' ').length < 2) return erroForm(errId, 'Escreva o nome completo (nome e sobrenome).'), false;
+  if (email !== null && !emailOk(email)) return erroForm(errId, 'Escreva um e-mail válido, por exemplo nome@gmail.com.'), false;
+  if (email !== null && S.contas.some(c => c.email === email)) return erroForm(errId, 'Já existe uma conta com esse e-mail. Volte e toque em Entrar.'), false;
+  if (!papel) return erroForm(errId, 'Escolha a sua função: médico, missionário ou voluntário.'), false;
+  if (s1.length < 6) return erroForm(errId, 'A senha precisa ter pelo menos 6 caracteres.'), false;
+  if (s1 !== s2) return erroForm(errId, 'As duas senhas estão diferentes. Digite de novo.'), false;
+  return true;
+}
 
 /* ---------- Equipe e convites (somente administrador) ---------- */
 function statusConvite(c) {
   if (c.cancelado) return ['Cancelado', ''];
-  if (S.contas.some(x => x.email === c.email)) return ['Conta ativada', 'ok'];
+  const conta = S.contas.find(x => x.convite === c.token);
+  if (conta) return ['Cadastro feito', 'ok', conta];
   if (conviteExpirou(c.criadoEm.slice(0, 10))) return ['Expirado', 'risk'];
-  return ['Aguardando ativação', 'pend'];
+  return ['Aguardando cadastro', 'pend'];
 }
 function vEquipe() {
   const conv = [...S.convites].reverse();
   return `<div class="stack">
     <div><p class="eyebrow">Somente administrador</p><h1>Equipe e convites</h1>
-      <p class="muted" style="max-width:62ch">Ninguém cria conta sozinho. Para dar acesso, gere um link de convite com o nome, o e-mail e a função da pessoa e envie para ela. O link vale por ${VALIDADE_CONVITE_DIAS} dias e só cria a conta daquele e-mail.</p></div>
+      <p class="muted" style="max-width:62ch">Ninguém se cadastra sem convite. Gere um link de cadastro, envie para a pessoa e ela mesma preenche nome, e-mail, função e senha. Cada link serve para um cadastro e vale por ${VALIDADE_CONVITE_DIAS} dias.</p></div>
     <form class="card stack" id="form-convite" novalidate>
-      <h2>Convidar pessoa</h2>
-      <div class="grid2">
-        <div class="field"><label for="i-nome">Nome completo</label><input id="i-nome" type="text" autocomplete="off" required></div>
-        <div class="field"><label for="i-email">E-mail (será o login)</label><input id="i-email" type="email" inputmode="email" autocomplete="off" required></div>
-      </div>
-      <div class="field"><span class="lbl">Função</span><div class="opts">${PAPEIS.map((x, i) => `<label class="opt"><input type="radio" name="i-papel" value="${h(x)}" ${i === 0 ? 'checked' : ''}><span>${h(x)}</span></label>`).join('')}</div></div>
-      <label class="consent" style="background:var(--surface-2)"><input type="checkbox" id="i-admin"><span><b>Também é administrador(a)</b><br><span class="muted" style="font-size:.84rem">Pode convidar e desativar pessoas.</span></span></label>
-      <p class="form-erro" id="convite-erro" role="alert" hidden></p>
-      <button class="btn primary" type="submit" style="align-self:flex-start">${ico('plus')} Gerar link de convite</button>
+      <h2>Novo link de cadastro</h2>
+      <div class="field"><label for="i-para">Para quem é este link? <span class="muted" style="font-weight:400">(opcional, só para você se lembrar)</span></label><input id="i-para" type="text" autocomplete="off" placeholder="Ex.: João, voluntário da igreja"></div>
+      <button class="btn primary" type="submit" style="align-self:flex-start">${ico('plus')} Gerar link de cadastro</button>
     </form>
-    <div class="section-head"><h2>Convites enviados</h2><span class="muted num" style="font-size:.86rem">${conv.length}</span></div>
-    <div class="list">${conv.length ? conv.map(c => { const [st, cl] = statusConvite(c); return `<div class="item">
-      <span class="t">${h(c.nome)}</span><span class="chip ${cl}">${st}</span>
-      <span class="s">${h(c.papel)}${c.admin ? ' · administrador(a)' : ''} · <span class="mono">${h(c.email)}</span> · ${fmtData(c.criadoEm)}</span><span></span>
-      ${st === 'Aguardando ativação' ? `<span class="chips"><button class="btn small" data-act="ver-convite" data-t="${c.token}">Ver e enviar link</button><button class="btn small ghost" data-act="cancelar-convite" data-t="${c.token}">Cancelar</button></span>` : st === 'Expirado' ? `<span class="chips"><button class="btn small" data-act="renovar-convite" data-t="${c.token}">Gerar novo link</button></span>` : ''}
-    </div>`; }).join('') : '<p class="item muted">Nenhum convite ainda. Use o formulário acima.</p>'}</div>
+    <div class="section-head"><h2>Links enviados</h2><span class="muted num" style="font-size:.86rem">${conv.length}</span></div>
+    <div class="list">${conv.length ? conv.map(c => { const [st, cl, conta] = statusConvite(c); return `<div class="item">
+      <span class="t">${h(c.para || 'Link sem nome')}</span><span class="chip ${cl}">${st}</span>
+      <span class="s">Gerado em ${fmtData(c.criadoEm)}${conta ? ` · cadastrado: <b>${h(conta.nome)}</b> (${h(conta.papel)})` : ''}</span><span></span>
+      ${st === 'Aguardando cadastro' ? `<span class="chips"><button class="btn small" data-act="ver-convite" data-t="${c.token}">Ver e enviar link</button><button class="btn small ghost" data-act="cancelar-convite" data-t="${c.token}">Cancelar</button></span>` : st === 'Expirado' ? `<span class="chips"><button class="btn small" data-act="renovar-convite" data-t="${c.token}">Gerar novo link</button></span>` : ''}
+    </div>`; }).join('') : '<p class="item muted">Nenhum link ainda. Use o botão acima.</p>'}</div>
     <div class="section-head"><h2>Pessoas com acesso</h2><span class="muted num" style="font-size:.86rem">${S.contas.length}</span></div>
     <div class="list">${S.contas.map(c => `<div class="item">
       <span class="t">${h(c.nome)}${c.id === S.perfil.id ? ' <span class="muted" style="font-weight:400">(você)</span>' : ''}</span>
       <span class="chip ${c.ativo === false ? 'risk' : 'ok'}">${c.ativo === false ? 'Desativado' : 'Ativo'}</span>
       <span class="s">${h(c.papel)}${c.admin ? ' · administrador(a)' : ''} · <span class="mono">${h(c.email)}</span>${c.ultimoAcesso ? ' · último acesso ' + fmtQuando(c.ultimoAcesso) : ''}</span><span></span>
-      ${c.id !== S.perfil.id ? `<span class="chips"><button class="btn small ghost" data-act="ativar-conta" data-id="${c.id}">${c.ativo === false ? 'Reativar acesso' : 'Desativar acesso'}</button></span>` : ''}
+      ${c.id !== S.perfil.id ? `<span class="chips"><button class="btn small ghost" data-act="ativar-conta" data-id="${c.id}">${c.ativo === false ? 'Reativar acesso' : 'Desativar acesso'}</button><button class="btn small ghost" data-act="tornar-admin" data-id="${c.id}">${c.admin ? 'Tirar de administrador' : 'Tornar administrador'}</button></span>` : ''}
     </div>`).join('')}</div>
-    <p class="muted" style="font-size:.84rem;max-width:62ch">Na versão final, o convite é enviado pelo próprio sistema para o e-mail da pessoa, o link funciona uma única vez e vale em qualquer celular. Neste protótipo, as contas ficam guardadas só no aparelho onde foram ativadas.</p>
+    <p class="muted" style="font-size:.84rem;max-width:62ch">Na versão final, o link funciona uma única vez em qualquer celular e a conta fica guardada na nuvem. Neste protótipo, as contas ficam guardadas só no aparelho onde o cadastro foi feito.</p>
   </div>`;
 }
 function abrirConvite(c) {
   const link = linkConvite(c);
-  const msg = `Olá, ${c.nome.split(' ')[0]}! Você foi convidado(a) para usar o app Saúde em Campo${MARCA ? ' da ' + MARCA.programa : ''}. Toque no link para criar sua senha e entrar (vale por ${VALIDADE_CONVITE_DIAS} dias): ${link}`;
+  const msg = `Olá! Este é o seu link para se cadastrar no app Saúde em Campo${MARCA ? ' da ' + MARCA.programa : ''}. Abra, preencha seus dados e crie sua senha (vale por ${VALIDADE_CONVITE_DIAS} dias): ${link}`;
   abrirSheet(`
-    <div class="sheet-head"><div><p class="eyebrow">Link de convite</p><h2>${h(c.nome)}</h2><p class="muted" style="font-size:.88rem">${h(c.papel)}${c.admin ? ' · administrador(a)' : ''} · <span class="mono">${h(c.email)}</span></p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
+    <div class="sheet-head"><div><p class="eyebrow">Link de cadastro</p><h2>${h(c.para || 'Novo link')}</h2></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
     <div class="stack">
-      <p>Envie este link só para ${h(c.nome.split(' ')[0])}. Ao abrir, a pessoa cria a própria senha e já entra no app.</p>
+      <p>Envie este link para a pessoa. Ao abrir, ela preenche nome completo, e-mail, função e cria a senha. Cada link serve para um cadastro.</p>
       <div class="field"><label for="link-out">Link</label><textarea id="link-out" readonly class="mono invite-link">${h(link)}</textarea></div>
       <button class="btn primary" data-act="copiar-link">Copiar link</button>
       <a class="btn" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
-      <p class="muted" style="font-size:.84rem">Vale até ${fmtData(new Date(new Date(c.criadoEm).getTime() + VALIDADE_CONVITE_DIAS * 864e5))}. Se o link expirar, gere um novo nesta tela.</p>
+      <p class="muted" style="font-size:.84rem">Vale até ${fmtData(new Date(new Date(c.criadoEm).getTime() + VALIDADE_CONVITE_DIAS * 864e5))}. Se expirar, gere um novo nesta tela.</p>
     </div>`);
 }
 
@@ -1652,11 +1669,12 @@ document.addEventListener('click', e => {
       toast(S.online ? (pendentes().length ? 'Internet disponível: registros prontos para enviar' : 'Internet disponível') : 'Sem internet: os registros ficam guardados no aparelho');
       break;
     case 'sync-now': sincronizar(); break;
-    case 'ir-entrar': UI.convite = null; limparHash(); abrirLogin(); break;
+    case 'ir-entrar': UI.convite = null; UI.primeiroAdmin = null; limparHash(); abrirLogin(); break;
+    case 'tornar-admin': { const c = S.contas.find(x => x.id === a.dataset.id); c.admin = !c.admin; salvar(); render(); toast(c.nome.split(' ')[0] + (c.admin ? ' agora é administrador(a)' : ' não é mais administrador(a)')); break; }
     case 'sair': S.logado = false; S.perfil = null; fecharSheet(); salvar(); render(); break;
     case 'ver-convite': abrirConvite(S.convites.find(c => c.token === a.dataset.t)); break;
     case 'cancelar-convite': { const c = S.convites.find(x => x.token === a.dataset.t); c.cancelado = true; salvar(); render(); toast('Convite de ' + c.nome.split(' ')[0] + ' cancelado'); break; }
-    case 'renovar-convite': { const c = S.convites.find(x => x.token === a.dataset.t); c.cancelado = true; const n = { ...c, token: uid().slice(0, 8), criadoEm: new Date().toISOString(), cancelado: false }; S.convites.push(n); salvar(); render(); abrirConvite(n); break; }
+    case 'renovar-convite': { const c = S.convites.find(x => x.token === a.dataset.t); c.cancelado = true; const n = { ...c, token: uid().slice(0, 12), criadoEm: new Date().toISOString(), cancelado: false }; S.convites.push(n); salvar(); render(); abrirConvite(n); break; }
     case 'ativar-conta': { const c = S.contas.find(x => x.id === a.dataset.id); c.ativo = c.ativo === false; salvar(); render(); toast(c.ativo ? 'Acesso de ' + c.nome.split(' ')[0] + ' reativado' : 'Acesso de ' + c.nome.split(' ')[0] + ' desativado'); break; }
     case 'copiar-link': {
       const ta = document.getElementById('link-out');
@@ -1759,31 +1777,38 @@ document.addEventListener('submit', e => {
     const email = f.querySelector('#l-email').value.trim().toLowerCase(), senha = f.querySelector('#l-senha').value;
     if (!email || !senha) { erroForm('login-erro', 'Preencha o e-mail e a senha.'); return; }
     const conta = S.contas.find(c => c.email === email);
-    if (!conta) { erroForm('login-erro', 'Não encontramos conta com esse e-mail. Se é seu primeiro acesso, abra o link de convite que o administrador enviou.'); return; }
+    if (!conta) {
+      ehEmailAdmin(email).then(ok => { if (ok) { UI.primeiroAdmin = email; abrirLogin(); } else erroForm('login-erro', 'Não encontramos conta com esse e-mail. Se é seu primeiro acesso, abra o link de cadastro que o administrador enviou.'); });
+      return;
+    }
     if (conta.ativo === false) { erroForm('login-erro', 'Seu acesso foi desativado. Fale com o administrador da missão.'); return; }
     hashSenha(email, senha).then(hs => hs === conta.hash ? entrarComo(conta) : erroForm('login-erro', 'Senha incorreta. Confira e tente de novo.'));
     return;
   }
   if (f.id === 'form-ativar') {
     const c = UI.convite; const v = id => f.querySelector(id).value;
-    const nome = v('#v-nome').trim().replace(/\s+/g, ' ');
-    if (nome.split(' ').length < 2) return erroForm('ativar-erro', 'Escreva o nome completo (nome e sobrenome).');
-    if (v('#v-senha').length < 6) return erroForm('ativar-erro', 'A senha precisa ter pelo menos 6 caracteres.');
-    if (v('#v-senha') !== v('#v-senha2')) return erroForm('ativar-erro', 'As duas senhas estão diferentes. Digite de novo.');
-    hashSenha(c.e, v('#v-senha')).then(hash => {
-      const conta = { id: uid(), nome, email: c.e, papel: c.p, admin: !!c.a, ativo: true, hash, convite: c.t, criadoEm: new Date().toISOString() };
+    const nome = v('#v-nome').trim().replace(/\s+/g, ' '), email = v('#v-email').trim().toLowerCase();
+    const papel = (f.querySelector('input[name=v-papel]:checked') || {}).value;
+    if (!validarCadastro('ativar-erro', nome, email, papel, v('#v-senha'), v('#v-senha2'))) return;
+    Promise.all([hashSenha(email, v('#v-senha')), ehEmailAdmin(email)]).then(([hash, adm]) => {
+      const conta = { id: uid(), nome, email, papel, admin: adm, ativo: true, hash, convite: c.t, criadoEm: new Date().toISOString() };
       S.contas.push(conta); UI.convite = null; limparHash(); entrarComo(conta);
-      toast('Conta ativada. Bem-vindo(a), ' + nome.split(' ')[0] + '!');
+      toast('Cadastro concluído. Bem-vindo(a), ' + nome.split(' ')[0] + '!');
+    });
+    return;
+  }
+  if (f.id === 'form-admin') {
+    const v = id => f.querySelector(id).value; const email = UI.primeiroAdmin;
+    const nome = v('#ad-nome').trim().replace(/\s+/g, ' '), papel = (f.querySelector('input[name=ad-papel]:checked') || {}).value;
+    if (!validarCadastro('admin-erro', nome, null, papel, v('#ad-senha'), v('#ad-senha2'))) return;
+    hashSenha(email, v('#ad-senha')).then(hash => {
+      const conta = { id: uid(), nome, email, papel, admin: true, ativo: true, hash, criadoEm: new Date().toISOString() };
+      S.contas.push(conta); UI.primeiroAdmin = null; entrarComo(conta); toast('Senha criada. Você é o administrador da missão.');
     });
     return;
   }
   if (f.id === 'form-convite') {
-    const nome = f.querySelector('#i-nome').value.trim().replace(/\s+/g, ' '), email = f.querySelector('#i-email').value.trim().toLowerCase();
-    if (nome.split(' ').length < 2) return erroForm('convite-erro', 'Escreva o nome completo da pessoa (nome e sobrenome).');
-    if (!emailOk(email)) return erroForm('convite-erro', 'Escreva um e-mail válido, por exemplo nome@gmail.com.');
-    if (S.contas.some(c => c.email === email)) return erroForm('convite-erro', 'Essa pessoa já tem conta. Veja em “Pessoas com acesso”.');
-    S.convites.filter(c => c.email === email && !c.cancelado).forEach(c => c.cancelado = true);
-    const c = { token: uid().slice(0, 8), nome, email, papel: f.querySelector('input[name=i-papel]:checked').value, admin: f.querySelector('#i-admin').checked, criadoEm: new Date().toISOString(), por: quem() };
+    const c = { token: uid().slice(0, 12), para: f.querySelector('#i-para').value.trim(), criadoEm: new Date().toISOString(), por: quem() };
     S.convites.push(c); salvar(); render(); abrirConvite(c);
     return;
   }
@@ -1857,7 +1882,7 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !EMBU
 lerHashConvite();
 window.addEventListener('hashchange', () => { lerHashConvite(); if (UI.convite) { S.logado = false; S.perfil = null; fecharSheet(); render(); } abrirLogin(); });
 if (UI.convite) { S.logado = false; S.perfil = null; }
-garantirAdminDemo();
+S.contas = S.contas.filter(c => c.email !== 'admin@exemplo.org'); S.convites = S.convites.filter(c => !c.email);
 render();
 </script>
 </body>

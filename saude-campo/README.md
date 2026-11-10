@@ -18,10 +18,10 @@ Acesse `http://localhost:8000`. No celular, use "Adicionar à tela inicial".
 
 ## O que dá para testar
 
-- **Acesso só por convite:** entre como administrador de exemplo (`admin@exemplo.org`,
-  senha `admin123`), abra **Equipe e convites**, convide uma pessoa e abra o link gerado:
-  ela cria a senha e entra. Depois, sempre e-mail e senha. Cada cadastro e atendimento
-  registra quem preencheu.
+- **Cadastro só pelo link do administrador:** o administrador (e-mail do responsável)
+  entra, abre **Equipe e convites** e gera um link de cadastro. A pessoa abre o link,
+  preenche nome, e-mail, função e cria a senha. Depois, sempre e-mail e senha. Cada
+  cadastro e atendimento registra quem preencheu.
 - Buscar família pelo nome do responsável ou morador.
 - **Nova família** em 5 passos: família e composição, moradia e saneamento, renda,
   benefícios e acesso ao posto, moradores, revisão com consentimento.
