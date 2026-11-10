@@ -4,6 +4,9 @@ App da **MUB – Missões Urbanas Brazil · Ação Missionária Norte (Pará)** 
 famílias e os atendimentos de saúde em campo. Funciona sem internet e sincroniza com o
 Supabase quando há sinal. (O protótipo de visualização continua em `../saude-campo/`.)
 
+**Endereço:** https://saude-em-campo-tau.vercel.app (Vercel, projeto `saude-em-campo`).
+Para publicar uma nova versão, envie ao GitHub e faça um deploy de produção da branch.
+
 ## Como funciona
 
 - **Arquivos do app** (`index.html`, `sw.js`, `marca/`): site estático. A biblioteca do
