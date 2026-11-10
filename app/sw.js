@@ -1,6 +1,6 @@
 // Saúde em Campo: guarda os arquivos do app no aparelho para abrir sem internet.
 // Só cuida dos arquivos do app e da biblioteca do Supabase; os dados vão direto para o Supabase.
-const VERSAO = 'saude-em-campo-2026-11-10b';
+const VERSAO = 'saude-em-campo-2026-11-10c';
 const BIBLIOTECA = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.89.0/dist/umd/supabase.js';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icon.svg', BIBLIOTECA,
   './marca/acao-missionaria-norte.png', './marca/mub.png', './marca/icone-192.png'];

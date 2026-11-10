@@ -1833,11 +1833,31 @@ window.addEventListener('hashchange', () => { lerHashConvite(); if (UI.convite &
 setInterval(() => { if (S && S.logado && navigator.onLine) sincronizar(false); }, 120000);
 (async () => {
   S = Object.assign(estadoInicial(), (await carregar()) || {});
-  S.logado = false; // pede e-mail e senha sempre que o app é aberto
+  // Continua conectado entre aberturas do app, até a pessoa tocar em "Sair".
+  if (!S.perfil) S.logado = false;
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* opcional */ }
   lerHashConvite();
+  if (UI.convite) S.logado = false;
   render();
+  if (S.logado) conferirConta();
 })();
+// Com internet, confere no servidor se a conta continua ativa e atualiza nome e função.
+async function conferirConta() {
+  if (!navigator.onLine) return;
+  try {
+    const { data: { session } } = await supa.auth.getSession();
+    if (!session || session.user.id !== S.perfil.id) return;
+    const { data: p, error } = await supa.from('perfis').select('id, nome, email, papel, admin, ativo').eq('id', session.user.id).maybeSingle();
+    if (error) return;
+    if (!p || !p.ativo) {
+      await supa.auth.signOut(); S.logado = false; S.perfil = null; salvar(); render();
+      toast('Seu acesso foi desativado. Fale com o administrador da missão.'); return;
+    }
+    S.perfil = { id: p.id, nome: p.nome, email: p.email, papel: p.papel, admin: !!p.admin };
+    if (S.locais[p.email]) S.locais[p.email].perfil = p;
+    salvar(); render(); sincronizar(false);
+  } catch (e) { /* sem conexão: segue com os dados do aparelho */ }
+}
 </script>
 </body>
 </html>
