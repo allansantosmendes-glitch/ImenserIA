@@ -1,0 +1,1843 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saúde em Campo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0C371D">
+<link rel="icon" href="marca/icone-192.png">
+<link rel="apple-touch-icon" href="marca/icone-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: app de campo — barra superior com estado da conexão, conteúdo em coluna única
+   no celular; no computador a navegação vira um trilho lateral. Paleta "mata e rio". */
+/* Paleta tirada dos logos: verde-mata e dourado da Ação Missionária Norte (Pará),
+   creme das letras, laranja da MUB como segundo destaque. */
+:root {
+  --bg: #F7F4EA;
+  --surface: #FFFFFF;
+  --surface-2: #EEEADD;
+  --ink: #13231A;
+  --muted: #5B675E;
+  --line: #DDD8C8;
+  --primary: #17603A;
+  --primary-ink: #FFFFFF;
+  --primary-soft: #DCECDF;
+  --brand-dark: #0C371D;
+  --brand-ink: #F8F1DC;
+  --gold: #FDB413;
+  --gold-ink: #1D1806;
+  --orange: #FA850E;
+  --river: #2A6A8C;
+  --river-soft: #D6E7F0;
+  --sun: #A9640A;
+  --sun-soft: #FCE8C4;
+  --danger: #B23E2C;
+  --danger-soft: #F6DDD7;
+  --shadow: 0 1px 2px rgba(12,55,29,.06), 0 8px 24px rgba(12,55,29,.09);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1510; --surface: #14211A; --surface-2: #1C2C23; --ink: #EEEADC; --muted: #A4AF9F;
+    --line: #2A3B30; --primary: #5FC48F; --primary-ink: #07170E; --primary-soft: #1A3A28;
+    --brand-dark: #08251A; --brand-ink: #F8F1DC; --gold: #FDB92B; --gold-ink: #1D1806; --orange: #FB9534;
+    --river: #74B6D8; --river-soft: #17303D; --sun: #F3B54A; --sun-soft: #3A2C10;
+    --danger: #EF8A75; --danger-soft: #3E201A; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1510; --surface: #14211A; --surface-2: #1C2C23; --ink: #EEEADC; --muted: #A4AF9F;
+  --line: #2A3B30; --primary: #5FC48F; --primary-ink: #07170E; --primary-soft: #1A3A28;
+  --brand-dark: #08251A; --brand-ink: #F8F1DC; --gold: #FDB92B; --gold-ink: #1D1806; --orange: #FB9534;
+  --river: #74B6D8; --river-soft: #17303D; --sun: #F3B54A; --sun-soft: #3A2C10;
+  --danger: #EF8A75; --danger-soft: #3E201A; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--f-body); -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.01em; }
+h2 { font-size: 1.15rem; font-weight: 600; }
+h3 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--river); outline-offset: 2px; border-radius: 6px; }
+.mono { font-family: var(--f-mono); font-size: .85em; letter-spacing: .01em; }
+.muted { color: var(--muted); }
+.num { font-variant-numeric: tabular-nums; }
+svg.i { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* ---------- Shell ---------- */
+.app { min-height: 100%; display: grid; grid-template-rows: auto 1fr auto; grid-template-columns: minmax(0, 1fr); }
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--brand-dark); color: var(--brand-ink); border-bottom: 3px solid var(--gold);
+  padding-block: 9px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; gap: 12px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--brand-dark); }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+.brand-mark { width: 32px; height: 32px; border-radius: 9px; background: var(--brand-ink); color: var(--brand-dark); display: grid; place-items: center; flex: none; }
+.brand-mark svg { width: 20px; height: 20px; stroke-width: 2.2; }
+.brand b { font-family: var(--f-display); font-weight: 800; font-size: 1.08rem; display: block; line-height: 1.1; }
+.brand small { opacity: .82; font-size: .78rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand > div { min-width: 0; }
+.net {
+  display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px;
+  padding: 6px 12px 6px 9px; font-size: .82rem; font-weight: 700; white-space: nowrap;
+}
+.net svg { width: 18px; height: 18px; }
+.net.off { background: var(--sun-soft); color: var(--sun); }
+.net.on { background: var(--primary-soft); color: var(--primary); }
+.icon-btn { background: transparent; border: 0; color: inherit; padding: 6px; border-radius: 8px; display: grid; place-items: center; }
+.demo-band {
+  background: var(--sun-soft); color: var(--ink); font-size: .8rem; text-align: center;
+  padding-block: 5px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.layout { display: grid; grid-template-columns: 1fr; min-height: 0; }
+main {
+  padding-block: 18px 110px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  width: 100%; max-width: 980px; margin: 0 auto; min-width: 0;
+}
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 25;
+  background: var(--surface); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px);
+}
+nav.tabs button {
+  background: none; border: 0; padding: 8px 2px 10px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: .72rem; color: var(--muted); position: relative;
+}
+nav.tabs button[aria-current="page"] { color: var(--primary); font-weight: 700; }
+nav.tabs button.novo span.plus { width: 48px; height: 48px; margin-top: -22px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); border: 3px solid var(--surface); display: grid; place-items: center; box-shadow: var(--shadow); }
+nav.tabs .badge { position: absolute; top: 4px; left: calc(50% + 6px); }
+.badge { background: var(--sun); color: var(--surface); border-radius: 999px; font-size: .68rem; font-weight: 700; padding: 1px 6px; line-height: 1.4; }
+nav.tabs .extra { display: none; }
+
+@media (min-width: 900px) {
+  .layout { grid-template-columns: 220px 1fr; }
+  nav.tabs {
+    position: sticky; top: 64px; align-self: start; height: calc(100vh - 64px);
+    grid-template-columns: 1fr; grid-auto-rows: min-content; gap: 4px; border-top: 0; border-right: 1px solid var(--line);
+    padding: 18px 12px; background: var(--bg);
+  }
+  nav.tabs button { flex-direction: row; gap: 10px; font-size: .95rem; padding: 10px 12px; border-radius: 10px; }
+  nav.tabs button[aria-current="page"] { background: var(--primary-soft); }
+  nav.tabs button.novo span.plus { width: 22px; height: 22px; margin: 0; box-shadow: none; }
+  nav.tabs button.novo span.plus svg { width: 16px; height: 16px; }
+  nav.tabs .badge { position: static; margin-left: auto; }
+  nav.tabs .extra { display: flex; }
+  main { padding-block: 26px 48px; }
+}
+
+/* ---------- Componentes ---------- */
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.between { justify-content: space-between; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 8px; }
+.eyebrow { font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 12px; border: 1px solid var(--line); background: var(--surface); padding: 11px 16px; font-weight: 700; min-height: 46px;
+}
+.btn.primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+.btn.ghost { background: transparent; }
+.btn.sun { background: var(--sun); border-color: var(--sun); color: var(--surface); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn.block { width: 100%; }
+.btn.small { min-height: 36px; padding: 6px 12px; font-size: .88rem; border-radius: 10px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: .76rem; font-weight: 700; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.chip.pend { background: var(--sun-soft); color: var(--sun); }
+.chip.ok { background: var(--primary-soft); color: var(--primary); }
+.chip.risk { background: var(--danger-soft); color: var(--danger); }
+.chip.river { background: var(--river-soft); color: var(--river); }
+.filter-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.filter-chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-size: .86rem; white-space: nowrap; }
+.filter-chips button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* Início */
+.hello h1 { margin-top: 2px; }
+.sync-card { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: center; border-radius: var(--r); padding: 16px; border: 1px solid transparent; }
+.sync-card .ico { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; grid-row: span 2; }
+.sync-card.off { background: var(--sun-soft); }
+.sync-card.off .ico { background: var(--sun); color: var(--surface); }
+.sync-card.on { background: var(--primary-soft); }
+.sync-card.on .ico { background: var(--primary); color: var(--primary-ink); }
+.sync-card .actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.progress { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.progress > i { display: block; height: 100%; background: var(--primary); border-radius: inherit; transition: width .3s ease; }
+.quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.quick button { text-align: left; display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); }
+.quick button.main { background: var(--brand-dark); color: var(--brand-ink); border-color: var(--brand-dark); box-shadow: inset 0 -4px 0 var(--gold); }
+.quick button b { font-size: 1rem; }
+.quick button small { opacity: .8; font-size: .8rem; }
+
+.list { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); overflow: hidden; }
+.list > * + * { border-top: 1px solid var(--line); }
+.item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 13px 14px; background: none; border: 0; text-align: left; width: 100%; align-items: center; }
+.item:hover { background: var(--surface-2); }
+.item .t { font-weight: 700; min-width: 0; }
+.item .s { color: var(--muted); font-size: .86rem; min-width: 0; }
+.item .chips { display: flex; gap: 6px; flex-wrap: wrap; grid-column: 1 / -1; }
+.alert-item { display: grid; grid-template-columns: 8px 1fr auto; gap: 12px; padding: 12px 14px; align-items: center; background: none; border: 0; width: 100%; text-align: left; }
+.alert-item .bar { align-self: stretch; border-radius: 4px; background: var(--sun); }
+.alert-item.alta .bar { background: var(--danger); }
+.alert-item:hover { background: var(--surface-2); }
+
+.search { position: relative; }
+.search input { width: 100%; padding: 12px 14px 12px 42px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); min-height: 48px; }
+.search svg { position: absolute; left: 13px; top: 13px; color: var(--muted); }
+
+/* Formulário */
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.steps div { font-size: .76rem; color: var(--muted); display: flex; flex-direction: column; gap: 6px; }
+.steps div::before { content: ""; height: 5px; border-radius: 4px; background: var(--line); }
+.steps div.done::before, .steps div.now::before { background: var(--primary); }
+.steps div.now { color: var(--ink); font-weight: 700; }
+fieldset { border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); padding: 14px 16px 16px; margin: 0; display: grid; gap: 14px; min-width: 0; }
+legend { font-family: var(--f-display); font-weight: 600; padding: 0 6px; font-size: 1.02rem; }
+.grid2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 640px) { .grid2 { grid-template-columns: 1fr 1fr; } }
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field > label, .field > .lbl { font-weight: 700; font-size: .9rem; }
+.field .hint { font-size: .8rem; color: var(--muted); }
+.field input[type="text"], .field input[type="date"], .field input[type="number"], .field select, .field textarea, .field input[type="password"] {
+  width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); min-height: 46px;
+}
+.field textarea { min-height: 80px; resize: vertical; }
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { position: relative; }
+.opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opt span { display: inline-block; padding: 9px 13px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); font-size: .9rem; }
+.opt input:checked + span { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 700; }
+.opt input:focus-visible + span { outline: 3px solid var(--river); outline-offset: 2px; }
+.gps { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding: 12px; border-radius: 12px; background: var(--river-soft); color: var(--ink); }
+.gps svg { color: var(--river); }
+.wizard-foot {
+  position: sticky; bottom: calc(66px + env(safe-area-inset-bottom, 0px)); z-index: 5;
+  display: flex; gap: 10px; padding: 12px 0; background: linear-gradient(to top, var(--bg) 70%, transparent);
+}
+.wizard-foot .btn { flex: 1; }
+@media (min-width: 900px) { .wizard-foot { bottom: 0; } }
+.member { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: center; padding: 12px 14px; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--primary-soft); color: var(--primary); font-family: var(--f-display); }
+.avatar.F { background: var(--river-soft); color: var(--river); }
+.consent { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 14px; border-radius: 12px; background: var(--surface-2); }
+.consent input { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--primary); }
+dl.review { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; font-size: .92rem; }
+dl.review dt { color: var(--muted); }
+dl.review dd { margin: 0; min-width: 0; }
+
+/* Painel */
+.kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+@media (min-width: 720px) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 2px; }
+.kpi b { font-family: var(--f-display); font-size: 1.9rem; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi span { font-size: .84rem; color: var(--muted); }
+.charts { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 720px) { .charts { grid-template-columns: 1fr 1fr; } }
+.charts .card { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.pyr { display: grid; grid-template-columns: 1fr 48px 1fr; gap: 4px 6px; align-items: center; font-size: .78rem; }
+.pyr .l { display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
+.pyr .r { display: flex; align-items: center; gap: 6px; }
+.pyr .bar { height: 14px; border-radius: 3px; min-width: 2px; }
+.pyr .l .bar { background: var(--river); }
+.pyr .r .bar { background: var(--primary); }
+.pyr .mid { text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pyr .v { color: var(--muted); font-variant-numeric: tabular-nums; min-width: 1.4em; }
+.legend { display: flex; gap: 14px; font-size: .8rem; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.hbars { display: flex; flex-direction: column; gap: 9px; }
+.hbar { display: grid; grid-template-columns: minmax(96px, 38%) 1fr 54px; gap: 10px; align-items: center; font-size: .86rem; }
+.hbar .track { height: 12px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+.hbar .track i { display: block; height: 100%; background: var(--primary); border-radius: inherit; }
+.hbar.river .track i { background: var(--river); }
+.hbar.sun .track i { background: var(--sun); }
+.hbar .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.hbar .lab { min-width: 0; overflow-wrap: anywhere; }
+
+/* Sincronizar */
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.switch input { appearance: none; width: 52px; height: 30px; border-radius: 999px; background: var(--line); position: relative; cursor: pointer; flex: none; transition: background .2s; }
+.switch input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--surface); transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.switch input:checked { background: var(--primary); }
+.switch input:checked::after { transform: translateX(22px); }
+.flow { display: grid; grid-template-columns: 1fr; gap: 8px; counter-reset: f; }
+@media (min-width: 720px) { .flow { grid-template-columns: repeat(4, 1fr); } }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; font-size: .88rem; display: flex; flex-direction: column; gap: 4px; }
+.flow div b { font-family: var(--f-display); font-size: .98rem; }
+.flow div b::before { counter-increment: f; content: counter(f) " · "; color: var(--primary); }
+
+/* Overlays */
+.scrim { position: fixed; inset: 0; background: rgba(8, 20, 15, .45); z-index: 40; display: flex; align-items: flex-end; justify-content: center; }
+.sheet {
+  background: var(--bg); width: 100%; max-width: 680px; max-height: 92vh; overflow: auto; border-radius: 20px 20px 0 0;
+  padding-block: 8px calc(20px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.sheet .grab { width: 44px; height: 5px; border-radius: 4px; background: var(--line); margin: 4px auto 12px; }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+@media (min-width: 720px) { .scrim { align-items: center; } .sheet { border-radius: 20px; max-height: 86vh; } }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--ink); color: var(--bg); padding: 11px 16px; border-radius: 12px; font-size: .92rem; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+@media (min-width: 900px) { .toast { bottom: 24px; } }
+.login { position: fixed; inset: 0; z-index: 80; background: var(--brand-dark); color: var(--brand-ink); border-top: 4px solid var(--gold); overflow: auto; display: grid; place-items: center; padding-block: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.login .box { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 18px; }
+.login .card { color: var(--ink); }
+.login h1 { font-size: 2.2rem; }
+table.agg { border-collapse: collapse; width: 100%; font-size: .84rem; font-variant-numeric: tabular-nums; }
+table.agg th, table.agg td { border-bottom: 1px solid var(--line); padding: 7px 8px; text-align: right; white-space: nowrap; }
+table.agg th:first-child, table.agg td:first-child { text-align: left; }
+table.agg th { font-size: .74rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.scroll-x { overflow-x: auto; }
+.prose { max-width: 68ch; display: flex; flex-direction: column; gap: 10px; }
+.prose ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+/* Família, morador e atendimento */
+.comp { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.comp div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; }
+.comp b { font-family: var(--f-display); font-size: 1.4rem; line-height: 1.1; }
+.comp span { font-size: .72rem; color: var(--muted); }
+.comp-in { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.comp-in .total { grid-column: 1 / -1; }
+@media (min-width: 640px) { .comp-in { grid-template-columns: repeat(4, 1fr); } }
+.vitals { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 640px) { .vitals { grid-template-columns: repeat(3, 1fr); } }
+.vitals-view { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.vitals-view div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; min-width: 0; }
+.vitals-view span { font-size: .74rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+.vitals-view b { font-family: var(--f-display); font-size: 1.3rem; }
+.vitals-view small { font-size: .74rem; color: var(--muted); overflow-wrap: anywhere; }
+.imc-out { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: .95rem; }
+.curva svg { width: 100%; height: auto; max-width: 100%; display: block; }
+.curva { display: flex; flex-direction: column; gap: 8px; }
+.cid-res { display: flex; flex-direction: column; gap: 4px; }
+.cid-res button { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 9px 12px; }
+.cid-res button:hover { background: var(--surface-2); }
+.med-row { display: grid; grid-template-columns: 1fr 96px 40px; grid-template-areas: "nome qtd rm" "pos pos pos"; gap: 8px 10px; align-items: end; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); }
+.med-row .med-nome { grid-area: nome; } .med-row .med-qtd { grid-area: qtd; } .med-row .med-pos { grid-area: pos; } .med-row .med-rm { grid-area: rm; align-self: end; margin-bottom: 4px; }
+.med-row label { font-size: .8rem !important; }
+.med-row input { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); min-height: 46px; min-width: 0; }
+@media (max-width: 479px) { .med-row { grid-template-columns: 1fr 40px; grid-template-areas: "nome rm" "qtd qtd" "pos pos"; } }
+.med-quick { display: flex; flex-wrap: wrap; gap: 6px; }
+.med-quick button { border: 1px dashed var(--line); background: transparent; border-radius: 999px; padding: 5px 11px; font-size: .8rem; color: var(--muted); }
+.med-quick button:hover { border-style: solid; color: var(--ink); }
+.evolucao p { margin-top: 8px; white-space: normal; line-height: 1.6; }
+#a-evol { min-height: 180px; }
+.brand b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brand-mark.logos { width: auto; height: 38px; background: none; border-radius: 0; display: flex; gap: 4px; }
+.logos img { height: 100%; width: auto; aspect-ratio: 1; object-fit: contain; }
+.brand-mark.big.logos { height: 84px; gap: 10px; }
+@media (max-width: 439px) { .net .net-txt { display: none; } .net { padding: 7px; } }
+@media (max-width: 479px) { .topbar .brand-mark.logos { height: 32px; gap: 3px; } .brand { gap: 8px; } }
+.login-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; }
+.login .login-title { text-align: center; }
+.login .card h2 { font-size: 1.25rem; }
+.form-erro { background: var(--danger-soft); color: var(--danger); border-radius: 10px; padding: 10px 12px; font-size: .9rem; font-weight: 700; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--primary); font-weight: 700; text-decoration: underline; }
+.center { text-align: center; }
+.demo-hint { background: rgba(253,180,19,.14); border: 1px dashed var(--gold); color: var(--brand-ink); border-radius: 12px; padding: 10px 12px; font-size: .84rem; text-align: center; }
+.invite-link { min-height: 110px !important; font-size: .74rem !important; word-break: break-all; }
+a.btn { text-decoration: none; color: inherit; }
+.autoria { font-size: .84rem; margin-top: 4px; }
+.field input[type="email"] { width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); min-height: 46px; }
+.field input[readonly] { background: var(--surface-2); color: var(--muted); }
+.login-brand b { display: block; font-family: var(--f-display); font-size: 1.05rem; line-height: 1.2; }
+.login-brand > div span { color: var(--gold); font-size: .95rem; font-weight: 700; }
+.report .r-org { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; margin-bottom: 14px; }
+.report .r-mark { height: 60px; display: flex; gap: 8px; flex: none; }
+.report .r-org b { display: block; font-size: .95rem; color: #1B1F1D; }
+.report .r-org div span { font-size: .8rem; color: #5A645F; }
+.linkish { background: none; border: 0; padding: 0; text-align: left; min-width: 0; display: block; }
+.linkish:hover b { text-decoration: underline; }
+.member .btn.primary svg { width: 18px; height: 18px; }
+@media (max-width: 479px) { .hide-sm { display: none; } .member .btn.small { padding: 6px 10px; } }
+
+/* Relatório: folha branca deliberada (papel), igual nos dois temas */
+.report-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--line); }
+.report { background: #FFFFFF; color: #1B1F1D; padding: 28px 26px; font: 13px/1.45 var(--f-body); min-width: 520px; }
+.report header { text-align: center; border-bottom: 3px solid #FDB413; padding-bottom: 12px; margin-bottom: 14px; }
+.report h1 { font-size: 1.45rem; color: #1B1F1D; }
+.report h2 { font-size: 1rem; margin: 16px 0 6px; color: #17603A; }
+.report .r-eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: #5A645F; font-weight: 700; }
+.report p { color: #3B4440; }
+.report table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.report th, .report td { border-bottom: 1px solid #DDE3DF; padding: 5px 6px; text-align: right; }
+.report th:first-child, .report td:first-child { text-align: left; }
+.report th { font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: #5A645F; }
+.report tr.tot td { font-weight: 700; border-top: 2px solid #1B1F1D; }
+.report table.nominal { margin-top: 10px; }
+.report table.nominal td, .report table.nominal th { text-align: left; }
+.report footer { margin-top: 18px; padding-top: 10px; border-top: 1px solid #DDE3DF; font-size: .75rem; color: #5A645F; }
+.report section { break-inside: avoid; }
+#print-area { display: none; }
+@media print {
+  body > *:not(#print-area) { display: none !important; }
+  body::before { display: none; }
+  body { background: #FFFFFF; }
+  #print-area { display: block; }
+  #print-area .report { min-width: 0; padding: 0; }
+  @page { size: A4; margin: 14mm; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" id="brand-mark" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>
+      <div><b>Saúde em Campo</b><small id="sub-equipe">Atenção primária · censo e atendimentos</small></div>
+    </div>
+    <button class="net off" id="net-pill" data-act="sync-now" title="Sincronizar agora"></button>
+    <button class="icon-btn" data-act="go" data-tab="projeto" aria-label="Sobre o projeto"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg></button>
+  </header>
+  <div class="layout">
+    <nav class="tabs" id="tabs" aria-label="Navegação principal"></nav>
+    <main id="view"></main>
+  </div>
+</div>
+<div id="overlay"></div>
+<div id="toast" class="toast" role="status" hidden></div>
+<div id="print-area"></div>
+
+<script src="vendor/supabase-2.89.0.js"></script>
+<script>
+/* =========================================================
+   Saúde em Campo — app de campo da Ação Missionária.
+   Os dados ficam no aparelho (IndexedDB) e são sincronizados
+   com o Supabase quando há internet.
+   ========================================================= */
+/* Identidade da organização. Os logos ficam na pasta marca/.
+   Para trocar as cores, edite --primary (e as demais cores) no topo do <style>. */
+const MARCA = {
+  nome: 'MUB – Missões Urbanas Brazil', programa: 'Ação Missionária Norte · Pará',
+  logos: [{ src: 'marca/acao-missionaria-norte.png', alt: 'Ação Missionária Norte · Pará' }, { src: 'marca/mub.png', alt: 'MUB – Missões Urbanas Brazil' }]
+};
+const HOJE = new Date();
+const LS_KEY = 'saude-em-campo-reserva';
+/* Conexão com o Supabase (chave pública: só funciona junto com as regras de acesso do banco). */
+const SUPA_URL = 'https://dodveluyifweryxuxhqk.supabase.co';
+const SUPA_CHAVE = 'sb_publishable_Dm6gTwJ8lWfCtKZhgZfgCA_qLuZdJSl';
+const supa = window.supabase.createClient(SUPA_URL, SUPA_CHAVE, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'saude-em-campo-sessao' } });
+const META_DIA = 12;
+const EMBUTIDO = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+
+const ICON = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.9.7 3.1 2.5 3.5 5.2"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  cloud: '<path d="M7 18h10.5a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.6 9.1 4.5 4.5 0 0 0 7 18z"/><path d="M12 15v-5m-2.5 2.5L12 10l2.5 2.5"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  wifi: '<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/>',
+  wifiOff: '<path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r="1"/><path d="M3 3l18 18"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  clip: '<path d="M9 4h6v3H9z"/><path d="M9 5.5H6v15h12v-15h-3"/><path d="M9 12h6M9 16h4"/>',
+  steth: '<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v2a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="11" r="2"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>'
+};
+function marcaHTML(cls, extra = '') {
+  if (!MARCA) return `<span class="${cls}" ${extra} aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></span>`;
+  return `<span class="${cls} logos" ${extra}>${MARCA.logos.map(l => `<img src="${h(l.src)}" alt="${h(l.alt)}" onerror="this.remove()">`).join('')}</span>`;
+}
+const ico = (n, cls = 'i') => `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON[n]}</svg>`;
+const h = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- Listas de opções ---------- */
+const OP = {
+  localidades: ['Vila Piriá'],
+  moradia: ['Palafita', 'Madeira', 'Alvenaria', 'Outro'],
+  energia: ['Sim', 'Não', 'Gerador', 'Solar'],
+  agua: ['Rio', 'Poço', 'Chuva', 'Rede', 'Outro'],
+  tratamento: ['Fervida', 'Filtrada', 'Clorada', 'Sem tratamento'],
+  esgoto: ['Fossa', 'A céu aberto', 'Rio', 'Banheiro com descarga', 'Sem banheiro'],
+  lixo: ['Queimado', 'Enterrado', 'Jogado no rio/mato', 'Coletado'],
+  animais: ['Cão', 'Gato', 'Outros', 'Nenhum'],
+  renda: ['Até ¼ salário mínimo', '¼ a ½ salário mínimo', '½ a 1 salário mínimo', '1 a 2 salários mínimos', 'Acima de 2 salários mínimos'],
+  benefFamilia: ['Bolsa Família', 'BPC/LOAS', 'Aposentadoria', 'Pensão', 'Seguro-defeso', 'Outro', 'Nenhum'],
+  benefPessoa: ['Bolsa Família', 'BPC/LOAS', 'Aposentadoria', 'Pensão', 'Seguro-defeso', 'Outro'],
+  tempoPosto: ['Até 30 min', '30 min a 1 h', '1 a 3 h', '3 a 6 h', 'Mais de 6 h'],
+  meioPosto: ['A pé', 'Barco / rabeta', 'Carro / moto', 'Outro'],
+  parentesco: ['Responsável', 'Cônjuge', 'Filho(a)', 'Enteado(a)', 'Neto(a)', 'Pai / mãe', 'Irmão / irmã', 'Outro parente', 'Não parente'],
+  raca: ['Branca', 'Preta', 'Parda', 'Amarela', 'Indígena'],
+  escolaridade: ['Sem escolaridade', 'Fundamental incompleto', 'Fundamental completo', 'Médio incompleto', 'Médio completo', 'Superior', 'Criança fora da idade escolar'],
+  condicoes: ['Gestante', 'Hipertensão', 'Diabetes', 'Doença respiratória', 'Tuberculose', 'Hanseníase', 'Malária recente', 'Verminose', 'Deficiência', 'Saúde mental', 'Álcool / tabaco', 'Acamado(a)', 'Outra'],
+  profissionais: ['Médico(a)', 'Missionário(a)', 'Voluntário(a)'],
+  urgencia: ['Eletivo', 'Prioritário', 'Urgente'],
+  destinos: ['UBS da sede do município', 'Hospital regional', 'Maternidade', 'CAPS', 'Centro de especialidades', 'Laboratório municipal', 'CEO (odontologia)'],
+  meds: ['Losartana 50 mg', 'Hidroclorotiazida 25 mg', 'Metformina 850 mg', 'Glibenclamida 5 mg', 'Paracetamol 500 mg', 'Paracetamol gotas 200 mg/mL', 'Dipirona 500 mg', 'Ibuprofeno 600 mg', 'Amoxicilina 500 mg', 'Amoxicilina suspensão 250 mg/5 mL', 'Cefalexina 500 mg', 'Albendazol 400 mg', 'Sais de reidratação oral', 'Sulfato ferroso 40 mg', 'Ácido fólico 5 mg', 'Omeprazol 20 mg', 'Salbutamol spray', 'Permetrina loção 5%']
+};
+
+/* CID-10 — recorte dos códigos mais usados na atenção primária em campo */
+const CID = [
+  ['A09', 'Diarreia e gastroenterite infecciosa'], ['A15', 'Tuberculose respiratória'], ['A30', 'Hanseníase'], ['A90', 'Dengue'],
+  ['B35', 'Micose de pele (dermatofitose)'], ['B50', 'Malária por P. falciparum'], ['B51', 'Malária por P. vivax'], ['B54', 'Malária não especificada'],
+  ['B82.9', 'Parasitose intestinal (verminose)'], ['B85', 'Pediculose (piolho)'], ['B86', 'Escabiose (sarna)'], ['D50', 'Anemia por deficiência de ferro'],
+  ['E10', 'Diabetes tipo 1'], ['E11', 'Diabetes tipo 2'], ['E44', 'Desnutrição moderada ou leve'], ['E66', 'Obesidade'],
+  ['F10', 'Transtorno por uso de álcool'], ['F17', 'Transtorno por uso de tabaco'], ['F32', 'Episódio depressivo'], ['F41', 'Transtorno de ansiedade'],
+  ['G40', 'Epilepsia'], ['H10', 'Conjuntivite'], ['H66', 'Otite média'], ['I10', 'Hipertensão essencial'],
+  ['J00', 'Resfriado comum'], ['J03', 'Amigdalite aguda'], ['J06.9', 'Infecção aguda das vias aéreas superiores'], ['J18.9', 'Pneumonia'],
+  ['J44', 'DPOC'], ['J45', 'Asma'], ['K02', 'Cárie dentária'], ['K05', 'Gengivite / doença periodontal'],
+  ['K29', 'Gastrite'], ['L08.9', 'Infecção localizada de pele'], ['M54.5', 'Dor lombar (lombalgia)'], ['M25.5', 'Dor articular'],
+  ['N39.0', 'Infecção do trato urinário'], ['N76', 'Vaginite / vulvovaginite'], ['R05', 'Tosse'], ['R10.4', 'Dor abdominal'],
+  ['R50.9', 'Febre'], ['R51', 'Cefaleia (dor de cabeça)'], ['S61', 'Ferimento de mão ou punho'], ['T63.0', 'Picada de serpente'],
+  ['W54', 'Mordedura de cão'], ['Z00.0', 'Exame médico geral (adulto)'], ['Z00.1', 'Acompanhamento de crescimento (puericultura)'], ['Z34', 'Pré-natal de gravidez normal'],
+  ['Z30', 'Planejamento familiar'], ['Z23', 'Vacinação']
+];
+
+/* Curva de IMC por idade (OMS) — medianas aproximadas, sexos combinados, 0 a 19 anos.
+   Os limites de escore-z são estimados a partir da mediana (conferir com a Caderneta). */
+const IMC_MED = [13.4, 16.9, 16.0, 15.6, 15.4, 15.3, 15.3, 15.5, 15.7, 16.0, 16.4, 16.9, 17.5, 18.2, 19.0, 19.8, 20.5, 21.1, 21.7, 22.2];
+function imcRef(anos) { const a = Math.max(0, Math.min(19, anos)); const i = Math.floor(a); const f = a - i; const m = i >= 19 ? IMC_MED[19] : IMC_MED[i] + (IMC_MED[i + 1] - IMC_MED[i]) * f; return { med: m, zm2: m * .83, zp1: m * 1.13, zp2: m * 1.28 }; }
+function classificaIMC(imc, anosDec) {
+  if (!imc) return null;
+  if (anosDec < 19) {
+    const r = imcRef(anosDec);
+    if (imc < r.zm2) return { txt: 'Magreza para a idade', nivel: 'alta' };
+    if (imc > r.zp2) return { txt: 'Obesidade para a idade', nivel: 'media' };
+    if (imc > r.zp1) return { txt: 'Sobrepeso / risco para a idade', nivel: 'media' };
+    return { txt: 'Adequado para a idade', nivel: 'ok' };
+  }
+  if (anosDec >= 60) return imc <= 22 ? { txt: 'Baixo peso (idoso)', nivel: 'media' } : imc < 27 ? { txt: 'Adequado (idoso)', nivel: 'ok' } : { txt: 'Sobrepeso (idoso)', nivel: 'media' };
+  return imc < 18.5 ? { txt: 'Baixo peso', nivel: 'media' } : imc < 25 ? { txt: 'Adequado', nivel: 'ok' } : imc < 30 ? { txt: 'Sobrepeso', nivel: 'media' } : { txt: 'Obesidade', nivel: 'media' };
+}
+const calcIMC = (peso, alt) => peso && alt ? peso / Math.pow(alt / 100, 2) : null;
+
+function uid() { return (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Math.random().toString(36).slice(2) + Date.now().toString(36)); }
+
+/* ---------- Estado: guardado no próprio aparelho (IndexedDB), funciona sem internet ---------- */
+let S = null;
+const estadoInicial = () => ({ domicilios: [], syncs: [], rascunho: null, perfil: null, logado: false, locais: {}, nomes: {}, cursorFam: null, cursorAt: null, orfaos: [] });
+const UI = { online: navigator.onLine, equipe: null, aviso: '', convite: null, primeiroAdmin: false, tab: 'inicio', filtro: 'todos', busca: '', buscaInicio: '', local: 'Todas', periodo: 'tudo', de: '', ate: '', passo: 0, sincronizando: false, progresso: 0 };
+const IDB = (() => {
+  let dbp = null;
+  const abrir = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('saude-em-campo', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+  const tx = (modo, fn) => abrir().then(db => new Promise((res, rej) => { const t = db.transaction('kv', modo); const req = fn(t.objectStore('kv')); t.oncomplete = () => res(req ? req.result : undefined); t.onerror = () => rej(t.error); }));
+  return { get: k => tx('readonly', st => st.get(k)), set: (k, v) => tx('readwrite', st => st.put(v, k)) };
+})();
+async function carregar() { try { return await IDB.get('estado'); } catch (e) { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch (e2) { return null; } } }
+let salvarT = null;
+function salvar() { clearTimeout(salvarT); salvarT = setTimeout(gravar, 120); }
+function gravar() { if (!S) return; const copia = JSON.parse(JSON.stringify(S)); return IDB.set('estado', copia).catch(() => { try { localStorage.setItem(LS_KEY, JSON.stringify(copia)); } catch (e) { /* sem espaço */ } }); }
+window.addEventListener('pagehide', () => gravar());
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') gravar(); });
+
+/* ---------- Utilidades ---------- */
+function idadeDec(nasc, ref = HOJE) { return Math.max(0, (new Date(ref) - new Date(nasc + 'T12:00:00')) / (365.25 * 864e5)); }
+function idade(nasc, ref) { return Math.floor(idadeDec(nasc, ref)); }
+function idadeTxt(nasc) {
+  if (!nasc) return '';
+  const d = idadeDec(nasc);
+  if (d < 1) { const m = Math.floor(d * 12); return m + (m === 1 ? ' mês' : ' meses'); }
+  const a = Math.floor(d); return a + (a === 1 ? ' ano' : ' anos');
+}
+function composicao(mor) {
+  const ids = mor.filter(m => m.nascimento).map(m => idade(m.nascimento));
+  return { total: mor.length, criancas: ids.filter(i => i <= 11).length, adolescentes: ids.filter(i => i >= 12 && i <= 17).length, adultos: ids.filter(i => i >= 18 && i <= 59).length, idosos: ids.filter(i => i >= 60).length };
+}
+const ehHoje = d => new Date(d).toDateString() === HOJE.toDateString();
+const fmtData = d => new Date(d).toLocaleDateString('pt-BR');
+const fmtHora = d => new Date(d).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+function fmtQuando(d) { const x = new Date(d); const ontem = new Date(HOJE); ontem.setDate(ontem.getDate() - 1); if (ehHoje(d)) return 'hoje, ' + fmtHora(d); if (x.toDateString() === ontem.toDateString()) return 'ontem, ' + fmtHora(d); return fmtData(d); }
+const pct = (a, b) => b ? Math.round(a / b * 100) : 0;
+const num = v => (v === '' || v == null || isNaN(Number(v))) ? null : Number(v);
+const fmtNum = (v, c = 1) => v == null ? '—' : Number(v).toFixed(c).replace('.', ',');
+const pendentes = () => S.domicilios.filter(d => d.pend);
+const iniciais = n => n.split(' ').filter(Boolean).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+const cnsMask = c => c ? c.slice(0, 3) + ' •••• •••• ' + c.slice(-4) : '';
+const cpfMask = c => c ? '•••.•••.' + c.slice(6, 9) + '-' + c.slice(9) : '';
+const achaMorador = (d, id) => d.moradores.find(m => m.id === id);
+const cidNome = c => (CID.find(x => x[0] === c) || [])[1] || '';
+function pendTexto(p) { if (!p) return ''; const t = []; if (p.cadastro) t.push(p.cadastro); if (p.atend) t.push(p.atend + (p.atend === 1 ? ' atendimento' : ' atendimentos')); return t.join(' + '); }
+function pendItens(p) { return p ? (p.cadastro ? 1 : 0) + (p.atend || 0) : 0; }
+function marcarPend(d, cad, atend = 0) {
+  const p = d.pend || { cadastro: null, atend: 0 };
+  if (cad && p.cadastro !== 'Nova família') p.cadastro = cad;
+  p.atend += atend; d.pend = p; d.atualizadoEm = new Date().toISOString();
+}
+
+function vitaisAlertas(a, anos) {
+  const r = [];
+  if (anos >= 18 && a.pas && a.pad) {
+    if (a.pas >= 180 || a.pad >= 110) r.push({ nivel: 'alta', txt: 'Pressão muito elevada' });
+    else if (a.pas >= 140 || a.pad >= 90) r.push({ nivel: 'media', txt: 'Pressão elevada' });
+    else if (a.pas < 90) r.push({ nivel: 'media', txt: 'Pressão baixa' });
+  }
+  if (a.temp) { if (a.temp >= 39.5) r.push({ nivel: 'alta', txt: 'Febre alta' }); else if (a.temp >= 37.8) r.push({ nivel: 'media', txt: 'Febre' }); }
+  if (a.sat) { if (a.sat < 90) r.push({ nivel: 'alta', txt: 'Saturação muito baixa' }); else if (a.sat < 94) r.push({ nivel: 'media', txt: 'Saturação baixa' }); }
+  if (a.glic) { if (a.glic < 70) r.push({ nivel: 'alta', txt: 'Hipoglicemia' }); else if (a.glic >= 250) r.push({ nivel: 'alta', txt: 'Glicemia muito alta' }); else if (a.glic >= 200) r.push({ nivel: 'media', txt: 'Glicemia alta' }); }
+  if (anos >= 12 && a.fc) { if (a.fc > 100) r.push({ nivel: 'media', txt: 'Frequência cardíaca alta' }); else if (a.fc < 50) r.push({ nivel: 'media', txt: 'Frequência cardíaca baixa' }); }
+  const imc = calcIMC(a.peso, a.altura); const c = classificaIMC(imc, anos);
+  if (c && c.nivel !== 'ok') r.push({ nivel: c.nivel, txt: c.txt + ` (IMC ${fmtNum(imc)})` });
+  return r;
+}
+function ultimoAtend(d, mId) { return d.atendimentos.filter(a => a.moradorId === mId).sort((a, b) => b.data.localeCompare(a.data))[0]; }
+
+function alertasDom(d) {
+  const a = [];
+  d.moradores.forEach(m => {
+    const anos = idadeDec(m.nascimento); const pn = m.nome.split(' ')[0];
+    const ult = ultimoAtend(d, m.id);
+    if (ult) {
+      if (ult.encaminhamento.sim) a.push({ nivel: ult.encaminhamento.urgencia === 'Urgente' ? 'alta' : 'media', texto: `${pn}: encaminhar para ${ult.encaminhamento.destino} (${ult.encaminhamento.urgencia.toLowerCase()})`, m });
+      vitaisAlertas(ult, anos).filter(v => v.nivel === 'alta').forEach(v => a.push({ nivel: 'alta', texto: `${pn}: ${v.txt.toLowerCase()} no último atendimento`, m }));
+    }
+    if (anos < 5 && m.vacina === 'Não') a.push({ nivel: 'alta', texto: `${pn} (${idadeTxt(m.nascimento)}): vacinação atrasada`, m });
+    if (m.condicoes.includes('Gestante') && !ult) a.push({ nivel: 'alta', texto: `${pn}: gestante (${m.semanas || '?'} sem.) sem atendimento registrado`, m });
+    if (m.condicoes.includes('Acamado(a)')) a.push({ nivel: 'media', texto: `${pn}: acamado(a), precisa de visita domiciliar`, m });
+  });
+  if (d.tratamento === 'Sem tratamento' && d.moradores.some(m => idade(m.nascimento) < 5)) a.push({ nivel: 'media', texto: 'Água sem tratamento com criança menor de 5 anos' });
+  return a.sort((x, y) => (x.nivel === 'alta' ? 0 : 1) - (y.nivel === 'alta' ? 0 : 1));
+}
+
+/* ---------- Render principal ---------- */
+const TABS = [
+  { id: 'inicio', nome: 'Início', ic: 'home' },
+  { id: 'familias', nome: 'Famílias', ic: 'users' },
+  { id: 'novo', nome: 'Nova família', ic: 'plus' },
+  { id: 'sync', nome: 'Sincronizar', ic: 'cloud' },
+  { id: 'painel', nome: 'Painel', ic: 'chart' },
+  { id: 'equipe', nome: 'Equipe e convites', ic: 'users', extra: true, admin: true },
+  { id: 'projeto', nome: 'Sobre o projeto', ic: 'info', extra: true }
+];
+const ehAdmin = () => !!(S.perfil && S.perfil.admin);
+function render() {
+  const p = pendentes().reduce((n, d) => n + pendItens(d.pend), 0);
+  if (UI.tab === 'equipe' && !ehAdmin()) UI.tab = 'inicio';
+  document.getElementById('tabs').innerHTML = TABS.filter(t => !t.admin || ehAdmin()).map(t => `
+    <button data-act="go" data-tab="${t.id}" class="${t.id === 'novo' ? 'novo' : ''} ${t.extra ? 'extra' : ''}" ${UI.tab === t.id ? 'aria-current="page"' : ''}>
+      ${t.id === 'novo' ? `<span class="plus">${ico('plus')}</span>` : ico(t.ic)}
+      <span>${t.nome}</span>
+      ${t.id === 'sync' && p ? `<span class="badge num">${p}</span>` : ''}
+    </button>`).join('');
+  const pill = document.getElementById('net-pill');
+  pill.className = 'net ' + (UI.online ? 'on' : 'off');
+  pill.innerHTML = UI.online ? `${ico('wifi')}<span class="net-txt">Online</span>` : `${ico('wifiOff')}<span class="net-txt">Offline</span>`;
+  pill.setAttribute('aria-label', (UI.online ? 'Online' : 'Offline') + ': tocar para simular a conexão');
+  document.getElementById('sub-equipe').textContent = [MARCA ? MARCA.programa : 'Atenção primária', S.perfil && S.perfil.nome.split(' ')[0]].filter(Boolean).join(' · ');
+  const bm = document.getElementById('brand-mark'); if (bm && !bm.dataset.ok) bm.outerHTML = marcaHTML('brand-mark', 'id="brand-mark" data-ok="1"');
+  const views = { inicio: vInicio, familias: vFamilias, novo: vNovo, sync: vSync, painel: vPainel, projeto: vProjeto, equipe: vEquipe };
+  document.getElementById('view').innerHTML = views[UI.tab]();
+  if (!S.logado && !document.getElementById('login')) abrirLogin();
+}
+
+/* ---------- Início ---------- */
+function resultadosBusca(q, lim) {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  return S.domicilios.filter(d => [d.codigo, d.localidade, d.responsavelNome, ...d.moradores.map(m => m.nome)].join(' ').toLowerCase().includes(q)).slice(0, lim);
+}
+function homeResHTML() {
+  const q = UI.buscaInicio.trim(); if (!q) return '';
+  const l = resultadosBusca(q, 5);
+  return `<div class="list">${l.length ? l.map(itemDom).join('') : '<p class="item muted">Nenhuma família encontrada com esse nome.</p>'}</div>`;
+}
+function vInicio() {
+  const pend = pendentes();
+  const nPend = pend.reduce((n, d) => n + pendItens(d.pend), 0);
+  const atHoje = S.domicilios.reduce((n, d) => n + d.atendimentos.filter(a => ehHoje(a.data)).length, 0);
+  const ult = S.syncs[S.syncs.length - 1];
+  const alertas = S.domicilios.flatMap(d => alertasDom(d).map(a => ({ ...a, d }))).sort((a, b) => (a.nivel === 'alta' ? 0 : 1) - (b.nivel === 'alta' ? 0 : 1));
+  const deHoje = S.domicilios.filter(d => ehHoje(d.atualizadoEm)).sort((a, b) => b.atualizadoEm.localeCompare(a.atualizadoEm));
+  const hr = HOJE.getHours();
+  const saud = hr < 12 ? 'Bom dia' : hr < 18 ? 'Boa tarde' : 'Boa noite';
+  const nome = S.perfil ? S.perfil.nome.split(' ').slice(0, 2).join(' ') : 'equipe';
+  return `<div class="stack">
+    <div class="hello row between"><div><p class="eyebrow">${h(HOJE.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }))}</p><h1>${saud}, ${h(nome)}</h1>${S.perfil ? `<p class="muted" style="font-size:.86rem">${h(S.perfil.papel)} · <span class="mono">${h(S.perfil.email)}</span></p>` : ''}</div><button class="btn small ghost" data-act="sair">Sair</button></div>
+    <div class="search">${ico('search')}<input id="busca-inicio" type="search" placeholder="Buscar família pelo nome do responsável ou morador" value="${h(UI.buscaInicio)}" aria-label="Buscar família"></div>
+    <div id="home-res">${homeResHTML()}</div>
+    <div class="quick">
+      <button class="main" data-act="nova-familia">${ico('plus')}<b>Nova família</b><small>Domicílio, moradores e atendimentos</small></button>
+      ${S.rascunho ? `<button data-act="go" data-tab="novo">${ico('edit')}<b>Continuar rascunho</b><small>${h(S.rascunho.responsavelNome || S.rascunho.localidade || 'Sem nome')} · passo ${UI.passo + 1} de ${PASSOS.length}</small></button>` : ''}
+      <button data-act="go" data-tab="familias">${ico('users')}<b>Famílias</b><small>${S.domicilios.length} cadastradas no território</small></button>
+      ${ehAdmin() ? `<button data-act="go" data-tab="equipe">${ico('plus')}<b>Convidar pessoa</b><small>Equipe e links de acesso</small></button>` : ''}
+    </div>
+    <div class="sync-card ${UI.online ? 'on' : 'off'}">
+      <div class="ico">${ico(UI.online ? 'cloud' : 'wifiOff')}</div>
+      <h2>${UI.online ? (nPend ? 'Internet disponível' : 'Tudo enviado') : 'Trabalhando sem internet'}</h2>
+      <p class="muted">${nPend ? `<b class="num">${nPend}</b> ${nPend === 1 ? 'registro guardado' : 'registros guardados'} neste aparelho` : 'Nenhum registro esperando envio'} · última sincronização ${ult ? fmtQuando(ult.quando) : 'nunca'}</p>
+      <div class="actions">
+        ${UI.online && nPend ? `<button class="btn primary small" data-act="sync-now">${ico('cloud')} Enviar agora</button>` : ''}
+        <button class="btn small" data-act="go" data-tab="sync">Ver fila de envio</button>
+      </div>
+    </div>
+    <div class="card stack" style="gap:10px">
+      <div class="row between"><h2>Atendimentos de hoje</h2><span class="num"><b>${atHoje}</b> <span class="muted">de ${META_DIA} previstos</span></span></div>
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${META_DIA}" aria-valuenow="${atHoje}"><i style="width:${Math.min(100, atHoje / META_DIA * 100)}%"></i></div>
+    </div>
+    <div class="section-head"><h2>Precisam de atenção</h2><span class="muted num" style="font-size:.86rem">${alertas.length} alertas</span></div>
+    <div class="list">${alertas.slice(0, 6).map(a => alertaItem(a, a.d)).join('')}</div>
+    <div class="section-head"><h2>Registros de hoje</h2></div>
+    <div class="list">${deHoje.length ? deHoje.map(itemDom).join('') : '<p class="item muted">Nenhum registro feito hoje.</p>'}</div>
+  </div>`;
+}
+function alertaItem(a, d) {
+  const alvo = a.m ? `data-act="abrir-morador" data-d="${d.id}" data-m="${a.m.id}"` : `data-act="abrir-dom" data-id="${d.id}"`;
+  return `<button class="alert-item ${a.nivel}" ${alvo}><span class="bar"></span><span><b>${h(a.texto)}</b><br><span class="muted" style="font-size:.84rem">${h(d.codigo)} · ${h(d.localidade)}</span></span>
+    <span class="chip ${a.nivel === 'alta' ? 'risk' : 'pend'}">${a.nivel === 'alta' ? 'Prioridade' : 'Acompanhar'}</span></button>`;
+}
+function itemDom(d) {
+  const al = alertasDom(d);
+  const gest = d.moradores.some(m => m.condicoes.includes('Gestante'));
+  const ben = d.beneficiosFamilia.some(b => b !== 'Nenhum');
+  return `<button class="item" data-act="abrir-dom" data-id="${d.id}">
+    <span class="t">${h(d.responsavelNome)}</span>
+    <span class="mono muted">${h(d.codigo)}</span>
+    <span class="s">${h(d.localidade)} · ${d.moradores.length} ${d.moradores.length === 1 ? 'morador' : 'moradores'} · ${d.atendimentos.length} ${d.atendimentos.length === 1 ? 'atendimento' : 'atendimentos'}</span>
+    <span></span>
+    <span class="chips">
+      ${d.pend ? `<span class="chip pend">Aguardando envio</span>` : '<span class="chip ok">Na nuvem</span>'}
+      ${al.some(a => a.nivel === 'alta') ? '<span class="chip risk">Prioridade</span>' : ''}
+      ${gest ? '<span class="chip river">Gestante</span>' : ''}
+      ${ben ? '<span class="chip">Recebe benefício</span>' : ''}
+    </span>
+  </button>`;
+}
+
+/* ---------- Famílias ---------- */
+const FILTROS = [['todos', 'Todas'], ['pendente', 'Aguardando envio'], ['prioridade', 'Prioridade'], ['retorno', 'Encaminhamento ou retorno'], ['gestante', 'Com gestante'], ['beneficio', 'Com benefício'], ['cronico', 'Hipertensos / diabéticos']];
+function filtrarDoms() {
+  const q = UI.busca.trim().toLowerCase();
+  return S.domicilios.filter(d => {
+    const f = UI.filtro;
+    if (f === 'pendente' && !d.pend) return false;
+    if (f === 'prioridade' && !alertasDom(d).some(a => a.nivel === 'alta')) return false;
+    if (f === 'retorno' && !d.atendimentos.some(a => a.encaminhamento.sim || a.retorno.sim)) return false;
+    if (f === 'gestante' && !d.moradores.some(m => m.condicoes.includes('Gestante'))) return false;
+    if (f === 'beneficio' && !d.beneficiosFamilia.some(b => b !== 'Nenhum')) return false;
+    if (f === 'cronico' && !d.moradores.some(m => m.condicoes.includes('Hipertensão') || m.condicoes.includes('Diabetes'))) return false;
+    return !q || [d.codigo, d.localidade, d.responsavelNome, ...d.moradores.map(m => m.nome)].join(' ').toLowerCase().includes(q);
+  }).sort((a, b) => (a.pend ? 0 : 1) - (b.pend ? 0 : 1) || a.responsavelNome.localeCompare(b.responsavelNome));
+}
+function listaFamiliasHTML() {
+  const l = filtrarDoms();
+  return `<p class="muted num" style="font-size:.86rem">${l.length} ${l.length === 1 ? 'família' : 'famílias'}</p>
+    <div class="list">${l.length ? l.map(itemDom).join('') : '<p class="item muted">Nenhuma família encontrada. Confira a grafia ou cadastre uma nova.</p>'}</div>`;
+}
+function vFamilias() {
+  return `<div class="stack">
+    <div class="row between"><h1>Famílias</h1><button class="btn primary small" data-act="nova-familia">${ico('plus')} Nova família</button></div>
+    <div class="search">${ico('search')}<input id="busca" type="search" placeholder="Nome do responsável ou de um morador" value="${h(UI.busca)}" aria-label="Buscar família"></div>
+    <div class="filter-chips" role="group" aria-label="Filtros">${FILTROS.map(([k, n]) => `<button data-act="filtro" data-f="${k}" aria-pressed="${UI.filtro === k}">${n}</button>`).join('')}</div>
+    <div id="lista-familias" class="stack" style="gap:8px">${listaFamiliasHTML()}</div>
+  </div>`;
+}
+
+/* ---------- Ficha da família ---------- */
+function chipsMorador(m) {
+  return `${m.condicoes.map(c => `<span class="chip ${c === 'Gestante' ? 'river' : 'risk'}">${h(c === 'Outra' && m.outraCondicao ? m.outraCondicao : c)}${c === 'Gestante' && m.semanas ? ' · ' + m.semanas + ' sem.' : ''}</span>`).join('')}
+  ${m.vacina === 'Não' ? '<span class="chip risk">Vacina atrasada</span>' : m.vacina === 'Não sabe' ? '<span class="chip pend">Vacina: não sabe</span>' : ''}
+  ${m.beneficios.map(b => `<span class="chip">${h(b)}</span>`).join('')}`;
+}
+function abrirDom(id) {
+  const d = S.domicilios.find(x => x.id === id); if (!d) return;
+  const al = alertasDom(d);
+  const c = d.comp || {};
+  const ats = [...d.atendimentos].sort((a, b) => b.data.localeCompare(a.data));
+  abrirSheet(`
+    <div class="sheet-head">
+      <div><p class="eyebrow mono">${h(d.codigo)} · microárea ${h(d.microarea)}</p><h2 style="font-size:1.35rem">${h(d.responsavelNome)}</h2>
+      <p class="muted">${h(d.localidade)}${d.referencia ? ' · ' + h(d.referencia) : ''}</p></div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <div class="stack">
+      <div class="row">
+        ${d.pend ? `<span class="chip pend">Aguardando envio · ${h(pendTexto(d.pend))}</span>` : '<span class="chip ok">Sincronizado</span>'}
+        <span class="chip">Versão ${d.versao}</span>
+      </div>
+      ${d.criadoPor ? `<p class="muted autoria">Cadastrada por <b>${h(d.criadoPor.nome)}</b> em ${fmtData(d.criadoEm)}${d.atualizadoPor ? ` · atualizada por <b>${h(d.atualizadoPor.nome)}</b>` : ''}</p>` : ''}
+      ${al.length ? `<div class="list">${al.map(a => alertaItem(a, d)).join('')}</div>` : ''}
+      <div class="comp">
+        ${[['Total', c.total], ['0–11 anos', c.criancas], ['12–17', c.adolescentes], ['18–59', c.adultos], ['60+', c.idosos]].map(([l, v]) => `<div><b class="num">${v ?? '—'}</b><span>${l}</span></div>`).join('')}
+      </div>
+      <div class="section-head"><h3>Moradores</h3><button class="btn small ghost" data-act="editar-dom" data-id="${d.id}">${ico('edit')} Editar família</button></div>
+      <div class="list">${d.moradores.map(m => {
+        const n = d.atendimentos.filter(a => a.moradorId === m.id).length;
+        return `<div class="member"><span class="avatar ${m.sexo}">${h(iniciais(m.nome))}</span>
+          <button class="linkish" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}"><b>${h(m.nome)}</b><br><span class="muted" style="font-size:.85rem">${h(m.parentesco)} · ${idadeTxt(m.nascimento)} · ${n} ${n === 1 ? 'atendimento' : 'atendimentos'}</span>
+          <span class="row" style="gap:6px;margin-top:6px">${chipsMorador(m)}</span></button>
+          <button class="btn small primary" data-act="novo-atend" data-d="${d.id}" data-m="${m.id}" aria-label="Novo atendimento para ${h(m.nome)}">${ico('steth')}<span class="hide-sm">Atender</span></button></div>`;
+      }).join('')}</div>
+      <h3>Domicílio</h3>
+      <div class="card"><dl class="review">
+        <dt>Moradia</dt><dd>${h(d.moradia)} · ${d.comodos} cômodo(s)</dd>
+        <dt>Energia</dt><dd>${h(d.energia)}</dd>
+        <dt>Água</dt><dd>${h(d.agua)} · ${h(d.tratamento)}</dd>
+        <dt>Esgoto</dt><dd>${h(d.esgoto)}</dd>
+        <dt>Lixo</dt><dd>${h(d.lixo)}</dd>
+        <dt>Animais</dt><dd>${h(d.animais.join(', '))}</dd>
+        <dt>Renda</dt><dd>${h(d.renda)}</dd>
+        <dt>Benefícios</dt><dd>${h(d.beneficiosFamilia.join(', '))} · ${d.pessoasComBeneficio} ${d.pessoasComBeneficio === 1 ? 'pessoa recebe' : 'pessoas recebem'}</dd>
+        <dt>Posto de saúde</dt><dd>${d.posto.acesso === 'Sim' ? `Tem acesso · ${d.posto.km ? d.posto.km + ' km · ' : ''}${h(d.posto.tempo)} (${h(d.posto.meio)})` : `Sem acesso · ${d.posto.km ? d.posto.km + ' km · ' : ''}${h(d.posto.tempo || '')}`}</dd>
+        <dt>GPS</dt><dd class="mono">${d.coords ? `${d.coords.lat}, ${d.coords.lng} (±${d.coords.prec} m)` : '—'}</dd>
+      </dl></div>
+      <h3>Últimos atendimentos</h3>
+      <div class="list">${ats.length ? ats.slice(0, 8).map(a => itemAtend(d, a, true)).join('') : '<p class="item muted">Nenhum atendimento ainda. Use “Atender” ao lado de cada morador.</p>'}</div>
+    </div>`);
+}
+function itemAtend(d, a, comNome) {
+  const m = achaMorador(d, a.moradorId) || { nome: '—', nascimento: '' };
+  const al = vitaisAlertas(a, idadeDec(m.nascimento, a.data));
+  return `<button class="item" data-act="ver-atend" data-d="${d.id}" data-a="${a.id}">
+    <span class="t">${comNome ? h(m.nome.split(' ')[0]) + ' · ' : ''}${h(a.hipotese || a.queixa)}</span><span class="muted" style="font-size:.84rem">${fmtQuando(a.data)}</span>
+    <span class="s">${h(a.profNome)} · ${a.cid ? '<span class="mono">' + h(a.cid) + '</span> · ' : ''}${h(a.queixa)}</span><span></span>
+    <span class="chips">${a.encaminhamento.sim ? `<span class="chip ${a.encaminhamento.urgencia === 'Urgente' ? 'risk' : 'pend'}">Encaminhado · ${h(a.encaminhamento.urgencia)}</span>` : ''}${a.retorno.sim ? '<span class="chip river">Retorno</span>' : ''}${al.filter(x => x.nivel === 'alta').map(x => `<span class="chip risk">${h(x.txt)}</span>`).join('')}</span>
+  </button>`;
+}
+
+/* ---------- Ficha do morador ---------- */
+function abrirMorador(dId, mId) {
+  const d = S.domicilios.find(x => x.id === dId); const m = achaMorador(d, mId); if (!m) return;
+  const ats = d.atendimentos.filter(a => a.moradorId === m.id).sort((a, b) => b.data.localeCompare(a.data));
+  abrirSheet(`
+    <div class="sheet-head">
+      <div><button class="btn small ghost" data-act="abrir-dom" data-id="${d.id}" style="margin-left:-10px">${ico('back')} Família ${h(d.responsavelNome.split(' ')[0])}</button>
+      <h2 style="font-size:1.35rem">${h(m.nome)}</h2><p class="muted">${h(m.parentesco)} · ${idadeTxt(m.nascimento)} · ${m.sexo === 'F' ? 'Feminino' : 'Masculino'} · nasc. ${fmtData(m.nascimento + 'T12:00:00')}</p></div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <div class="stack">
+      <div class="row" style="gap:6px">${chipsMorador(m)}</div>
+      <button class="btn primary block" data-act="novo-atend" data-d="${d.id}" data-m="${m.id}">${ico('steth')} Novo atendimento</button>
+      <div class="card"><dl class="review">
+        <dt>CNS</dt><dd class="mono">${cnsMask(m.cns) || 'não informado'}</dd>
+        <dt>CPF</dt><dd class="mono">${cpfMask(m.cpf) || 'não informado'}</dd>
+        <dt>Raça / cor</dt><dd>${h(m.raca || '—')}</dd>
+        <dt>Escolaridade</dt><dd>${h(m.escolaridade || '—')}${m.alfabetizado === false ? ' · não sabe ler/escrever' : m.alfabetizado ? ' · sabe ler/escrever' : ''}</dd>
+        <dt>Ocupação</dt><dd>${h(m.ocupacao || '—')}</dd>
+        <dt>Vacinação</dt><dd>${h(m.vacina || '—')}${m.caderneta ? ' · caderneta: ' + h(m.caderneta) : ''}</dd>
+        <dt>Medicamento contínuo</dt><dd>${m.medUsa ? h(m.medQual || 'sim') : 'Não'}</dd>
+      </dl></div>
+      <h3>Atendimentos</h3>
+      <div class="list">${ats.length ? ats.map(a => itemAtend(d, a, false)).join('') : '<p class="item muted">Nenhum atendimento registrado.</p>'}</div>
+    </div>`);
+}
+
+/* ---------- Atendimento: ver ---------- */
+function abrirAtendVer(dId, aId) {
+  const d = S.domicilios.find(x => x.id === dId); const a = d.atendimentos.find(x => x.id === aId); const m = achaMorador(d, a.moradorId);
+  const anos = idadeDec(m.nascimento, a.data); const imc = calcIMC(a.peso, a.altura); const cl = classificaIMC(imc, anos);
+  const al = vitaisAlertas(a, anos);
+  abrirSheet(`
+    <div class="sheet-head">
+      <div><button class="btn small ghost" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}" style="margin-left:-10px">${ico('back')} ${h(m.nome.split(' ')[0])}</button>
+      <h2>${h(a.hipotese || 'Atendimento')}</h2><p class="muted">${fmtData(a.data)} às ${fmtHora(a.data)} · ${h(a.profNome)} (${h(a.profTipo)})</p>${a.por && a.por.email ? `<p class="muted autoria">Registrado pela conta <span class="mono">${h(a.por.email)}</span></p>` : ''}</div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <div class="stack">
+      ${al.length ? `<div class="row" style="gap:6px">${al.map(x => `<span class="chip ${x.nivel === 'alta' ? 'risk' : 'pend'}">${h(x.txt)}</span>`).join('')}</div>` : ''}
+      <div class="vitals-view">
+        ${[['PA', a.pas ? a.pas + '×' + a.pad : '—', 'mmHg'], ['FC', a.fc ?? '—', 'bpm'], ['Temp.', fmtNum(a.temp), '°C'], ['Glicemia', a.glic ?? '—', 'mg/dL'], ['Saturação', a.sat ?? '—', '%'], ['IMC', fmtNum(imc), cl ? cl.txt : '']].map(([l, v, u]) => `<div><span>${l}</span><b class="num">${v}</b><small>${h(u)}</small></div>`).join('')}
+      </div>
+      ${anos < 19 && imc ? curvaIMC(imc, anos) : ''}
+      <div class="card"><dl class="review">
+        <dt>Queixa</dt><dd>${h(a.queixa)}</dd>
+        <dt>Peso / altura</dt><dd>${fmtNum(a.peso)} kg · ${a.altura ?? '—'} cm</dd>
+        <dt>Hipótese</dt><dd>${h(a.hipotese || '—')}${a.cid ? ` · <span class="mono">${h(a.cid)}</span> ${h(cidNome(a.cid))}` : ''}</dd>
+        <dt>Conduta</dt><dd>${h(a.conduta || '—')}</dd>
+        <dt>Medicamentos</dt><dd>${a.meds.length ? a.meds.map(x => '<b>' + h(x.nome) + '</b> · ' + x.qtd + (x.pos ? '<br><span class="muted">' + h(x.pos) + '</span>' : '')).join('<br>') : 'Nenhum'}</dd>
+        <dt>Exames</dt><dd>${h(a.exames || 'Nenhum')}</dd>
+        <dt>Encaminhamento</dt><dd>${a.encaminhamento.sim ? h(a.encaminhamento.destino) + ' · ' + h(a.encaminhamento.urgencia) : 'Não'}</dd>
+        <dt>Retorno</dt><dd>${a.retorno.sim ? 'Sim' + (a.retorno.dias ? ', em ' + a.retorno.dias + ' dias' : '') : 'Não'}</dd>
+      </dl></div>
+      <div class="card evolucao"><h3>Evolução médica</h3><p>${a.evolucao ? h(a.evolucao).replace(/\n/g, '<br>') : '<span class="muted">Sem evolução registrada.</span>'}</p></div>
+    </div>`);
+}
+
+/* Curva de IMC para idade (crianças e adolescentes) */
+function curvaIMC(imc, anos) {
+  const W = 320, H = 150, L = 30, R = 8, T = 10, B = 24;
+  const x = a => L + a / 19 * (W - L - R);
+  const y = v => T + (1 - (v - 10) / 24) * (H - T - B);
+  const pts = k => Array.from({ length: 39 }, (_, i) => { const a = i / 2; return [x(a), y(imcRef(a)[k])]; });
+  const band = [...pts('zm2'), ...pts('zp2').reverse()].map(p => p.join(',')).join(' ');
+  const line = k => pts(k).map(p => p.join(',')).join(' ');
+  const c = classificaIMC(imc, anos);
+  const cor = c.nivel === 'ok' ? 'var(--primary)' : c.nivel === 'alta' ? 'var(--danger)' : 'var(--sun)';
+  const iy = Math.max(10, Math.min(34, imc));
+  return `<div class="card curva"><div class="row between"><h3>IMC para a idade</h3><span class="chip ${c.nivel === 'ok' ? 'ok' : c.nivel === 'alta' ? 'risk' : 'pend'}">${h(c.txt)}</span></div>
+    <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Curva de IMC para idade com o ponto da criança">
+      <polygon points="${band}" style="fill:var(--primary-soft)"/>
+      <polyline points="${line('med')}" style="fill:none;stroke:var(--primary);stroke-width:1.5"/>
+      <polyline points="${line('zm2')}" style="fill:none;stroke:var(--danger);stroke-width:1;stroke-dasharray:3 3"/>
+      <polyline points="${line('zp2')}" style="fill:none;stroke:var(--sun);stroke-width:1;stroke-dasharray:3 3"/>
+      ${[0, 5, 10, 15, 19].map(a => `<text x="${x(a)}" y="${H - 6}" text-anchor="middle" style="fill:var(--muted);font-size:10px">${a}a</text>`).join('')}
+      ${[12, 18, 24, 30].map(v => `<text x="${L - 4}" y="${y(v) + 3}" text-anchor="end" style="fill:var(--muted);font-size:10px">${v}</text><line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" style="stroke:var(--line);stroke-width:.6"/>`).join('')}
+      <circle cx="${x(Math.min(19, anos))}" cy="${y(iy)}" r="5.5" style="fill:${cor};stroke:var(--surface);stroke-width:2"/>
+    </svg>
+    <p class="muted" style="font-size:.78rem">Faixa verde: entre −2 e +2 escores-z (referência OMS, valores aproximados; confira na Caderneta da Criança). IMC ${fmtNum(imc)} aos ${fmtNum(anos)} anos.</p></div>`;
+}
+
+/* ---------- Atendimento: novo ---------- */
+function abrirAtendForm(dId, mId) {
+  const d = S.domicilios.find(x => x.id === dId); const m = achaMorador(d, mId);
+  const anos = idadeDec(m.nascimento);
+  const hojeISO = new Date(HOJE.getTime() - HOJE.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+  const papel = S.perfil ? S.perfil.papel : 'Médico(a)';
+  abrirSheet(`
+    <div class="sheet-head">
+      <div><button class="btn small ghost" data-act="abrir-morador" data-d="${d.id}" data-m="${m.id}" style="margin-left:-10px">${ico('back')} Cancelar</button>
+      <h2>Novo atendimento</h2><p class="muted">${h(m.nome)} · ${idadeTxt(m.nascimento)} · ${h(d.localidade)}</p></div>
+      <button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button>
+    </div>
+    <form id="form-atend" class="stack" data-d="${d.id}" data-m="${m.id}" data-anos="${anos}">
+      <fieldset><legend>Atendimento</legend>
+        <div class="grid2">
+          <div class="field"><label for="a-data">Data</label><input id="a-data" name="data" type="date" value="${hojeISO}" required></div>
+          <div class="field"><label for="a-prof">Profissional (conta conectada)</label><input id="a-prof" type="text" value="${h(quem().nome)}" readonly><span class="hint mono">${h(quem().email)}</span></div>
+        </div>
+        <div class="field"><span class="lbl">Profissional</span><div class="opts">${OP.profissionais.map(p => `<label class="opt"><input type="radio" name="profTipo" value="${h(p)}" ${p === (OP.profissionais.includes(papel) ? papel : 'Médico(a)') ? 'checked' : ''}><span>${h(p)}</span></label>`).join('')}</div></div>
+        <div class="field"><label for="a-queixa">Queixa principal</label><textarea id="a-queixa" name="queixa" placeholder="Nas palavras do paciente" required></textarea></div>
+      </fieldset>
+      <fieldset><legend>Sinais vitais</legend>
+        <div class="vitals">
+          <div class="field"><label for="a-pas">PA sistólica</label><input id="a-pas" name="pas" type="number" inputmode="numeric" placeholder="120"><span class="hint">mmHg</span></div>
+          <div class="field"><label for="a-pad">PA diastólica</label><input id="a-pad" name="pad" type="number" inputmode="numeric" placeholder="80"><span class="hint">mmHg</span></div>
+          <div class="field"><label for="a-fc">Freq. cardíaca</label><input id="a-fc" name="fc" type="number" inputmode="numeric"><span class="hint">bpm</span></div>
+          <div class="field"><label for="a-temp">Temperatura</label><input id="a-temp" name="temp" type="number" step="0.1" inputmode="decimal"><span class="hint">°C</span></div>
+          <div class="field"><label for="a-glic">Glicemia capilar</label><input id="a-glic" name="glic" type="number" inputmode="numeric"><span class="hint">mg/dL</span></div>
+          <div class="field"><label for="a-sat">Saturação</label><input id="a-sat" name="sat" type="number" inputmode="numeric"><span class="hint">% SpO₂</span></div>
+        </div>
+        <div id="vitais-alertas" class="row" style="gap:6px"></div>
+      </fieldset>
+      <fieldset><legend>Peso e altura</legend>
+        <div class="grid2">
+          <div class="field"><label for="a-peso">Peso (kg)</label><input id="a-peso" name="peso" type="number" step="0.1" inputmode="decimal"></div>
+          <div class="field"><label for="a-alt">Altura (cm)</label><input id="a-alt" name="altura" type="number" inputmode="numeric"></div>
+        </div>
+        <div id="imc-out" class="imc-out muted">Preencha peso e altura para calcular o IMC.</div>
+        <div id="curva-out"></div>
+      </fieldset>
+      <fieldset><legend>Avaliação e conduta</legend>
+        <div class="field"><label for="a-hip">Hipótese diagnóstica</label><input id="a-hip" name="hipotese" type="text" placeholder="Ex.: hipertensão descompensada"></div>
+        <div class="field"><label for="cid-busca">CID-10 (opcional)</label><input id="cid-busca" type="search" placeholder="Busque por código ou nome, ex.: I10 ou malária" autocomplete="off"><input type="hidden" name="cid" id="a-cid"><div id="cid-res" class="cid-res"></div></div>
+        <div class="field"><label for="a-cond">Conduta</label><textarea id="a-cond" name="conduta"></textarea></div>
+        <div class="field"><span class="lbl">Medicamentos entregues</span><span class="hint">Escreva o nome do remédio ou toque em um dos mais usados.</span>
+          <div id="meds" class="stack" style="gap:10px">${medRow()}</div>
+          <div class="med-quick" aria-label="Remédios mais usados">${OP.meds.slice(0, 10).map(x => `<button type="button" data-act="med-pick" data-n="${h(x)}">${h(x)}</button>`).join('')}</div>
+          <button type="button" class="btn small" data-act="add-med" style="align-self:flex-start">${ico('plus')} Adicionar outro remédio</button></div>
+        <div class="field"><label for="a-ex">Exames solicitados</label><input id="a-ex" name="exames" type="text" placeholder="Ex.: hemograma, gota espessa"></div>
+      </fieldset>
+      <fieldset><legend>Encaminhamento e retorno</legend>
+        <div class="field"><span class="lbl">Precisa de encaminhamento?</span><div class="opts">${['Não', 'Sim'].map((s, i) => `<label class="opt"><input type="radio" name="encSim" value="${s}" ${i === 0 ? 'checked' : ''}><span>${s}</span></label>`).join('')}</div></div>
+        <div class="grid2">
+          <div class="field"><label for="a-dest">Para onde</label><input id="a-dest" name="encDestino" type="text" list="lista-destinos" placeholder="Ex.: Hospital regional"></div>
+          <div class="field"><span class="lbl">Urgência</span><div class="opts">${OP.urgencia.map((u, i) => `<label class="opt"><input type="radio" name="encUrg" value="${u}" ${i === 0 ? 'checked' : ''}><span>${u}</span></label>`).join('')}</div></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><span class="lbl">Precisa de retorno / acompanhamento?</span><div class="opts">${['Não', 'Sim'].map((s, i) => `<label class="opt"><input type="radio" name="retSim" value="${s}" ${i === 0 ? 'checked' : ''}><span>${s}</span></label>`).join('')}</div></div>
+          <div class="field"><label for="a-ret">Retorno em (dias)</label><input id="a-ret" name="retDias" type="number" inputmode="numeric" placeholder="30"></div>
+        </div>
+      </fieldset>
+      <fieldset><legend>Evolução médica</legend>
+        <div class="field"><label for="a-evol" class="muted" style="font-weight:400">Registro livre do atendimento: história, exame físico, avaliação e plano.</label>
+        <textarea id="a-evol" name="evolucao" rows="8" placeholder="Ex.: Paciente refere cefaleia há 3 dias, sem uso da medicação. Ao exame: BEG, corado, hidratado, PA 160x100. Avaliação: HAS descompensada por má adesão. Plano: reiniciar losartana, orientar dieta hipossódica, retorno em 30 dias."></textarea></div>
+      </fieldset>
+      <datalist id="lista-destinos">${OP.destinos.map(x => `<option value="${h(x)}">`).join('')}</datalist>
+      <datalist id="lista-meds">${OP.meds.map(x => `<option value="${h(x)}">`).join('')}</datalist>
+      <button class="btn primary block" type="submit">${ico('check')} Salvar atendimento no aparelho</button>
+    </form>`);
+}
+const medRow = () => `<div class="med-row">
+  <div class="field med-nome"><label>Nome do remédio</label><input name="med_nome" type="text" list="lista-meds" placeholder="Escreva o nome e a dose, ex.: Amoxicilina 500 mg" autocomplete="off"></div>
+  <div class="field med-qtd"><label>Quantidade</label><input name="med_qtd" type="number" inputmode="numeric" placeholder="Ex.: 21"></div>
+  <div class="field med-pos"><label>Como tomar</label><input name="med_pos" type="text" placeholder="Ex.: 1 comprimido de 8 em 8 horas por 7 dias"></div>
+  <button type="button" class="icon-btn med-rm" data-act="rm-med" aria-label="Remover remédio">${ico('close')}</button></div>`;
+function atualizarCalculosAtend() {
+  const f = document.getElementById('form-atend'); if (!f) return;
+  const v = n => num(f.elements[n].value);
+  const anos = Number(f.dataset.anos);
+  const a = { pas: v('pas'), pad: v('pad'), fc: v('fc'), temp: v('temp'), glic: v('glic'), sat: v('sat'), peso: v('peso'), altura: v('altura') };
+  const imc = calcIMC(a.peso, a.altura);
+  const cl = classificaIMC(imc, anos);
+  document.getElementById('imc-out').innerHTML = imc ? `IMC <b class="num">${fmtNum(imc)}</b> kg/m² · <span class="chip ${cl.nivel === 'ok' ? 'ok' : cl.nivel === 'alta' ? 'risk' : 'pend'}">${h(cl.txt)}</span>` : 'Preencha peso e altura para calcular o IMC.';
+  document.getElementById('curva-out').innerHTML = imc && anos < 19 ? curvaIMC(imc, anos) : '';
+  document.getElementById('vitais-alertas').innerHTML = vitaisAlertas({ ...a, peso: null }, anos).map(x => `<span class="chip ${x.nivel === 'alta' ? 'risk' : 'pend'}">${h(x.txt)}</span>`).join('');
+}
+function buscaCID(q) {
+  q = q.trim().toLowerCase(); const el = document.getElementById('cid-res');
+  if (!q) { el.innerHTML = ''; return; }
+  const norm = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const l = CID.filter(([c, n]) => c.toLowerCase().startsWith(q) || norm(n).includes(norm(q))).slice(0, 6);
+  el.innerHTML = l.length ? l.map(([c, n]) => `<button type="button" data-act="cid-pick" data-c="${c}" data-n="${h(n)}"><span class="mono">${c}</span> ${h(n)}</button>`).join('') : '<p class="muted" style="font-size:.84rem;padding:6px 2px">Código não encontrado na lista offline. Escreva só a hipótese.</p>';
+}
+
+/* ---------- Cadastro da família (assistente) ---------- */
+const PASSOS = ['Família', 'Moradia', 'Renda e acesso', 'Moradores', 'Revisão'];
+function novoRascunho() {
+  const unica = OP.localidades.length === 1 ? OP.localidades[0] : '';
+  return { id: null, localidade: unica, microarea: unica ? '01' : '', referencia: '', coords: null, responsavelNome: '', comp: { total: '', criancas: '', adolescentes: '', adultos: '', idosos: '' }, moradia: '', comodos: '', energia: '', agua: '', tratamento: '', esgoto: '', lixo: '', animais: [], renda: '', beneficiosFamilia: [], pessoasComBeneficio: '', posto: { acesso: '', km: '', tempo: '', meio: '' }, moradores: [], atendimentos: [], consentimento: false, observacoes: '' };
+}
+const radios = (campo, lista, valor) => `<div class="opts" role="radiogroup">${lista.map(o => `<label class="opt"><input type="radio" name="${campo}" data-f="${campo}" value="${h(o)}" ${valor === o ? 'checked' : ''}><span>${h(o)}</span></label>`).join('')}</div>`;
+const checks = (grupo, lista, valores) => `<div class="opts">${lista.map(o => `<label class="opt"><input type="checkbox" data-g="${grupo}" value="${h(o)}" ${valores.includes(o) ? 'checked' : ''}><span>${h(o)}</span></label>`).join('')}</div>`;
+const getPath = (o, p) => p.split('.').reduce((x, k) => x?.[k], o);
+function setPath(o, p, v) { const ks = p.split('.'); const last = ks.pop(); ks.reduce((x, k) => x[k] ??= {}, o)[last] = v; }
+function compHint() {
+  const c = S.rascunho.comp; const soma = ['criancas', 'adolescentes', 'adultos', 'idosos'].reduce((n, k) => n + (Number(c[k]) || 0), 0);
+  if (!c.total) return 'Informe o total e a divisão por idade.';
+  return Number(c.total) === soma ? `<span style="color:var(--primary)">Soma confere: ${soma} pessoas.</span>` : `<span style="color:var(--sun)">A soma das faixas (${soma}) é diferente do total (${c.total}).</span>`;
+}
+function vNovo() {
+  if (!S.rascunho) { S.rascunho = novoRascunho(); UI.passo = 0; }
+  const r = S.rascunho;
+  const locSel = r.locSel || (r.localidade && !OP.localidades.includes(r.localidade) ? 'Outro' : (r.localidade || OP.localidades[0]));
+  const passos = `<div class="steps">${PASSOS.map((p, i) => `<div class="${i < UI.passo ? 'done' : i === UI.passo ? 'now' : ''}">${p}</div>`).join('')}</div>`;
+  let corpo = '';
+  if (UI.passo === 0) corpo = `
+    <fieldset><legend>Onde fica</legend>
+      <div class="grid2">
+        <div class="field"><label for="f-loc">Comunidade / localidade</label><select id="f-loc" data-f="locSel">${OP.localidades.map(l => `<option ${locSel === l ? 'selected' : ''}>${h(l)}</option>`).join('')}<option value="Outro" ${locSel === 'Outro' ? 'selected' : ''}>Outro lugar (escrever)</option></select>
+          <div class="field" id="f-loc-outro-wrap" ${locSel === 'Outro' ? '' : 'hidden'} style="margin-top:8px"><label for="f-loc-outro">Nome do lugar</label><input id="f-loc-outro" type="text" data-f="localidadeOutro" list="locais-usados" value="${h(locSel === 'Outro' ? r.localidade : '')}" placeholder="Ex.: Comunidade Boa Vista" autocomplete="off">
+          <datalist id="locais-usados">${locaisUsados().filter(l => !OP.localidades.includes(l)).map(l => `<option value="${h(l)}">`).join('')}</datalist></div></div>
+        <div class="field"><label for="f-ref">Ponto de referência</label><input id="f-ref" type="text" data-f="referencia" value="${h(r.referencia)}" placeholder="Ex.: casa azul ao lado da igreja"></div>
+      </div>
+      <div class="gps">${ico('pin')}<div style="flex:1;min-width:160px">${r.coords ? `<b class="mono">${r.coords.lat}, ${r.coords.lng}</b><br><span class="muted" style="font-size:.84rem">Precisão de ±${r.coords.prec} m · GPS funciona sem internet</span>` : '<b>Localização da casa</b><br><span class="muted" style="font-size:.84rem">Usa o GPS do celular, mesmo sem internet</span>'}</div>
+      <button type="button" class="btn small" data-act="gps">${r.coords ? 'Capturar de novo' : 'Capturar GPS'}</button></div>
+    </fieldset>
+    <fieldset><legend>Responsável e moradores</legend>
+      <div class="field"><label for="f-resp">Nome do responsável pela família</label><input id="f-resp" type="text" data-f="responsavelNome" value="${h(r.responsavelNome)}" autocomplete="off"></div>
+      <div class="comp-in">
+        ${[['comp.total', 'Total de moradores'], ['comp.criancas', 'Crianças 0–11'], ['comp.adolescentes', 'Adolescentes 12–17'], ['comp.adultos', 'Adultos 18–59'], ['comp.idosos', 'Idosos 60+']].map(([f, l], i) => `<div class="field ${i === 0 ? 'total' : ''}"><label for="f-${f}">${l}</label><input id="f-${f}" type="number" min="0" inputmode="numeric" data-f="${f}" value="${h(getPath(r, f))}"></div>`).join('')}
+      </div>
+      <p id="comp-hint" class="hint" style="font-size:.84rem">${compHint()}</p>
+    </fieldset>`;
+  if (UI.passo === 1) corpo = `
+    <fieldset><legend>Moradia</legend>
+      <div class="field"><span class="lbl">Tipo de moradia</span>${radios('moradia', OP.moradia, r.moradia)}</div>
+      <div class="grid2"><div class="field"><label for="f-com">Número de cômodos</label><input id="f-com" type="number" min="1" inputmode="numeric" data-f="comodos" value="${h(r.comodos)}"></div></div>
+      <div class="field"><span class="lbl">Energia elétrica</span>${radios('energia', OP.energia, r.energia)}</div>
+    </fieldset>
+    <fieldset><legend>Água</legend>
+      <div class="field"><span class="lbl">De onde vem</span>${radios('agua', OP.agua, r.agua)}</div>
+      <div class="field"><span class="lbl">Como é tratada</span>${radios('tratamento', OP.tratamento, r.tratamento)}</div>
+    </fieldset>
+    <fieldset><legend>Esgoto, lixo e animais</legend>
+      <div class="field"><span class="lbl">Esgoto / banheiro</span>${radios('esgoto', OP.esgoto, r.esgoto)}</div>
+      <div class="field"><span class="lbl">Destino do lixo</span>${radios('lixo', OP.lixo, r.lixo)}</div>
+      <div class="field"><span class="lbl">Animais em casa</span>${checks('animais', OP.animais, r.animais)}</div>
+    </fieldset>`;
+  if (UI.passo === 2) corpo = `
+    <fieldset><legend>Renda familiar aproximada</legend>${radios('renda', OP.renda, r.renda)}</fieldset>
+    <fieldset><legend>Benefícios do governo</legend>
+      <div class="field"><span class="lbl">Recebidos pela família (marque todos)</span>${checks('beneficiosFamilia', OP.benefFamilia, r.beneficiosFamilia)}</div>
+      <div class="grid2"><div class="field"><label for="f-pben">Quantas pessoas da casa recebem algum benefício</label><input id="f-pben" type="number" min="0" inputmode="numeric" data-f="pessoasComBeneficio" value="${h(r.pessoasComBeneficio)}"></div></div>
+    </fieldset>
+    <fieldset><legend>Acesso à saúde</legend>
+      <div class="field"><span class="lbl">A família tem acesso a posto de saúde?</span>${radios('posto.acesso', ['Sim', 'Não'], r.posto.acesso)}</div>
+      <div class="grid2"><div class="field"><label for="f-km">Distância até o posto mais próximo (km)</label><input id="f-km" type="number" min="0" inputmode="numeric" data-f="posto.km" value="${h(r.posto.km)}"></div></div>
+      <div class="field"><span class="lbl">Tempo até o posto</span>${radios('posto.tempo', OP.tempoPosto, r.posto.tempo)}</div>
+      <div class="field"><span class="lbl">Como chega</span>${radios('posto.meio', OP.meioPosto, r.posto.meio)}</div>
+    </fieldset>`;
+  if (UI.passo === 3) {
+    const decl = Number(r.comp.total) || 0;
+    corpo = `
+    <div class="row between"><div><h2>Quem mora na casa</h2><p class="muted" style="font-size:.88rem">Cadastre cada morador. Os atendimentos ficam disponíveis depois de salvar a família.</p></div><button type="button" class="btn primary small" data-act="add-morador">${ico('plus')} Adicionar morador</button></div>
+    <div class="list">${r.moradores.length ? r.moradores.map((m, i) => `<div class="member"><span class="avatar ${m.sexo}">${h(iniciais(m.nome))}</span>
+      <div style="min-width:0"><b>${h(m.nome)}</b><br><span class="muted" style="font-size:.85rem">${h(m.parentesco)} · ${idadeTxt(m.nascimento)}${m.condicoes.length ? ' · ' + h(m.condicoes.join(', ')) : ''}${m.beneficios.length ? ' · ' + h(m.beneficios.join(', ')) : ''}</span></div>
+      <button type="button" class="btn small ghost" data-act="edit-morador" data-i="${i}">Editar</button></div>`).join('') : `<p class="item muted">Nenhum morador ainda. Comece por ${h(r.responsavelNome || 'o responsável')}.</p>`}</div>
+    <p class="muted num" style="font-size:.86rem">${r.moradores.length} de ${decl || '?'} moradores declarados no passo 1</p>`;
+  }
+  if (UI.passo === 4) {
+    const falta = validarRascunho();
+    corpo = `
+    <div class="card"><dl class="review">
+      <dt>Responsável</dt><dd>${h(r.responsavelNome || '—')}</dd>
+      <dt>Localidade</dt><dd>${h(r.localidade || '—')}${r.referencia ? ' · ' + h(r.referencia) : ''}</dd>
+      <dt>GPS</dt><dd class="mono">${r.coords ? r.coords.lat + ', ' + r.coords.lng : 'não capturado'}</dd>
+      <dt>Composição</dt><dd>${r.comp.total || '—'} pessoas · ${r.comp.criancas || 0} crianças · ${r.comp.adolescentes || 0} adolescentes · ${r.comp.adultos || 0} adultos · ${r.comp.idosos || 0} idosos</dd>
+      <dt>Moradia</dt><dd>${h([r.moradia, r.comodos ? r.comodos + ' cômodo(s)' : '', r.energia ? 'energia: ' + r.energia : ''].filter(Boolean).join(' · ') || '—')}</dd>
+      <dt>Saneamento</dt><dd>${h([r.agua && 'água: ' + r.agua, r.tratamento, r.esgoto, r.lixo && 'lixo: ' + r.lixo].filter(Boolean).join(' · ') || '—')}</dd>
+      <dt>Renda</dt><dd>${h(r.renda || '—')}</dd>
+      <dt>Benefícios</dt><dd>${h(r.beneficiosFamilia.join(', ') || '—')}${r.pessoasComBeneficio !== '' ? ' · ' + r.pessoasComBeneficio + ' pessoa(s)' : ''}</dd>
+      <dt>Posto de saúde</dt><dd>${h([r.posto.acesso && (r.posto.acesso === 'Sim' ? 'tem acesso' : 'sem acesso'), r.posto.km && r.posto.km + ' km', r.posto.tempo, r.posto.meio].filter(Boolean).join(' · ') || '—')}</dd>
+      <dt>Moradores</dt><dd>${r.moradores.length ? h(r.moradores.map(m => m.nome.split(' ')[0] + ' (' + idadeTxt(m.nascimento) + ')').join(', ')) : '—'}</dd>
+    </dl></div>
+    ${falta.length ? `<div class="card" style="background:var(--sun-soft);border-color:transparent"><b>Falta preencher</b><ul style="margin:6px 0 0;padding-left:20px">${falta.map(f => `<li>${h(f)}</li>`).join('')}</ul></div>` : ''}
+    <label class="consent"><input type="checkbox" id="f-cons" data-f="consentimento" ${r.consentimento ? 'checked' : ''}>
+      <span><b>A família autorizou o registro dos dados</b><br><span class="muted" style="font-size:.86rem">Li o termo em voz alta: os dados serão usados para o cuidado em saúde e para relatórios sem identificação entregues à Secretaria de Saúde. A família pode pedir para corrigir ou apagar as informações.</span></span></label>`;
+  }
+  const editando = r.id ? S.domicilios.find(d => d.id === r.id) : null;
+  return `<div class="stack">
+    <div class="row between"><div><p class="eyebrow">${editando ? 'Editando ' + h(editando.codigo) : 'Nova família'} · passo ${UI.passo + 1} de ${PASSOS.length} · rascunho salvo sozinho</p><h1>${PASSOS[UI.passo]}</h1></div>
+    <button class="btn small ghost" data-act="descartar">Descartar</button></div>
+    ${passos}
+    ${corpo}
+    <div class="wizard-foot">
+      ${UI.passo > 0 ? '<button class="btn" data-act="passo" data-dir="-1">Voltar</button>' : ''}
+      ${UI.passo < PASSOS.length - 1 ? '<button class="btn primary" data-act="passo" data-dir="1">Continuar</button>' : `<button class="btn primary" data-act="salvar-dom">${ico('check')} Salvar família</button>`}
+    </div>
+  </div>`;
+}
+function validarRascunho() {
+  const r = S.rascunho; const f = [];
+  if (!r.localidade) f.push(r.locSel === 'Outro' ? 'Nome do lugar, em “Outro lugar” (passo 1)' : 'Comunidade / localidade (passo 1)');
+  if (!r.responsavelNome.trim()) f.push('Nome do responsável (passo 1)');
+  if (!r.comp.total) f.push('Total de moradores (passo 1)');
+  if (!r.moradia) f.push('Tipo de moradia (passo 2)');
+  if (!r.agua || !r.tratamento) f.push('Origem e tratamento da água (passo 2)');
+  if (!r.esgoto) f.push('Esgoto / banheiro (passo 2)');
+  if (!r.renda) f.push('Renda familiar (passo 3)');
+  if (!r.beneficiosFamilia.length) f.push('Benefícios: marque “Nenhum” se não receber (passo 3)');
+  if (!r.moradores.length) f.push('Ao menos um morador (passo 4)');
+  else if (!r.moradores.some(m => m.parentesco === 'Responsável')) f.push('Indicar quem é o responsável entre os moradores (passo 4)');
+  return f;
+}
+
+function abrirMoradorForm(i) {
+  const r = S.rascunho;
+  const m = i != null ? r.moradores[i] : { nome: r.moradores.length ? '' : r.responsavelNome, sexo: '', nascimento: '', parentesco: r.moradores.length ? '' : 'Responsável', cns: '', cpf: '', raca: '', escolaridade: '', alfabetizado: null, ocupacao: '', beneficios: [], condicoes: [], semanas: null, outraCondicao: '', vacina: '', caderneta: null, medUsa: false, medQual: '' };
+  const rad = (name, lista, val) => `<div class="opts">${lista.map(s => `<label class="opt"><input type="radio" name="${name}" value="${h(s)}" ${val === s ? 'checked' : ''}><span>${h(s)}</span></label>`).join('')}</div>`;
+  abrirSheet(`
+    <div class="sheet-head"><div><p class="eyebrow">Cadastro individual</p><h2>${i != null ? 'Editar morador' : 'Novo morador'}</h2></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
+    <form id="form-morador" class="stack" data-i="${i ?? ''}">
+      <fieldset><legend>Identificação</legend>
+        <div class="field"><label for="m-nome">Nome completo</label><input id="m-nome" name="nome" type="text" required value="${h(m.nome)}" autocomplete="off"></div>
+        <div class="grid2">
+          <div class="field"><label for="m-nasc">Data de nascimento</label><input id="m-nasc" name="nascimento" type="date" required value="${h(m.nascimento)}"><span class="hint" id="m-idade">${m.nascimento ? 'Idade: ' + idadeTxt(m.nascimento) : 'A idade é calculada automaticamente'}</span></div>
+          <div class="field"><span class="lbl">Sexo</span><div class="opts">${['F', 'M'].map(s => `<label class="opt"><input type="radio" name="sexo" value="${s}" ${m.sexo === s ? 'checked' : ''} required><span>${s === 'F' ? 'Feminino' : 'Masculino'}</span></label>`).join('')}</div></div>
+          <div class="field"><label for="m-cns">Cartão SUS (CNS)</label><input id="m-cns" name="cns" type="text" inputmode="numeric" value="${h(m.cns)}" placeholder="Opcional · 15 dígitos"></div>
+          <div class="field"><label for="m-cpf">CPF</label><input id="m-cpf" name="cpf" type="text" inputmode="numeric" value="${h(m.cpf)}" placeholder="Opcional"></div>
+          <div class="field"><label for="m-par">Parentesco com o responsável</label><select id="m-par" name="parentesco" required><option value="">Selecione</option>${OP.parentesco.map(p => `<option ${m.parentesco === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
+          <div class="field"><label for="m-raca">Raça / cor (IBGE, autodeclarada)</label><select id="m-raca" name="raca"><option value="">Selecione</option>${OP.raca.map(p => `<option ${m.raca === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
+          <div class="field"><label for="m-esc">Escolaridade</label><select id="m-esc" name="escolaridade"><option value="">Selecione</option>${OP.escolaridade.map(p => `<option ${m.escolaridade === p ? 'selected' : ''}>${h(p)}</option>`).join('')}</select></div>
+          <div class="field"><span class="lbl">Sabe ler e escrever?</span>${rad('alfabetizado', ['Sim', 'Não'], m.alfabetizado === true ? 'Sim' : m.alfabetizado === false ? 'Não' : '')}</div>
+        </div>
+        <div class="field"><label for="m-oc">Ocupação</label><input id="m-oc" name="ocupacao" type="text" value="${h(m.ocupacao)}" placeholder="Ex.: pescador(a), agricultor(a), estudante"></div>
+        <div class="field"><span class="lbl">Recebe benefício individual? Qual?</span><div class="opts">${OP.benefPessoa.map(c => `<label class="opt"><input type="checkbox" name="beneficios" value="${h(c)}" ${m.beneficios.includes(c) ? 'checked' : ''}><span>${h(c)}</span></label>`).join('')}</div><span class="hint">Deixe em branco se não recebe.</span></div>
+      </fieldset>
+      <fieldset><legend>Saúde</legend>
+        <div class="field"><span class="lbl">Condições de saúde</span><div class="opts">${OP.condicoes.map(c => `<label class="opt"><input type="checkbox" name="condicoes" value="${h(c)}" ${m.condicoes.includes(c) ? 'checked' : ''}><span>${h(c)}</span></label>`).join('')}</div></div>
+        <div class="grid2">
+          <div class="field"><label for="m-sem">Se gestante: semanas</label><input id="m-sem" name="semanas" type="number" min="1" max="42" inputmode="numeric" value="${m.semanas ?? ''}"></div>
+          <div class="field"><label for="m-outra">Se outra: qual</label><input id="m-outra" name="outraCondicao" type="text" value="${h(m.outraCondicao)}"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><span class="lbl">Vacinação em dia?</span>${rad('vacina', ['Sim', 'Não', 'Não sabe'], m.vacina)}</div>
+          <div class="field"><span class="lbl">Criança: tem caderneta?</span>${rad('caderneta', ['Sim', 'Não'], m.caderneta)}</div>
+        </div>
+        <div class="grid2">
+          <div class="field"><span class="lbl">Faz uso contínuo de medicamento?</span>${rad('medUsa', ['Sim', 'Não'], m.medUsa ? 'Sim' : (i != null ? 'Não' : ''))}</div>
+          <div class="field"><label for="m-medq">Qual</label><input id="m-medq" name="medQual" type="text" list="lista-meds2" value="${h(m.medQual)}" placeholder="Ex.: Losartana 50 mg"></div>
+        </div>
+        <datalist id="lista-meds2">${OP.meds.map(x => `<option value="${h(x)}">`).join('')}</datalist>
+      </fieldset>
+      <div class="row">
+        ${i != null ? '<button type="button" class="btn" data-act="remover-morador" data-i="' + i + '">Remover</button>' : ''}
+        <button class="btn primary" type="submit" style="flex:1">${ico('check')} Salvar morador</button>
+      </div>
+    </form>`);
+}
+
+/* ---------- Sincronizar ---------- */
+function vSync() {
+  const pend = pendentes();
+  const itens = pend.reduce((n, d) => n + pendItens(d.pend), 0);
+  return `<div class="stack">
+    <h1>Sincronizar</h1>
+    ${UI.aviso ? `<div class="card" style="background:var(--sun-soft);border-color:transparent"><b>${h(UI.aviso)}</b></div>` : ''}
+    <div class="sync-card ${UI.online ? 'on' : 'off'}">
+      <div class="ico">${ico(UI.online ? 'cloud' : 'wifiOff')}</div>
+      <h2 class="num">${itens} ${itens === 1 ? 'registro' : 'registros'} na fila</h2>
+      <p class="muted">${pend.length} ${pend.length === 1 ? 'família' : 'famílias'} · ${UI.online ? 'pronto para enviar' : 'tudo seguro no aparelho, envia quando houver sinal'}</p>
+      <div class="actions" style="flex-direction:column;align-items:stretch">
+        ${UI.sincronizando ? `<div class="progress"><i style="width:${UI.progresso}%"></i></div><p class="muted num" style="font-size:.86rem">Enviando… ${UI.progresso}%</p>` :
+        `<button class="btn primary" data-act="sync-now" ${!UI.online ? 'disabled' : ''}>${ico('cloud')} ${UI.online ? (itens ? 'Enviar agora' : 'Atualizar dados da equipe') : 'Aguardando internet'}</button>`}
+      </div>
+    </div>
+    ${pend.length ? `<h2>Na fila</h2><div class="list">${pend.map(d => `<button class="item" data-act="abrir-dom" data-id="${d.id}"><span class="t">${h(d.responsavelNome)}</span><span class="mono muted">${h(d.codigo)}</span><span class="s">${h(pendTexto(d.pend))} · ${fmtQuando(d.atualizadoEm)}${(d.atualizadoPor || d.criadoPor) ? ' · por ' + h((d.atualizadoPor || d.criadoPor).nome) : ''}</span></button>`).join('')}</div>` : ''}
+    <h2>Histórico de envios</h2>
+    <div class="list">${S.syncs.length ? '' : '<p class="item muted">Nenhuma sincronização ainda.</p>'}${[...S.syncs].reverse().slice(0, 20).map(s => `<div class="item"><span class="t num">${s.qtd} ${s.qtd === 1 ? 'enviado' : 'enviados'}${s.recebidos ? ' · ' + s.recebidos + (s.recebidos === 1 ? ' recebido' : ' recebidos') : ''}</span><span class="chip ok">Concluído</span><span class="s">${fmtQuando(s.quando)}</span></div>`).join('')}</div>
+    <h2>Como o envio funciona</h2>
+    <div class="flow">
+      <div><b>Coleta</b><span class="muted">Família, moradores e atendimentos são salvos no próprio celular, com ou sem sinal.</span></div>
+      <div><b>Fila</b><span class="muted">Cada registro ganha um código único e entra na fila de envio.</span></div>
+      <div><b>Envio</b><span class="muted">Com internet, a fila sobe para a nuvem. Se cair no meio, retoma de onde parou.</span></div>
+      <div><b>Confirmação</b><span class="muted">O servidor confirma cada registro e o celular marca como “Na nuvem”.</span></div>
+    </div>
+  </div>`;
+}
+/* ---------- Sincronização com o Supabase ----------
+   1) envia o que está na fila (famílias e atendimentos); 2) recebe o que a equipe enviou. */
+function dadosFamilia(d) { const { atendimentos, pend, versao, criadoEm, atualizadoEm, criadoPor, atualizadoPor, ...resto } = d; return resto; }
+function dadosAtend(a) { const { _sujo, ...resto } = a; return resto; }
+async function buscarTudo(tabela, coluna, desde) {
+  const linhas = []; let de = 0;
+  for (;;) {
+    let q = supa.from(tabela).select('*').order(coluna, { ascending: true }).range(de, de + 999);
+    if (desde) q = q.gte(coluna, desde);
+    const { data, error } = await q; if (error) throw error;
+    linhas.push(...data); if (data.length < 1000) return linhas; de += 1000;
+  }
+}
+function anexarAtend(row) {
+  const d = S.domicilios.find(x => x.id === row.familia_id); if (!d) return false;
+  if (d.atendimentos.some(a => a.id === row.id)) return true;
+  const autor = S.nomes[row.registrado_por];
+  d.atendimentos.push({ ...row.dados, id: row.id, moradorId: row.morador_id, data: row.data, por: autor || row.dados.por, profNome: autor ? autor.nome : row.dados.profNome });
+  return true;
+}
+let syncPromessa = null;
+function sincronizar(manual) { if (!syncPromessa) syncPromessa = _sincronizar(manual !== false).finally(() => { syncPromessa = null; }); return syncPromessa; }
+async function _sincronizar(manual) {
+  if (!S || !S.logado) return;
+  if (!navigator.onLine) { UI.online = false; if (manual) toast('Sem internet. Os registros continuam guardados no aparelho.'); render(); return; }
+  const { data: { session } } = await supa.auth.getSession();
+  if (!session || session.user.id !== S.perfil.id) {
+    UI.aviso = 'Para enviar os registros, toque em Sair e entre de novo com internet.';
+    if (manual) toast(UI.aviso); render(); return;
+  }
+  UI.aviso = ''; UI.sincronizando = true; UI.progresso = 0; render();
+  let enviados = 0, recebidos = 0;
+  try {
+    const fila = pendentes(); const total = Math.max(1, fila.reduce((n, d) => n + pendItens(d.pend), 0));
+    for (const d of fila) {
+      if (d.pend.cadastro) {
+        const { error } = await supa.from('familias').upsert({ id: d.id, codigo: d.codigo, localidade: d.localidade, dados: dadosFamilia(d) });
+        if (error) throw error; enviados++;
+      }
+      const ats = d.atendimentos.filter(a => a._sujo);
+      if (ats.length) {
+        const { error } = await supa.from('atendimentos').upsert(ats.map(a => ({ id: a.id, familia_id: d.id, morador_id: a.moradorId, data: a.data, dados: dadosAtend(a) })), { onConflict: 'id', ignoreDuplicates: true });
+        if (error) throw error; ats.forEach(a => delete a._sujo); enviados += ats.length;
+      }
+      d.pend = null; UI.progresso = Math.round(enviados / total * 100); salvar(); if (UI.tab === 'sync') render();
+    }
+    const { data: pessoas, error: ep } = await supa.from('perfis').select('id, nome, email');
+    if (ep) throw ep;
+    pessoas.forEach(x => { S.nomes[x.id] = { nome: x.nome, email: x.email }; });
+    const fams = await buscarTudo('familias', 'atualizado_em', S.cursorFam);
+    for (const f of fams) {
+      const i = S.domicilios.findIndex(x => x.id === f.id); const local = i >= 0 ? S.domicilios[i] : null;
+      S.cursorFam = f.atualizado_em;
+      if (local && local.pend && local.pend.cadastro) continue;
+      if (local && local.atualizadoEm === f.atualizado_em) continue;
+      const d = { ...f.dados, id: f.id, codigo: f.codigo, localidade: f.localidade, versao: f.versao, criadoEm: f.criado_em, atualizadoEm: f.atualizado_em,
+        criadoPor: S.nomes[f.criado_por] || null, atualizadoPor: f.atualizado_por ? (S.nomes[f.atualizado_por] || null) : null,
+        atendimentos: local ? local.atendimentos : [], pend: local ? local.pend : null };
+      if (i >= 0) S.domicilios[i] = d; else { S.domicilios.push(d); recebidos++; }
+    }
+    const ats = await buscarTudo('atendimentos', 'recebido_em', S.cursorAt);
+    const antes = S.domicilios.reduce((n, d) => n + d.atendimentos.length, 0);
+    S.orfaos = [...(S.orfaos || []), ...ats].filter(row => !anexarAtend(row));
+    if (ats.length) S.cursorAt = ats[ats.length - 1].recebido_em;
+    recebidos += S.domicilios.reduce((n, d) => n + d.atendimentos.length, 0) - antes;
+    S.syncs.push({ quando: new Date().toISOString(), qtd: enviados, recebidos });
+    if (S.syncs.length > 50) S.syncs = S.syncs.slice(-50);
+    if (manual || enviados) toast(enviados || recebidos ? `Sincronizado: ${enviados} ${enviados === 1 ? 'enviado' : 'enviados'}, ${recebidos} ${recebidos === 1 ? 'recebido' : 'recebidos'}` : 'Tudo em dia com a nuvem');
+  } catch (err) {
+    const msg = String((err && err.message) || err);
+    UI.aviso = /JWT|token|auth/i.test(msg) ? 'Sua sessão expirou. Toque em Sair e entre de novo com internet para enviar.'
+      : /row-level|permission|42501/i.test(msg) ? 'O servidor recusou o envio. Seu acesso pode ter sido desativado: fale com o administrador.' : '';
+    toast(UI.aviso || 'Não foi possível sincronizar agora. Os registros continuam guardados; tente de novo.');
+  } finally {
+    UI.sincronizando = false; salvar(); render();
+  }
+}
+
+/* ---------- Painel (calculado no próprio aparelho) ---------- */
+const FAIXAS = [[0, 4], [5, 9], [10, 14], [15, 19], [20, 29], [30, 39], [40, 49], [50, 59], [60, 69], [70, 200]];
+function periodo() {
+  const fim = d => { const x = new Date(d); x.setHours(23, 59, 59, 999); return x; };
+  let ate = fim(HOJE), de = null, rot = 'Todo o período';
+  if (UI.periodo === '15' || UI.periodo === '30') { de = new Date(HOJE); de.setDate(de.getDate() - Number(UI.periodo)); de.setHours(0, 0, 0, 0); rot = `Últimos ${UI.periodo} dias`; }
+  if (UI.periodo === 'custom') { if (UI.de) de = new Date(UI.de + 'T00:00:00'); if (UI.ate) ate = fim(UI.ate + 'T12:00:00'); rot = `${de ? fmtData(de) : 'início'} a ${fmtData(ate)}`; }
+  return { de, ate, rot };
+}
+function dadosPainel(soSinc = false) {
+  const p = periodo();
+  const doms = S.domicilios.filter(d => (UI.local === 'Todas' || d.localidade === UI.local) && new Date(d.criadoEm) <= p.ate && (!soSinc || !d.pend || d.pend.cadastro !== 'Nova família'));
+  const atends = doms.flatMap(d => d.atendimentos.map(a => ({ a, d }))).filter(({ a }) => { const t = new Date(a.data); return t <= p.ate && (!p.de || t >= p.de); });
+  const pes = doms.flatMap(d => d.moradores);
+  const tem = c => pes.filter(m => m.condicoes.includes(c)).length;
+  const benef = OP.benefPessoa.map(b => ({ b, familias: doms.filter(d => d.beneficiosFamilia.includes(b)).length, pessoas: pes.filter(m => m.beneficios.includes(b)).length }));
+  const lista = atends.filter(({ a }) => a.encaminhamento.sim || a.retorno.sim).map(({ a, d }) => ({ a, d, m: achaMorador(d, a.moradorId) }))
+    .sort((x, y) => OP.urgencia.indexOf(y.a.encaminhamento.urgencia || 'Eletivo') - OP.urgencia.indexOf(x.a.encaminhamento.urgencia || 'Eletivo') + (y.a.encaminhamento.sim - x.a.encaminhamento.sim) * 10);
+  return {
+    p, doms, atends, pes, lista,
+    familias: doms.length, moradores: pes.length, atendimentos: atends.length,
+    gestantes: tem('Gestante'), hipertensos: tem('Hipertensão'), diabeticos: tem('Diabetes'),
+    menores5: pes.filter(m => idade(m.nascimento) < 5).length, idosos: pes.filter(m => idade(m.nascimento) >= 60).length,
+    cond: OP.condicoes.map(c => [c, tem(c)]).filter(([, v]) => v).sort((a, b) => b[1] - a[1]),
+    semAgua: doms.filter(d => d.tratamento === 'Sem tratamento').length,
+    semBanheiro: doms.filter(d => ['Sem banheiro', 'A céu aberto'].includes(d.esgoto)).length,
+    semEnergia: doms.filter(d => d.energia === 'Não').length,
+    semPosto: doms.filter(d => d.posto.acesso === 'Não').length,
+    famComBenef: doms.filter(d => d.beneficiosFamilia.some(b => b !== 'Nenhum')).length,
+    pesComBenef: doms.reduce((n, d) => n + (Number(d.pessoasComBeneficio) || 0), 0),
+    benef, renda: OP.renda.map(r => [r, doms.filter(d => d.renda === r).length]),
+    enc: { total: lista.filter(x => x.a.encaminhamento.sim).length, urg: lista.filter(x => x.a.encaminhamento.urgencia === 'Urgente').length, ret: lista.filter(x => x.a.retorno.sim).length },
+    piramide: FAIXAS.map(([a, b]) => ({ faixa: b > 100 ? a + '+' : a + '–' + b, M: pes.filter(m => m.sexo === 'M' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length, F: pes.filter(m => m.sexo === 'F' && idade(m.nascimento) >= a && idade(m.nascimento) <= b).length }))
+  };
+}
+function locaisUsados() { const l = [...new Set([...OP.localidades, ...S.domicilios.map(d => d.localidade).filter(Boolean)])]; return l; }
+const nomeLocal = () => UI.local !== 'Todas' ? UI.local : locaisUsados().length === 1 ? locaisUsados()[0] : 'Todos os lugares atendidos';
+const hbar = (lab, v, total, cls = '', mostrarPct = true) => `<div class="hbar ${cls}"><span class="lab">${h(lab)}</span><span class="track"><i style="width:${total ? Math.max(1.5, v / total * 100) : 0}%"></i></span><span class="val">${mostrarPct ? pct(v, total) + '%' : v}</span></div>`;
+function piramideHTML(I) {
+  const maxP = Math.max(1, ...I.piramide.flatMap(p => [p.M, p.F]));
+  return `<div class="pyr">${[...I.piramide].reverse().map(p => `<div class="l"><span class="v">${p.M}</span><span class="bar" style="width:${p.M / maxP * 85}%"></span></div><div class="mid">${p.faixa}</div><div class="r"><span class="bar" style="width:${p.F / maxP * 85}%"></span><span class="v">${p.F}</span></div>`).join('')}</div>`;
+}
+function vPainel() {
+  const I = dadosPainel();
+  const naoEnviados = I.doms.filter(d => d.pend).length;
+  const maxC = Math.max(1, ...I.cond.map(c => c[1]));
+  return `<div class="stack">
+    <div class="row between"><div><p class="eyebrow">Diagnóstico do território · calculado no aparelho, funciona offline</p><h1>Painel</h1></div>
+      <button class="btn primary small" data-act="relatorio">${ico('doc')} Gerar relatório em PDF</button></div>
+    ${locaisUsados().length > 1 ? '' : `<p class="chip ok" style="align-self:flex-start">${h(locaisUsados()[0])}</p>`}
+    <div class="filter-chips" role="group" aria-label="Lugar" ${locaisUsados().length > 1 ? '' : 'hidden'}>${['Todas', ...locaisUsados()].map(l => `<button data-act="painel-local" data-l="${h(l)}" aria-pressed="${UI.local === l}">${h(l === 'Todas' ? 'Todos os lugares' : l)}</button>`).join('')}</div>
+    <div class="filter-chips" role="group" aria-label="Período">${[['tudo', 'Todo o período'], ['15', 'Últimos 15 dias'], ['30', 'Últimos 30 dias'], ['custom', 'Escolher datas']].map(([k, n]) => `<button data-act="periodo" data-p="${k}" aria-pressed="${UI.periodo === k}">${n}</button>`).join('')}</div>
+    ${UI.periodo === 'custom' ? `<div class="row"><div class="field" style="flex:1;min-width:140px"><label for="p-de">De</label><input id="p-de" type="date" value="${h(UI.de)}"></div><div class="field" style="flex:1;min-width:140px"><label for="p-ate">Até</label><input id="p-ate" type="date" value="${h(UI.ate)}"></div></div>` : ''}
+    <p class="muted" style="font-size:.84rem">Famílias cadastradas até ${fmtData(I.p.ate)}; atendimentos de ${h(I.p.rot.toLowerCase())}.${naoEnviados ? ` <span class="chip pend">${naoEnviados} famílias ainda no aparelho</span>` : ''}</p>
+    <div class="kpis">
+      <div class="kpi"><b>${I.familias}</b><span>famílias</span></div>
+      <div class="kpi"><b>${I.moradores}</b><span>moradores</span></div>
+      <div class="kpi"><b>${I.atendimentos}</b><span>atendimentos</span></div>
+      <div class="kpi"><b>${I.menores5}</b><span>crianças &lt; 5 anos</span></div>
+      <div class="kpi"><b>${I.gestantes}</b><span>gestantes</span></div>
+      <div class="kpi"><b>${I.hipertensos}</b><span>hipertensos</span></div>
+      <div class="kpi"><b>${I.diabeticos}</b><span>diabéticos</span></div>
+      <div class="kpi"><b>${I.enc.total}</b><span>encaminhamentos${I.enc.urg ? ` · <b style="font-size:inherit;color:var(--danger)">${I.enc.urg} urgentes</b>` : ''}</span></div>
+    </div>
+    <div class="charts">
+      <div class="card"><div class="row between"><h3>Pirâmide etária</h3><div class="legend"><span><i style="background:var(--river)"></i>Homens</span><span><i style="background:var(--primary)"></i>Mulheres</span></div></div>
+        ${piramideHTML(I)}<p class="muted" style="font-size:.82rem">${I.idosos} pessoas com 60 anos ou mais</p></div>
+      <div class="card"><h3>Casas em situação de risco</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">% das ${I.familias} casas</p>
+        <div class="hbars">${hbar('Sem água tratada', I.semAgua, I.familias, 'sun')}${hbar('Sem banheiro (inclui céu aberto)', I.semBanheiro, I.familias, 'sun')}${hbar('Sem energia elétrica', I.semEnergia, I.familias, 'sun')}${hbar('Sem acesso a posto de saúde', I.semPosto, I.familias, 'sun')}</div></div>
+      <div class="card"><h3>Condições de saúde</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">Número de pessoas</p>
+        <div class="hbars">${I.cond.map(([c, v]) => hbar(c, v, maxC, c === 'Gestante' ? 'river' : '', false)).join('')}</div></div>
+      <div class="card"><h3>Benefícios do governo</h3><p class="muted" style="font-size:.82rem;margin-top:-6px">${I.famComBenef} famílias (${pct(I.famComBenef, I.familias)}%) e ${I.pesComBenef} pessoas recebem algum benefício</p>
+        <div class="scroll-x"><table class="agg"><thead><tr><th>Benefício</th><th>Famílias</th><th>Pessoas</th></tr></thead><tbody>${I.benef.map(b => `<tr><td>${h(b.b)}</td><td>${b.familias}</td><td>${b.pessoas}</td></tr>`).join('')}</tbody></table></div></div>
+      <div class="card" style="grid-column:1/-1"><div class="row between"><h3>Precisam de encaminhamento ou retorno</h3><span class="muted num" style="font-size:.84rem">${I.lista.length} pessoas</span></div>
+        <div class="list">${I.lista.length ? I.lista.slice(0, 12).map(({ a, d, m }) => `<button class="item" data-act="ver-atend" data-d="${d.id}" data-a="${a.id}"><span class="t">${h(m ? m.nome : '—')}</span><span class="muted" style="font-size:.84rem">${fmtData(a.data)}</span><span class="s">${h(d.localidade)} · ${h(a.hipotese || a.queixa)}</span><span></span><span class="chips">${a.encaminhamento.sim ? `<span class="chip ${a.encaminhamento.urgencia === 'Urgente' ? 'risk' : 'pend'}">${h(a.encaminhamento.destino)} · ${h(a.encaminhamento.urgencia)}</span>` : ''}${a.retorno.sim ? `<span class="chip river">Retorno${a.retorno.dias ? ' em ' + a.retorno.dias + ' dias' : ''}</span>` : ''}</span></button>`).join('') : '<p class="item muted">Ninguém no período selecionado.</p>'}</div>
+        ${I.lista.length > 12 ? `<p class="muted" style="font-size:.84rem">E mais ${I.lista.length - 12}. O relatório interno traz a lista completa.</p>` : ''}</div>
+      <div class="card" style="grid-column:1/-1"><h3>Renda familiar</h3><div class="hbars">${I.renda.map(([r, v]) => hbar(r, v, I.familias)).join('')}</div></div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Relatório (PDF) ---------- */
+function relatorioHTML(I, nominal) {
+  const tl = (l, v, p) => `<tr><td>${h(l)}</td><td>${v}</td>${p != null ? `<td>${p}%</td>` : '<td></td>'}</tr>`;
+  return `<article class="report">
+    <header>${MARCA ? `<div class="r-org">${marcaHTML('r-mark')}<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div></div>` : ''}<div><p class="r-eyebrow">Relatório de diagnóstico do território · atenção primária</p><h1>${h(nomeLocal())}</h1>
+      <p>${h(MARCA ? MARCA.programa : 'Equipe missionária')} · ${h(I.p.rot)} · gerado em ${fmtData(new Date())} às ${fmtHora(new Date())}</p></div></header>
+    <section><h2>Resumo</h2><table><tbody>
+      ${tl('Famílias cadastradas', I.familias)}${tl('Moradores', I.moradores)}${tl('Atendimentos no período', I.atendimentos)}
+      ${tl('Crianças menores de 5 anos', I.menores5, pct(I.menores5, I.moradores))}${tl('Pessoas com 60 anos ou mais', I.idosos, pct(I.idosos, I.moradores))}
+      ${tl('Gestantes', I.gestantes)}${tl('Hipertensos', I.hipertensos, pct(I.hipertensos, I.moradores))}${tl('Diabéticos', I.diabeticos, pct(I.diabeticos, I.moradores))}
+    </tbody></table></section>
+    <section><h2>Faixa etária e sexo</h2><table><thead><tr><th>Faixa</th><th>Homens</th><th>Mulheres</th><th>Total</th></tr></thead><tbody>
+      ${I.piramide.map(p => `<tr><td>${p.faixa} anos</td><td>${p.M}</td><td>${p.F}</td><td>${p.M + p.F}</td></tr>`).join('')}</tbody></table></section>
+    <section><h2>Condições das casas</h2><table><thead><tr><th>Indicador</th><th>Casas</th><th>%</th></tr></thead><tbody>
+      ${tl('Sem água tratada', I.semAgua, pct(I.semAgua, I.familias))}${tl('Sem banheiro (inclui céu aberto)', I.semBanheiro, pct(I.semBanheiro, I.familias))}${tl('Sem energia elétrica', I.semEnergia, pct(I.semEnergia, I.familias))}${tl('Sem acesso a posto de saúde', I.semPosto, pct(I.semPosto, I.familias))}
+    </tbody></table></section>
+    <section><h2>Condições de saúde referidas</h2><table><thead><tr><th>Condição</th><th>Pessoas</th><th>%</th></tr></thead><tbody>${I.cond.map(([c, v]) => tl(c, v, pct(v, I.moradores))).join('')}</tbody></table></section>
+    <section><h2>Benefícios do governo</h2><table><thead><tr><th>Benefício</th><th>Famílias</th><th>Pessoas</th></tr></thead><tbody>
+      ${I.benef.map(b => `<tr><td>${h(b.b)}</td><td>${b.familias}</td><td>${b.pessoas}</td></tr>`).join('')}
+      <tr class="tot"><td>Com algum benefício</td><td>${I.famComBenef}</td><td>${I.pesComBenef}</td></tr></tbody></table></section>
+    <section><h2>Encaminhamentos e retornos</h2><table><tbody>
+      ${tl('Encaminhamentos', I.enc.total)}${tl('Dos quais urgentes', I.enc.urg)}${tl('Retornos / acompanhamentos', I.enc.ret)}</tbody></table>
+      ${nominal && I.lista.length ? `<table class="nominal"><thead><tr><th>Nome</th><th>Comunidade</th><th>Hipótese</th><th>Destino / urgência</th><th>Retorno</th></tr></thead><tbody>${I.lista.map(({ a, d, m }) => `<tr><td>${h(m ? m.nome : '—')}</td><td>${h(d.localidade)}</td><td>${h(a.hipotese || a.queixa)}</td><td>${a.encaminhamento.sim ? h(a.encaminhamento.destino) + ' · ' + h(a.encaminhamento.urgencia) : '—'}</td><td>${a.retorno.sim ? (a.retorno.dias ? a.retorno.dias + ' dias' : 'Sim') : '—'}</td></tr>`).join('')}</tbody></table>` : ''}</section>
+    <footer>${nominal ? 'Contém lista nominal: uso restrito à rede de saúde, não divulgar.' : 'Relatório agregado, sem identificação de pessoas.'} Dados coletados em campo${MARCA ? ' pela ' + h(MARCA.programa) + ' da ' + h(MARCA.nome) : ''} e consolidados pelo aplicativo Saúde em Campo.</footer>
+  </article>`;
+}
+function abrirRelatorio() {
+  const nominal = !!UI.nominal;
+  const I = dadosPainel(true);
+  abrirSheet(`
+    <div class="sheet-head"><div><p class="eyebrow">Para a Secretaria de Saúde</p><h2>Relatório em PDF</h2><p class="muted" style="font-size:.88rem">${h(nomeLocal())} · ${h(I.p.rot)}. Gerado no aparelho, sem internet. Só entram famílias já salvas.</p></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
+    <div class="stack">
+      <label class="consent" style="background:var(--surface-2)"><input type="checkbox" id="r-nominal" ${nominal ? 'checked' : ''}><span><b>Incluir lista nominal de encaminhamentos</b><br><span class="muted" style="font-size:.84rem">Só para entrega direta à equipe de regulação. Por padrão o relatório não tem nomes.</span></span></label>
+      ${EMBUTIDO ? `<p class="card" style="background:var(--river-soft);border-color:transparent;font-size:.9rem">Neste link de visualização o navegador bloqueia a impressão. No app instalado, o botão abaixo abre “Salvar como PDF” do celular ou computador.</p>` : ''}
+      <button class="btn primary" data-act="imprimir" ${EMBUTIDO ? 'disabled' : ''}>${ico('doc')} Salvar PDF</button>
+      <div class="report-wrap">${relatorioHTML(I, nominal)}</div>
+    </div>`);
+}
+
+/* ---------- Projeto ---------- */
+function vProjeto() {
+  return `<div class="stack">
+    <div class="prose"><p class="eyebrow">Sobre o app</p><h1>Saúde em Campo</h1>
+      ${MARCA ? `<p><b>${h(MARCA.nome)} · ${h(MARCA.programa)}</b></p>` : ''}<p>Aplicativo gratuito para equipes missionárias de saúde registrarem, em campo e sem internet, o censo das famílias (domicílio e moradores) e os atendimentos de cada pessoa. Quando o celular encontra sinal, tudo sobe para a nuvem. O painel e o relatório em PDF funcionam offline e podem ser entregues à Secretaria de Saúde.</p></div>
+    <div class="flow">
+      <div><b>Família</b><span class="muted">Domicílio: localização, composição, moradia, saneamento, renda, benefícios e acesso ao posto.</span></div>
+      <div><b>Moradores</b><span class="muted">Cadastro individual: documentos, escolaridade, benefícios, condições de saúde e vacinação.</span></div>
+      <div><b>Atendimentos</b><span class="muted">Sinais vitais, IMC automático, CID-10, conduta, medicamentos, encaminhamento e retorno.</span></div>
+      <div><b>Painel e PDF</b><span class="muted">Indicadores por comunidade e período; relatório sem nomes para a Secretaria.</span></div>
+    </div>
+    <div class="charts">
+      <div class="card prose"><h3>Quem usa</h3><ul>
+        <li><b>Médico(a):</b> registra atendimentos e acompanha os alertas.</li>
+        <li><b>Missionário(a) e voluntário(a):</b> cadastram famílias e moradores.</li>
+        <li><b>Administrador:</b> envia os links de cadastro e controla quem tem acesso.</li>
+        <li><b>Secretaria de Saúde:</b> recebe só números agregados.</li></ul></div>
+      <div class="card prose"><h3>Proteção de dados (LGPD)</h3><ul>
+        <li>Consentimento da família registrado em cada cadastro.</li>
+        <li>Cada pessoa entra com o próprio e-mail e senha; só quem recebeu o link do administrador tem conta.</li>
+        <li>No servidor, só contas ativas da equipe conseguem ler ou gravar dados.</li>
+        <li>Lista nominal só sai com escolha explícita.</li></ul></div>
+    </div>
+    ${S.perfil ? `<div class="card row between"><div><b>${h(S.perfil.nome)}</b><br><span class="muted" style="font-size:.88rem">${h(S.perfil.papel)} · <span class="mono">${h(S.perfil.email)}</span></span></div><button class="btn small" data-act="sair">Sair da conta</button></div>
+    ${ehAdmin() ? `<button class="btn" data-act="go" data-tab="equipe" style="align-self:flex-start">${ico('users')} Equipe e convites</button>` : ''}` : ''}
+  </div>`;
+}
+
+/* ---------- Entrada, cadastro pelo link e equipe ----------
+   Contas são criadas só pela função "cadastro" do servidor: pelo link que o administrador gera,
+   ou no primeiro acesso do administrador (e-mail guardado como segredo no servidor). */
+const PAPEIS = OP.profissionais;
+async function hashSenha(email, senha) {
+  const txt = 'saude-em-campo:' + email.trim().toLowerCase() + ':' + senha;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+const emailOk = e => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
+async function chamarCadastro(corpo) {
+  let r;
+  try { r = await fetch(SUPA_URL + '/functions/v1/cadastro', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SUPA_CHAVE }, body: JSON.stringify(corpo) }); }
+  catch (e) { throw new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.'); }
+  let j = {}; try { j = await r.json(); } catch (e) { /* resposta vazia */ }
+  if (!r.ok) throw new Error(j.erro || 'O servidor não respondeu como esperado. Tente de novo.');
+  return j;
+}
+const linkCadastro = token => location.origin + location.pathname + '#cadastro-' + token;
+function lerHashConvite() {
+  const m = location.hash.match(/^#cadastro-([0-9a-f-]{36})$/i);
+  UI.convite = m ? { token: m[1].toLowerCase(), status: 'verificando' } : null;
+  if (UI.convite) verificarConvite();
+}
+async function verificarConvite() {
+  const c = UI.convite; if (!c) return;
+  if (!navigator.onLine) { c.status = 'offline'; abrirLogin(); return; }
+  try { const r = await chamarCadastro({ acao: 'validar', token: c.token }); c.status = r.status; } catch (e) { c.status = 'erro'; c.erro = e.message; }
+  if (UI.convite === c && S) abrirLogin();
+}
+function limparHash() { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { location.hash = ''; } }
+const campoSenhas = (pfx) => `<div class="grid2">
+        <div class="field"><label for="${pfx}-senha">Crie uma senha</label><input id="${pfx}-senha" type="password" autocomplete="new-password" minlength="6" required><span class="hint">Mínimo de 6 caracteres</span></div>
+        <div class="field"><label for="${pfx}-senha2">Repita a senha</label><input id="${pfx}-senha2" type="password" autocomplete="new-password" required></div>
+      </div>`;
+const opcoesPapel = nome => `<div class="opts">${PAPEIS.map(x => `<label class="opt"><input type="radio" name="${nome}" value="${h(x)}"><span>${h(x)}</span></label>`).join('')}</div>`;
+function ativacaoHTML(c) {
+  const card = (titulo, txt, botao) => `<div class="card stack"><h2>${titulo}</h2><p class="muted">${txt}</p>${botao ? '<button class="btn primary block" data-act="ir-entrar">Ir para Entrar</button>' : ''}</div>`;
+  const msgs = {
+    verificando: ['Conferindo o link…', 'Só um instante.', false],
+    offline: ['Abra este link com internet', 'O cadastro precisa de conexão. Depois de cadastrado, o app funciona sem internet.', true],
+    erro: ['Não foi possível conferir o link', h(c.erro || 'Tente de novo em alguns minutos.'), true],
+    invalido: ['Link de cadastro inválido', 'Este link está incompleto ou foi alterado. Peça um novo link ao administrador da missão.', true],
+    cancelado: ['Link cancelado', 'O administrador cancelou este link. Se você precisa de acesso, peça um novo.', true],
+    usado: ['Link já usado', 'Este link já foi usado para um cadastro. Entre com o seu e-mail e a sua senha.', true],
+    expirado: ['Link expirado', 'Este link valia por 7 dias. Peça um novo link ao administrador da missão.', true]
+  };
+  if (msgs[c.status]) return card(...msgs[c.status]);
+  return `<form class="card stack" id="form-ativar" novalidate>
+      <div><p class="eyebrow">Convite do administrador</p><h2>Faça o seu cadastro</h2><p class="muted" style="font-size:.9rem">Preencha seus dados e crie a sua senha. Depois você entra sempre com o seu e-mail e essa senha.</p></div>
+      <div class="field"><label for="v-nome">Nome completo</label><input id="v-nome" type="text" autocomplete="name" required></div>
+      <div class="field"><label for="v-email">E-mail (será o seu login)</label><input id="v-email" type="email" autocomplete="username" inputmode="email" required></div>
+      <div class="field"><span class="lbl">Função</span>${opcoesPapel('v-papel')}</div>
+      ${campoSenhas('v')}
+      <p class="form-erro" id="ativar-erro" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">Concluir cadastro e entrar</button>
+    </form>`;
+}
+function adminPrimeiroHTML() {
+  return `<form class="card stack" id="form-admin" novalidate>
+      <div><p class="eyebrow">Primeiro acesso do administrador</p><h2>Crie a sua senha</h2><p class="muted" style="font-size:.9rem">Só funciona com o e-mail do administrador da missão e só uma vez.</p></div>
+      <div class="field"><label for="ad-email">E-mail do administrador</label><input id="ad-email" type="email" autocomplete="username" inputmode="email" required></div>
+      <div class="field"><label for="ad-nome">Nome completo</label><input id="ad-nome" type="text" autocomplete="name" required></div>
+      <div class="field"><span class="lbl">Função</span>${opcoesPapel('ad-papel')}</div>
+      ${campoSenhas('ad')}
+      <p class="form-erro" id="admin-erro" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">Criar senha e entrar</button>
+      <button type="button" class="btn ghost block" data-act="ir-entrar">Voltar</button>
+    </form>`;
+}
+function loginHTML() {
+  const corpo = UI.convite ? ativacaoHTML(UI.convite) : UI.primeiroAdmin ? adminPrimeiroHTML() : `
+    <form class="card stack" id="form-login" novalidate>
+      <div><h2>Entrar</h2><p class="muted" style="font-size:.88rem">Use o e-mail e a senha da sua conta.</p></div>
+      <div class="field"><label for="l-email">E-mail</label><input id="l-email" type="email" autocomplete="username" inputmode="email" required></div>
+      <div class="field"><label for="l-senha">Senha</label><input id="l-senha" type="password" autocomplete="current-password" required></div>
+      <p class="form-erro" id="login-erro" role="alert" hidden></p>
+      <button class="btn primary block" type="submit">Entrar</button>
+      <p class="muted center" style="font-size:.86rem">Ainda não tem conta? O cadastro é feito pelo link que o administrador da missão envia.</p>
+    </form>
+    <p class="center"><button type="button" class="linkbtn" style="color:var(--gold)" data-act="primeiro-admin">Primeiro acesso do administrador</button></p>`;
+  return `<div class="box">
+    <div class="login-brand">${marcaHTML('brand-mark big')}${MARCA ? `<div><b>${h(MARCA.nome)}</b><span>${h(MARCA.programa)}</span></div>` : ''}</div>
+    <div class="login-title"><h1>Saúde em Campo</h1><p style="opacity:.85">Censo das famílias e atendimentos da atenção primária, feito para funcionar sem internet.</p></div>
+    ${corpo}
+    <p class="center" style="opacity:.75;font-size:.82rem">Acesso restrito à equipe missionária. Dados de saúde protegidos conforme a LGPD.</p>
+  </div>`;
+}
+function abrirLogin() {
+  let el = document.getElementById('login');
+  if (!el) { el = document.createElement('div'); el.className = 'login'; el.id = 'login'; document.body.appendChild(el); }
+  el.innerHTML = loginHTML(); el.scrollTop = 0; document.body.style.overflow = 'hidden';
+}
+function erroForm(id, msg) { const e = document.getElementById(id); if (e) { e.textContent = msg; e.hidden = false; } }
+function ocupado(btn, sim, txt) { if (!btn) return; if (sim) { btn.dataset.txt = btn.textContent; btn.textContent = txt || 'Aguarde…'; btn.disabled = true; } else { btn.textContent = btn.dataset.txt || btn.textContent; btn.disabled = false; } }
+function entrarComo(p) {
+  S.perfil = { id: p.id, nome: p.nome, email: p.email, papel: p.papel, admin: !!p.admin };
+  S.logado = true; salvar();
+  const el = document.getElementById('login'); if (el) el.remove();
+  document.body.style.overflow = ''; UI.tab = 'inicio'; render(); window.scrollTo(0, 0);
+}
+async function entrar(email, senha) {
+  if (navigator.onLine) {
+    const { data, error } = await supa.auth.signInWithPassword({ email, password: senha });
+    if (!error) {
+      const { data: p, error: e2 } = await supa.from('perfis').select('id, nome, email, papel, admin, ativo').eq('id', data.user.id).maybeSingle();
+      if (e2 || !p || !p.ativo) { await supa.auth.signOut(); throw new Error(e2 ? 'Não foi possível carregar seu cadastro. Tente de novo.' : 'Seu acesso está desativado. Fale com o administrador da missão.'); }
+      S.locais[email] = { hash: await hashSenha(email, senha), perfil: p };
+      supa.rpc('registrar_acesso').then(() => {}, () => {});
+      entrarComo(p); sincronizar(false); return;
+    }
+    if (/invalid/i.test(error.message)) throw new Error('E-mail ou senha incorretos. Se é seu primeiro acesso, abra o link de cadastro que o administrador enviou.');
+    if (!/fetch|network|Failed/i.test(error.message)) throw new Error('Não foi possível entrar: ' + error.message);
+  }
+  const loc = S.locais[email];
+  if (!loc) throw new Error('Sem internet. No primeiro acesso neste aparelho é preciso estar conectado.');
+  if (loc.hash !== await hashSenha(email, senha)) throw new Error('E-mail ou senha incorretos.');
+  entrarComo(loc.perfil); toast('Você entrou sem internet. Os registros serão enviados quando houver sinal.');
+}
+async function sair() {
+  if (pendentes().length) {
+    if (!navigator.onLine) { toast('Há registros ainda não enviados. Conecte-se à internet e sincronize antes de sair.'); return; }
+    await sincronizar(true);
+    if (pendentes().length) { toast('Ainda há registros não enviados. Sincronize antes de sair.'); return; }
+  }
+  try { await supa.auth.signOut(); } catch (e) { /* sem conexão */ }
+  S.logado = false; S.perfil = null; UI.aviso = ''; fecharSheet(); salvar(); render();
+}
+const quem = () => S.perfil ? { nome: S.perfil.nome, email: S.perfil.email } : { nome: 'Equipe', email: '' };
+function validarCadastro(errId, nome, email, papel, s1, s2) {
+  if (nome.split(' ').length < 2) return erroForm(errId, 'Escreva o nome completo (nome e sobrenome).'), false;
+  if (!emailOk(email)) return erroForm(errId, 'Escreva um e-mail válido, por exemplo nome@gmail.com.'), false;
+  if (!papel) return erroForm(errId, 'Escolha a sua função: médico, missionário ou voluntário.'), false;
+  if (s1.length < 6) return erroForm(errId, 'A senha precisa ter pelo menos 6 caracteres.'), false;
+  if (s1 !== s2) return erroForm(errId, 'As duas senhas estão diferentes. Digite de novo.'), false;
+  if (!navigator.onLine) return erroForm(errId, 'O cadastro precisa de internet. Conecte-se e tente de novo.'), false;
+  return true;
+}
+
+/* ---------- Equipe e convites (somente administrador, precisa de internet) ---------- */
+async function carregarEquipe() {
+  if (!navigator.onLine) { UI.equipe = { erro: 'Sem internet. A gestão da equipe precisa de conexão.' }; if (UI.tab === 'equipe') render(); return; }
+  UI.equipe = { carregando: true }; if (UI.tab === 'equipe') render();
+  const [p, c] = await Promise.all([
+    supa.from('perfis').select('id, nome, email, papel, admin, ativo, ultimo_acesso').order('nome'),
+    supa.from('convites').select('token, para, criado_em, expira_em, usado_em, usado_por, cancelado').order('criado_em', { ascending: false }).limit(100)
+  ]);
+  UI.equipe = (p.error || c.error) ? { erro: 'Não foi possível carregar a equipe. Saia e entre de novo com internet.' } : { perfis: p.data, convites: c.data };
+  if (UI.tab === 'equipe') render();
+}
+function statusConvite(c, perfis) {
+  if (c.cancelado) return ['Cancelado', ''];
+  if (c.usado_em) return ['Cadastro feito', 'ok', perfis.find(x => x.id === c.usado_por)];
+  if (new Date(c.expira_em) < new Date()) return ['Expirado', 'risk'];
+  return ['Aguardando cadastro', 'pend'];
+}
+function vEquipe() {
+  const E = UI.equipe || {};
+  if (!E.perfis) return `<div class="stack"><div><p class="eyebrow">Somente administrador</p><h1>Equipe e convites</h1></div>
+    <div class="card">${E.carregando ? 'Carregando a equipe…' : h(E.erro || 'Carregando a equipe…')}</div>${E.erro ? '<button class="btn" data-act="recarregar-equipe" style="align-self:flex-start">Tentar de novo</button>' : ''}</div>`;
+  return `<div class="stack">
+    <div><p class="eyebrow">Somente administrador</p><h1>Equipe e convites</h1>
+      <p class="muted" style="max-width:62ch">Ninguém se cadastra sem convite. Gere um link de cadastro, envie para a pessoa e ela mesma preenche nome, e-mail, função e senha. Cada link serve para um cadastro e vale por 7 dias.</p></div>
+    <form class="card stack" id="form-convite" novalidate>
+      <h2>Novo link de cadastro</h2>
+      <div class="field"><label for="i-para">Para quem é este link? <span class="muted" style="font-weight:400">(opcional, só para você se lembrar)</span></label><input id="i-para" type="text" maxlength="120" autocomplete="off" placeholder="Ex.: João, voluntário da igreja"></div>
+      <button class="btn primary" type="submit" style="align-self:flex-start">${ico('plus')} Gerar link de cadastro</button>
+    </form>
+    <div class="section-head"><h2>Links enviados</h2><span class="muted num" style="font-size:.86rem">${E.convites.length}</span></div>
+    <div class="list">${E.convites.length ? E.convites.map(c => { const [st, cl, conta] = statusConvite(c, E.perfis); return `<div class="item">
+      <span class="t">${h(c.para || 'Link sem nome')}</span><span class="chip ${cl}">${st}</span>
+      <span class="s">Gerado em ${fmtData(c.criado_em)}${conta ? ` · cadastrado: <b>${h(conta.nome)}</b> (${h(conta.papel)})` : ''}</span><span></span>
+      ${st === 'Aguardando cadastro' ? `<span class="chips"><button class="btn small" data-act="ver-convite" data-t="${c.token}">Ver e enviar link</button><button class="btn small ghost" data-act="cancelar-convite" data-t="${c.token}">Cancelar</button></span>` : st === 'Expirado' ? `<span class="chips"><button class="btn small" data-act="renovar-convite" data-t="${c.token}">Gerar novo link</button></span>` : ''}
+    </div>`; }).join('') : '<p class="item muted">Nenhum link ainda. Use o botão acima.</p>'}</div>
+    <div class="section-head"><h2>Pessoas com acesso</h2><span class="muted num" style="font-size:.86rem">${E.perfis.length}</span></div>
+    <div class="list">${E.perfis.map(c => `<div class="item">
+      <span class="t">${h(c.nome)}${c.id === S.perfil.id ? ' <span class="muted" style="font-weight:400">(você)</span>' : ''}</span>
+      <span class="chip ${c.ativo === false ? 'risk' : 'ok'}">${c.ativo === false ? 'Desativado' : 'Ativo'}</span>
+      <span class="s">${h(c.papel)}${c.admin ? ' · administrador(a)' : ''} · <span class="mono">${h(c.email)}</span>${c.ultimo_acesso ? ' · último acesso ' + fmtQuando(c.ultimo_acesso) : ''}</span><span></span>
+      ${c.id !== S.perfil.id ? `<span class="chips"><button class="btn small ghost" data-act="ativar-conta" data-id="${c.id}">${c.ativo === false ? 'Reativar acesso' : 'Desativar acesso'}</button><button class="btn small ghost" data-act="tornar-admin" data-id="${c.id}">${c.admin ? 'Tirar de administrador' : 'Tornar administrador'}</button></span>` : ''}
+    </div>`).join('')}</div>
+  </div>`;
+}
+function abrirConvite(c) {
+  const link = linkCadastro(c.token);
+  const msg = `Olá! Este é o seu link para se cadastrar no app Saúde em Campo${MARCA ? ' da ' + MARCA.programa : ''}. Abra, preencha seus dados e crie sua senha (vale por 7 dias): ${link}`;
+  abrirSheet(`
+    <div class="sheet-head"><div><p class="eyebrow">Link de cadastro</p><h2>${h(c.para || 'Novo link')}</h2></div><button class="icon-btn" data-act="fechar" aria-label="Fechar">${ico('close')}</button></div>
+    <div class="stack">
+      <p>Envie este link para a pessoa. Ao abrir, ela preenche nome completo, e-mail, função e cria a senha. Cada link serve para um cadastro.</p>
+      <div class="field"><label for="link-out">Link</label><textarea id="link-out" readonly class="mono invite-link">${h(link)}</textarea></div>
+      <button class="btn primary" data-act="copiar-link">Copiar link</button>
+      <a class="btn" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Enviar pelo WhatsApp</a>
+      <p class="muted" style="font-size:.84rem">Vale até ${fmtData(c.expira_em)}. Se expirar, gere um novo na tela da equipe.</p>
+    </div>`);
+}
+async function acaoEquipe(promessa, ok) {
+  const { error } = await promessa;
+  if (error) toast('Não foi possível salvar: verifique a internet e tente de novo.'); else { toast(ok); await carregarEquipe(); }
+}
+
+/* ---------- Overlays e toast ---------- */
+function abrirSheet(html) {
+  document.getElementById('overlay').innerHTML = `<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`;
+  const s = document.querySelector('.sheet'); if (s) s.scrollTop = 0;
+}
+function fecharSheet() { document.getElementById('overlay').innerHTML = ''; }
+let toastT;
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3400); }
+
+/* ---------- Eventos ---------- */
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act;
+  if (act === 'scrim' && e.target !== a) return;
+  switch (act) {
+    case 'go': UI.tab = a.dataset.tab; fecharSheet(); if (UI.tab === 'equipe') carregarEquipe(); render(); window.scrollTo(0, 0); break;
+    case 'sync-now': sincronizar(true); break;
+    case 'ir-entrar': UI.convite = null; UI.primeiroAdmin = false; limparHash(); abrirLogin(); break;
+    case 'primeiro-admin': UI.primeiroAdmin = true; abrirLogin(); break;
+    case 'recarregar-equipe': carregarEquipe(); break;
+    case 'sair': sair(); break;
+    case 'ver-convite': abrirConvite(UI.equipe.convites.find(c => c.token === a.dataset.t)); break;
+    case 'cancelar-convite': acaoEquipe(supa.from('convites').update({ cancelado: true }).eq('token', a.dataset.t), 'Link cancelado'); break;
+    case 'renovar-convite': {
+      const velho = UI.equipe.convites.find(c => c.token === a.dataset.t);
+      supa.from('convites').insert({ para: velho.para }).select().single().then(({ data, error }) => {
+        if (error) return toast('Não foi possível gerar o link. Verifique a internet.');
+        supa.from('convites').update({ cancelado: true }).eq('token', velho.token).then(() => carregarEquipe());
+        abrirConvite(data);
+      });
+      break;
+    }
+    case 'ativar-conta': { const c = UI.equipe.perfis.find(x => x.id === a.dataset.id); acaoEquipe(supa.from('perfis').update({ ativo: !c.ativo }).eq('id', c.id), c.ativo ? 'Acesso de ' + c.nome.split(' ')[0] + ' desativado' : 'Acesso de ' + c.nome.split(' ')[0] + ' reativado'); break; }
+    case 'tornar-admin': { const c = UI.equipe.perfis.find(x => x.id === a.dataset.id); acaoEquipe(supa.from('perfis').update({ admin: !c.admin }).eq('id', c.id), c.nome.split(' ')[0] + (c.admin ? ' não é mais administrador(a)' : ' agora é administrador(a)')); break; }
+    case 'copiar-link': {
+      const ta = document.getElementById('link-out');
+      const falha = () => { ta.focus(); ta.select(); toast('Link selecionado: use Copiar do celular'); };
+      try { navigator.clipboard.writeText(ta.value).then(() => toast('Link copiado. Cole no WhatsApp ou e-mail da pessoa.'), falha); } catch (err) { falha(); }
+      break;
+    }
+    case 'nova-familia':
+      if (!S.rascunho || S.rascunho.id) { S.rascunho = novoRascunho(); UI.passo = 0; }
+      UI.tab = 'novo'; fecharSheet(); render(); window.scrollTo(0, 0); break;
+    case 'abrir-dom': abrirDom(a.dataset.id); break;
+    case 'abrir-morador': abrirMorador(a.dataset.d, a.dataset.m); break;
+    case 'novo-atend': abrirAtendForm(a.dataset.d, a.dataset.m); break;
+    case 'ver-atend': abrirAtendVer(a.dataset.d, a.dataset.a); break;
+    case 'fechar': case 'scrim': fecharSheet(); break;
+    case 'filtro': UI.filtro = a.dataset.f; render(); break;
+    case 'painel-local': UI.local = a.dataset.l; render(); break;
+    case 'periodo': UI.periodo = a.dataset.p; render(); break;
+    case 'relatorio': abrirRelatorio(); break;
+    case 'imprimir': {
+      document.getElementById('print-area').innerHTML = relatorioHTML(dadosPainel(true), !!UI.nominal);
+      try { window.print(); } catch (err) { toast('Não foi possível abrir a impressão neste navegador'); }
+      break;
+    }
+    case 'editar-dom': {
+      const d = S.domicilios.find(x => x.id === a.dataset.id);
+      S.rascunho = JSON.parse(JSON.stringify(d)); UI.passo = 0; UI.tab = 'novo'; fecharSheet(); salvar(); render(); window.scrollTo(0, 0); break;
+    }
+    case 'passo': UI.passo = Math.max(0, Math.min(PASSOS.length - 1, UI.passo + Number(a.dataset.dir))); salvar(); render(); window.scrollTo(0, 0); break;
+    case 'descartar': S.rascunho = null; UI.passo = 0; salvar(); UI.tab = 'inicio'; render(); toast('Rascunho descartado'); break;
+    case 'gps':
+      a.disabled = true; a.textContent = 'Buscando satélites…';
+      setTimeout(() => { S.rascunho.coords = { lat: (-1.465 - Math.random() * .012).toFixed(5), lng: (-46.125 - Math.random() * .015).toFixed(5), prec: 4 + Math.floor(Math.random() * 8) }; salvar(); render(); }, 1100);
+      break;
+    case 'add-morador': abrirMoradorForm(null); break;
+    case 'edit-morador': abrirMoradorForm(Number(a.dataset.i)); break;
+    case 'remover-morador': S.rascunho.moradores.splice(Number(a.dataset.i), 1); salvar(); fecharSheet(); render(); break;
+    case 'salvar-dom': salvarDom(); break;
+    case 'med-pick': {
+      let alvo = [...document.querySelectorAll('#meds input[name=med_nome]')].find(i => !i.value);
+      if (!alvo) { document.getElementById('meds').insertAdjacentHTML('beforeend', medRow()); alvo = document.querySelector('#meds .med-row:last-child input[name=med_nome]'); }
+      alvo.value = a.dataset.n; alvo.closest('.med-row').querySelector('input[name=med_qtd]').focus(); break;
+    }
+    case 'add-med': document.getElementById('meds').insertAdjacentHTML('beforeend', medRow()); document.querySelector('#meds .med-row:last-child input[name=med_nome]').focus(); break;
+    case 'rm-med': { const row = a.closest('.med-row'); if (document.querySelectorAll('#meds .med-row').length > 1) row.remove(); else row.querySelectorAll('input').forEach(i => i.value = ''); break; }
+    case 'cid-pick': {
+      document.getElementById('a-cid').value = a.dataset.c;
+      document.getElementById('cid-busca').value = a.dataset.c + ' – ' + a.dataset.n;
+      const hip = document.getElementById('a-hip'); if (!hip.value) hip.value = a.dataset.n;
+      document.getElementById('cid-res').innerHTML = ''; break;
+    }
+  }
+});
+
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.id === 'busca') { UI.busca = t.value; document.getElementById('lista-familias').innerHTML = listaFamiliasHTML(); return; }
+  if (t.id === 'busca-inicio') { UI.buscaInicio = t.value; document.getElementById('home-res').innerHTML = homeResHTML(); return; }
+  if (t.id === 'cid-busca') { document.getElementById('a-cid').value = ''; buscaCID(t.value); return; }
+  if (t.closest('#form-atend')) { atualizarCalculosAtend(); return; }
+  if (t.id === 'm-nasc') { document.getElementById('m-idade').textContent = t.value ? 'Idade: ' + idadeTxt(t.value) : 'A idade é calculada automaticamente'; return; }
+  campoRascunho(t);
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'p-de' || t.id === 'p-ate') { UI[t.id === 'p-de' ? 'de' : 'ate'] = t.value; render(); return; }
+  if (t.id === 'r-nominal') { UI.nominal = t.checked; document.querySelector('.report-wrap').innerHTML = relatorioHTML(dadosPainel(true), UI.nominal); return; }
+  if (t.closest('#form-atend') || t.closest('#form-morador')) return;
+  campoRascunho(t);
+});
+function campoRascunho(t) {
+  if (!S.rascunho || UI.tab !== 'novo') return;
+  const r = S.rascunho;
+  if (t.dataset.f) {
+    const f = t.dataset.f;
+    setPath(r, f, t.type === 'checkbox' ? t.checked : t.value);
+    if (f === 'locSel') {
+      const outro = t.value === 'Outro';
+      document.getElementById('f-loc-outro-wrap').hidden = !outro;
+      r.localidade = outro ? (document.getElementById('f-loc-outro').value.trim()) : t.value;
+      if (outro) document.getElementById('f-loc-outro').focus();
+    }
+    if (f === 'localidadeOutro') r.localidade = t.value.trim();
+    if (f.startsWith('comp.')) { const el = document.getElementById('comp-hint'); if (el) el.innerHTML = compHint(); }
+  } else if (t.dataset.g) {
+    const g = t.dataset.g; let set = new Set(r[g]);
+    if (t.checked) { if (t.value === 'Nenhum') set = new Set(['Nenhum']); else { set.delete('Nenhum'); set.add(t.value); } } else set.delete(t.value);
+    const mudou = (t.value === 'Nenhum' && t.checked && r[g].length > 0) || (t.value !== 'Nenhum' && r[g].includes('Nenhum'));
+    r[g] = [...set];
+    if (mudou) { const y = window.scrollY; render(); window.scrollTo(0, y); }
+  }
+  salvar();
+}
+
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.id === 'form-login') {
+    const email = f.querySelector('#l-email').value.trim().toLowerCase(), senha = f.querySelector('#l-senha').value;
+    if (!email || !senha) { erroForm('login-erro', 'Preencha o e-mail e a senha.'); return; }
+    const btn = f.querySelector('button[type=submit]'); ocupado(btn, true, 'Entrando…');
+    entrar(email, senha).catch(err => { ocupado(btn, false); erroForm('login-erro', err.message); });
+    return;
+  }
+  if (f.id === 'form-ativar' || f.id === 'form-admin') {
+    const adm = f.id === 'form-admin', pf = adm ? 'ad' : 'v', errId = adm ? 'admin-erro' : 'ativar-erro';
+    const v = id => f.querySelector(id).value;
+    const nome = v(`#${pf}-nome`).trim().replace(/\s+/g, ' '), email = v(`#${pf}-email`).trim().toLowerCase();
+    const papel = (f.querySelector(`input[name=${pf}-papel]:checked`) || {}).value, senha = v(`#${pf}-senha`);
+    if (!validarCadastro(errId, nome, email, papel, senha, v(`#${pf}-senha2`))) return;
+    const btn = f.querySelector('button[type=submit]'); ocupado(btn, true, 'Salvando…');
+    chamarCadastro(adm ? { acao: 'admin', nome, email, papel, senha } : { acao: 'cadastrar', token: UI.convite.token, nome, email, papel, senha })
+      .then(() => { UI.convite = null; UI.primeiroAdmin = false; limparHash(); return entrar(email, senha); })
+      .then(() => toast(adm ? 'Senha criada. Você é o administrador da missão.' : 'Cadastro concluído. Bem-vindo(a), ' + nome.split(' ')[0] + '!'))
+      .catch(err => { ocupado(btn, false); erroForm(errId, err.message); });
+    return;
+  }
+  if (f.id === 'form-convite') {
+    const btn = f.querySelector('button[type=submit]'); ocupado(btn, true, 'Gerando…');
+    supa.from('convites').insert({ para: f.querySelector('#i-para').value.trim() || null }).select().single().then(({ data, error }) => {
+      ocupado(btn, false);
+      if (error) return toast('Não foi possível gerar o link. Verifique a internet e tente de novo.');
+      abrirConvite(data); carregarEquipe();
+    });
+    return;
+  }
+  if (f.id === 'form-morador') {
+    const fd = new FormData(f);
+    const cond = fd.getAll('condicoes');
+    const nasc = fd.get('nascimento');
+    const crianca = nasc && idade(nasc) < 12;
+    const m = {
+      id: uid(), nome: (fd.get('nome') || '').trim(), sexo: fd.get('sexo'), nascimento: nasc, parentesco: fd.get('parentesco'),
+      cns: (fd.get('cns') || '').replace(/\D/g, ''), cpf: (fd.get('cpf') || '').replace(/\D/g, ''),
+      raca: fd.get('raca'), escolaridade: fd.get('escolaridade'), alfabetizado: fd.get('alfabetizado') === 'Sim' ? true : fd.get('alfabetizado') === 'Não' ? false : null,
+      ocupacao: fd.get('ocupacao'), beneficios: fd.getAll('beneficios'), condicoes: cond,
+      semanas: cond.includes('Gestante') ? (Number(fd.get('semanas')) || null) : null, outraCondicao: cond.includes('Outra') ? fd.get('outraCondicao') : '',
+      vacina: fd.get('vacina') || '', caderneta: crianca ? (fd.get('caderneta') || null) : null,
+      medUsa: fd.get('medUsa') === 'Sim', medQual: fd.get('medUsa') === 'Sim' ? fd.get('medQual') : ''
+    };
+    const i = f.dataset.i;
+    if (i !== '') { m.id = S.rascunho.moradores[i].id; S.rascunho.moradores[i] = m; } else S.rascunho.moradores.push(m);
+    if (m.parentesco === 'Responsável' && !S.rascunho.responsavelNome) S.rascunho.responsavelNome = m.nome;
+    salvar(); fecharSheet(); render(); toast(m.nome.split(' ')[0] + ' salvo(a) no cadastro');
+    return;
+  }
+  if (f.id === 'form-atend') {
+    const fd = new FormData(f);
+    const d = S.domicilios.find(x => x.id === f.dataset.d);
+    const nomes = fd.getAll('med_nome'), qtds = fd.getAll('med_qtd'), poss = fd.getAll('med_pos');
+    const dataSel = fd.get('data'); const agora = new Date();
+    const quando = dataSel ? new Date(dataSel + 'T' + agora.toTimeString().slice(0, 8)) : agora;
+    const at = {
+      id: uid(), moradorId: f.dataset.m, data: quando.toISOString(), profTipo: fd.get('profTipo'), profNome: quem().nome, por: quem(),
+      queixa: fd.get('queixa'), pas: num(fd.get('pas')), pad: num(fd.get('pad')), fc: num(fd.get('fc')), temp: num(fd.get('temp')), glic: num(fd.get('glic')), sat: num(fd.get('sat')),
+      peso: num(fd.get('peso')), altura: num(fd.get('altura')), hipotese: fd.get('hipotese'), cid: fd.get('cid'), conduta: fd.get('conduta'),
+      meds: nomes.map((n, k) => ({ nome: n.trim(), qtd: Number(qtds[k]) || 1, pos: (poss[k] || '').trim() })).filter(x => x.nome), exames: fd.get('exames'),
+      evolucao: (fd.get('evolucao') || '').trim(),
+      encaminhamento: fd.get('encSim') === 'Sim' ? { sim: true, destino: fd.get('encDestino') || 'A definir', urgencia: fd.get('encUrg') } : { sim: false },
+      retorno: fd.get('retSim') === 'Sim' ? { sim: true, dias: num(fd.get('retDias')) } : { sim: false }
+    };
+    at._sujo = true; d.atendimentos.push(at); marcarPend(d, null, 1); salvar(); render(); if (UI.online) setTimeout(() => sincronizar(false), 300);
+    abrirMorador(d.id, at.moradorId);
+    toast(UI.online ? 'Atendimento salvo. Pronto para enviar.' : 'Atendimento salvo no aparelho. Será enviado quando houver internet.');
+  }
+});
+
+function salvarDom() {
+  const r = S.rascunho; const falta = validarRascunho();
+  if (falta.length) { toast('Complete os campos indicados antes de salvar'); return; }
+  if (!r.consentimento) { toast('Marque a autorização da família para salvar'); return; }
+  const agora = new Date().toISOString();
+  const base = { ...r, comodos: Number(r.comodos) || 1, pessoasComBeneficio: Number(r.pessoasComBeneficio) || r.moradores.filter(m => m.beneficios.length).length, posto: { ...r.posto, km: num(r.posto.km) } };
+  let id;
+  if (r.id) {
+    const i = S.domicilios.findIndex(d => d.id === r.id);
+    S.domicilios[i] = { ...base, versao: (r.versao || 1) + 1, atualizadoPor: quem() };
+    marcarPend(S.domicilios[i], 'Atualização de cadastro'); id = r.id;
+  } else {
+    id = uid();
+    const d = { ...base, id, codigo: 'FAM-' + id.replace(/-/g, '').slice(0, 6).toUpperCase(), criadoEm: agora, atualizadoEm: agora, criadoPor: quem(), versao: 1, pend: null, atendimentos: [] };
+    marcarPend(d, 'Nova família'); S.domicilios.unshift(d);
+  }
+  S.rascunho = null; UI.passo = 0; UI.tab = 'familias'; salvar(); render(); window.scrollTo(0, 0);
+  abrirDom(id);
+  toast('Família salva no aparelho. Agora registre o atendimento de cada morador.');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharSheet(); });
+
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !EMBUTIDO) {
+  try { navigator.serviceWorker.register('sw.js').catch(() => {}); } catch (e) { /* sem suporte */ }
+}
+window.addEventListener('online', () => { UI.online = true; if (S) { render(); sincronizar(false); } if (UI.convite && UI.convite.status === 'offline') verificarConvite(); });
+window.addEventListener('offline', () => { UI.online = false; if (S) render(); });
+window.addEventListener('hashchange', () => { lerHashConvite(); if (UI.convite && S) { S.logado = false; fecharSheet(); render(); abrirLogin(); } });
+setInterval(() => { if (S && S.logado && navigator.onLine) sincronizar(false); }, 120000);
+(async () => {
+  S = Object.assign(estadoInicial(), (await carregar()) || {});
+  S.logado = false; // pede e-mail e senha sempre que o app é aberto
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) { /* opcional */ }
+  lerHashConvite();
+  render();
+})();
+</script>
+</body>
+</html>

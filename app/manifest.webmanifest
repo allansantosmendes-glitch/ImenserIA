@@ -1,0 +1,11 @@
+{
+  "name": "Saúde em Campo",
+  "short_name": "Saúde em Campo",
+  "description": "Cadastro territorial da atenção primária que funciona sem internet.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F7F4EA",
+  "theme_color": "#0C371D",
+  "icons": [{ "src": "marca/icone-192.png", "sizes": "192x192", "type": "image/png" }, { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
