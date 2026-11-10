@@ -6,8 +6,9 @@ Supabase quando há sinal. (O protótipo de visualização continua em `../saude
 
 ## Como funciona
 
-- **Arquivos do app** (`index.html`, `sw.js`, `vendor/`, `marca/`): site estático. O service
-  worker guarda o app no celular para abrir sem internet.
+- **Arquivos do app** (`index.html`, `sw.js`, `marca/`): site estático. A biblioteca do
+  Supabase vem do jsDelivr com versão fixa (2.89.0). O service worker guarda o app e a
+  biblioteca no celular para abrir sem internet.
 - **Dados no aparelho:** IndexedDB. Tudo o que é cadastrado fica salvo no celular na hora.
 - **Nuvem:** Supabase, projeto `saude-em-campo` (São Paulo).
   - Tabelas `perfis`, `convites`, `familias`, `atendimentos` com regras de acesso (RLS):
