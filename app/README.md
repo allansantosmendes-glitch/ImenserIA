@@ -19,11 +19,13 @@ Supabase quando há sinal. (O protótipo de visualização continua em `../saude
   enviou. Roda ao entrar, a cada 2 minutos com internet, quando o sinal volta e no botão
   de nuvem do topo.
 
-## Configuração no Supabase (uma vez)
+## Configuração no Supabase
 
-1. **Segredo `ADMIN_EMAIL`** (Edge Functions → Secrets): o e-mail do administrador.
-2. **Desligar cadastro aberto** (Authentication → Sign In / Providers → desmarcar
-   "Allow new users to sign up"). As contas continuam sendo criadas pela função `cadastro`.
+- **E-mail do administrador:** guardado na tabela `config` só como SHA-256
+  (`admin_email_sha256`). Opcionalmente, o segredo `ADMIN_EMAIL` das Edge Functions tem
+  prioridade sobre a tabela.
+- **Opcional:** desligar "Allow new users to sign up" (Authentication → Sign In /
+  Providers). Mesmo ligado, uma conta criada fora do link não tem perfil e não acessa dados.
 
 ## Primeiro uso
 

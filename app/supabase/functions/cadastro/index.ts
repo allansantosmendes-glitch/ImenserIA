@@ -1,6 +1,6 @@
 // Saúde em Campo — cadastro de contas.
 // Contas só são criadas aqui: pelo link de cadastro gerado por um administrador,
-// ou no primeiro acesso do administrador (e-mail definido no segredo ADMIN_EMAIL).
+// ou no primeiro acesso do administrador (e-mail guardado como SHA-256 na tabela config).
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const CORS = {
@@ -54,8 +54,7 @@ Deno.serve(async (req) => {
   let admin = false;
 
   if (acao === "admin") {
-    const adminEmail = (Deno.env.get("ADMIN_EMAIL") ?? "").trim().toLowerCase();
-    if (!adminEmail || email !== adminEmail) return json({ erro: "Este e-mail não é o do administrador." }, 403);
+    if (!(await ehEmailAdmin(email))) return json({ erro: "Este e-mail não é o do administrador." }, 403);
     const { count } = await db.from("perfis").select("id", { count: "exact", head: true }).eq("admin", true);
     if ((count ?? 0) > 0) return json({ erro: "O administrador já foi cadastrado. Entre com seu e-mail e senha." }, 409);
     admin = true;
@@ -87,6 +86,18 @@ Deno.serve(async (req) => {
   if (token) await db.from("convites").update({ usado_por: criado.user.id }).eq("token", token);
   return json({ ok: true });
 });
+
+// O e-mail do administrador fica no segredo ADMIN_EMAIL ou, como SHA-256, na tabela config.
+async function ehEmailAdmin(email: string) {
+  const env = (Deno.env.get("ADMIN_EMAIL") ?? "").trim().toLowerCase();
+  if (env) return email === env;
+  const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
+  const { data } = await db.from("config").select("valor").eq("chave", "admin_email_sha256").maybeSingle();
+  if (!data) return false;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(email));
+  const hex = [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return hex === data.valor;
+}
 
 function mensagemConvite(s: string) {
   return {

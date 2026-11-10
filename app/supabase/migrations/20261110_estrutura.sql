@@ -82,3 +82,9 @@ revoke all on public.perfis, public.convites, public.familias, public.atendiment
 revoke insert, delete on public.perfis from authenticated;
 revoke delete on public.familias, public.atendimentos, public.convites from authenticated;
 revoke update on public.atendimentos from authenticated;
+
+-- Configuração interna (lida só pela função cadastro, com a chave de serviço)
+create table public.config (chave text primary key, valor text not null);
+alter table public.config enable row level security;
+revoke all on public.config from anon, authenticated;
+-- insert into public.config values ('admin_email_sha256', '<sha-256 do e-mail do administrador>');
