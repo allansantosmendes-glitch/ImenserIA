@@ -34,27 +34,37 @@ viram um diagnóstico do território e relatórios agregados (sem nomes) para os
 | Coordenador(a) da missão | Acompanha equipes, exporta relatórios | Todas as equipes da missão |
 | Gestor externo (Secretaria / DSEI) | Recebe relatórios | **Somente números agregados** |
 
-## 2.1 Acesso: conta individual com e-mail e senha
+## 2.1 Acesso: só por convite do administrador
 
-O app é de uso restrito da equipe (missionários e profissionais de saúde).
+O app é de uso restrito da equipe. **Ninguém cria conta sozinho.**
 
-- **Primeiro acesso: “Criar conta”.** A pessoa preenche nome completo, e-mail (que é o
-  login), função (**médico, missionário ou voluntário**) — a missão tem uma única equipe — **código de acesso da equipe** e cria uma senha (mínimo 6
-  caracteres, digitada duas vezes).
-- **Código de acesso:** a coordenação passa o código só para quem é da equipe. Sem ele não
-  é possível criar conta. Na versão real, o ideal é o coordenador **convidar por e-mail**
-  ou **aprovar** cada conta nova antes do primeiro uso.
-- **Depois: “Entrar”** com e-mail e senha toda vez que o app é aberto. Botão “Sair” na
-  tela inicial e em “Sobre o projeto”.
-- **Quem preencheu:** cada família guarda quem cadastrou e quem atualizou, e cada
-  atendimento guarda o nome e o e-mail de quem registrou. Isso aparece na ficha da família,
-  no atendimento e na fila de envio. No atendimento o nome do profissional vem da conta
-  conectada e não pode ser trocado.
-- **Sem internet:** o primeiro login precisa de internet (para criar a conta no
-  Supabase). Depois, o app guarda a sessão de forma segura para permitir entrar offline.
-- **Versão real:** contas no Supabase Auth (senha nunca guardada em texto, recuperação de
-  senha por e-mail), papéis por função e regras de acesso por equipe no banco. No
-  protótipo, as contas ficam só no aparelho e a senha é guardada como código (hash).
+1. **O administrador convida.** Na tela **Equipe e convites** (só aparece para
+   administradores), ele preenche nome completo, e-mail e função da pessoa (médico,
+   missionário ou voluntário) e, se quiser, marca que ela também é administradora. O app
+   gera um **link de convite** para aquela pessoa, com botões para copiar e enviar pelo
+   WhatsApp.
+2. **A pessoa abre o link** e vê "Olá, Fulano! Você foi convidado(a) como ...". Nome e
+   e-mail já vêm preenchidos (o e-mail não pode ser trocado). Ela só **cria a senha**
+   (mínimo 6 caracteres, digitada duas vezes) e já entra no app.
+3. **Depois, entra sempre com e-mail e senha.** A tela de entrada não tem "criar conta":
+   quem não tem conta é orientado a pedir o link ao administrador.
+
+Regras do convite:
+- Vale por **7 dias** e só cria a conta do e-mail convidado.
+- Link alterado ou incompleto é recusado; link já usado leva para "Entrar".
+- O administrador vê o status de cada convite (aguardando, ativado, expirado, cancelado),
+  pode **cancelar**, **gerar um novo link** e **desativar ou reativar** o acesso de quem saiu
+  da equipe.
+
+**Quem preencheu:** cada família guarda quem cadastrou e quem atualizou, e cada
+atendimento guarda o nome e o e-mail de quem registrou (o nome vem da conta conectada e
+não pode ser trocado).
+
+**Versão real:** Supabase Auth com convite por e-mail (`inviteUserByEmail`), link de uso
+único assinado pelo servidor, recuperação de senha por e-mail e papéis
+(administrador, médico, missionário, voluntário) com regras de acesso no banco. No
+protótipo, as contas ficam só no aparelho onde foram ativadas, existe um administrador de
+exemplo (admin@exemplo.org / admin123) e o convite vai dentro do próprio link.
 
 ## 3. O dia a dia no app (fluxo do protótipo)
 
@@ -139,7 +149,9 @@ família já cadastrada.
 - **morador**: campos de 4.2 + familia_id.
 - **atendimento**: campos de 4.3 (incluindo evolução médica) + morador_id, familia_id, profissional_id.
 - **medicamento_entregue**: atendimento_id, nome, quantidade, como tomar.
-- **usuario** (conta): nome completo, e-mail (login), função, equipe, criado_em, último acesso.
+- **usuario** (conta): nome completo, e-mail (login), função, administrador (sim/não), ativo,
+  criado_em, último acesso.
+- **convite**: nome, e-mail, função, administrador, enviado_por, criado_em, expira_em, status.
   A senha fica no Supabase Auth.
 - **equipe**, **localidade**, **cid10**: cadastros de apoio.
 

@@ -18,9 +18,10 @@ Acesse `http://localhost:8000`. No celular, use "Adicionar à tela inicial".
 
 ## O que dá para testar
 
-- **Primeiro acesso:** criar conta com nome completo, e-mail (login), função (médico, missionário ou voluntário),
-  código de acesso da equipe (no protótipo: `NORTE2026`) e senha. Depois, entrar sempre
-  com e-mail e senha. Cada cadastro e atendimento registra quem preencheu.
+- **Acesso só por convite:** entre como administrador de exemplo (`admin@exemplo.org`,
+  senha `admin123`), abra **Equipe e convites**, convide uma pessoa e abra o link gerado:
+  ela cria a senha e entra. Depois, sempre e-mail e senha. Cada cadastro e atendimento
+  registra quem preencheu.
 - Buscar família pelo nome do responsável ou morador.
 - **Nova família** em 5 passos: família e composição, moradia e saneamento, renda,
   benefícios e acesso ao posto, moradores, revisão com consentimento.
